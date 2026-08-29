@@ -389,7 +389,7 @@
             color: var(--text-primary);
         }
 
-        /* Colorful Liquid Glass Backlog Cards (Slightly Darker Blue Blocks) */
+        /* Colorful Liquid Glass Backlog Cards */
         .backlog-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -746,8 +746,7 @@
             <button class="btn" style="width: auto;" id="mainAddBtn">+ Add Backlog</button>
         </div>
 
-        <div class="backlog-grid" id="backlogGrid">
-            </div>
+        <div class="backlog-grid" id="backlogGrid"></div>
     </div>
 
     <div class="modal" id="profileModal">
@@ -789,8 +788,7 @@
                 </div>
             </div>
 
-            <div id="syllabusContainer" style="max-height: 50vh; overflow-y: auto; padding-right: 0.5rem;">
-                </div>
+            <div id="syllabusContainer" style="max-height: 50vh; overflow-y: auto; padding-right: 0.5rem;"></div>
 
             <button type="button" class="btn close-modal" style="margin-top: 1rem;">Close Tracker</button>
         </div>
@@ -823,8 +821,7 @@
                 </div>
             </div>
             <div class="calendar-container">
-                <div class="calendar-grid" id="calendarGrid">
-                    </div>
+                <div class="calendar-grid" id="calendarGrid"></div>
             </div>
             <div id="daySchedulePreview" style="background: rgba(224, 242, 254, 0.85); padding: 1rem; border-radius: 12px; margin-bottom: 1rem; border: 0.5px solid var(--border-color); font-size: 0.85rem;">
                 <strong>Scheduled on selected date:</strong> <span id="previewScheduleText">None</span>
@@ -908,15 +905,15 @@
     </footer>
 
     <script>
-        // Data State
-        let profileData = {
+        // Load data from LocalStorage or use defaults if first time
+        let profileData = JSON.parse(localStorage.getItem('arsh_profileData')) || {
             name: "Arsh Verma",
             classLevel: "Class 11",
             address: "Lucknow, India",
             avatarUrl: ""
         };
 
-        let syllabusData = [
+        let syllabusData = JSON.parse(localStorage.getItem('arsh_syllabusData')) || [
             {
                 subject: "Physics",
                 chapters: [
@@ -991,7 +988,7 @@
             }
         ];
 
-        let backlogs = [
+        let backlogs = JSON.parse(localStorage.getItem('arsh_backlogs')) || [
             {
                 name: "Work, Energy And Power",
                 date: "2026-08-30",
@@ -1007,6 +1004,13 @@
         ];
 
         let selectedDateGlobal = new Date().toISOString().split('T')[0];
+
+        // Save functions to push data to browser memory
+        function saveData() {
+            localStorage.setItem('arsh_profileData', JSON.stringify(profileData));
+            localStorage.setItem('arsh_syllabusData', JSON.stringify(syllabusData));
+            localStorage.setItem('arsh_backlogs', JSON.stringify(backlogs));
+        }
 
         // DOM Elements
         const menuToggle = document.getElementById('menuToggle');
@@ -1025,7 +1029,13 @@
         closeSidebar.addEventListener('click', () => sidebar.classList.remove('active'));
 
         // Open Modals from Sidebar
-        document.getElementById('openProfileModal').addEventListener('click', () => profileModal.classList.add('active'));
+        document.getElementById('openProfileModal').addEventListener('click', () => {
+            document.getElementById('inputName').value = profileData.name;
+            document.getElementById('inputClass').value = profileData.classLevel;
+            document.getElementById('inputAddress').value = profileData.address;
+            document.getElementById('inputAvatar').value = profileData.avatarUrl;
+            profileModal.classList.add('active');
+        });
         document.getElementById('openProgressModal').addEventListener('click', () => {
             progressModal.classList.add('active');
             renderSyllabusTracker();
@@ -1061,6 +1071,7 @@
             profileData.address = document.getElementById('inputAddress').value;
             profileData.avatarUrl = document.getElementById('inputAvatar').value;
 
+            saveData();
             updateProfileUI();
             profileModal.classList.remove('active');
         });
@@ -1125,6 +1136,7 @@
                 backlogs.push(item);
             }
 
+            saveData();
             backlogModal.classList.remove('active');
             renderBacklogs();
         });
@@ -1141,6 +1153,7 @@
             }
 
             backlogs[cardIdx].links.push({ title, url });
+            saveData();
             document.getElementById('linkForm').reset();
             linkModal.classList.remove('active');
             renderBacklogs();
@@ -1153,6 +1166,7 @@
 
         function toggleFinish(index) {
             backlogs[index].finished = !backlogs[index].finished;
+            saveData();
             renderBacklogs();
         }
 
@@ -1173,7 +1187,6 @@
             backlogModal.classList.add('active');
         }
 
-        // Delete with Accidental Prevention Modal
         function promptDelete(index) {
             document.getElementById('deleteTargetIndex').value = index;
             document.getElementById('deleteTargetName').textContent = backlogs[index].name;
@@ -1183,11 +1196,11 @@
         document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
             const idx = parseInt(document.getElementById('deleteTargetIndex').value);
             backlogs.splice(idx, 1);
+            saveData();
             deleteModal.classList.remove('active');
             renderBacklogs();
         });
 
-        // Handle PDF File Upload & Local Storage
         function handlePdfUpload(event, index) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1198,13 +1211,13 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 backlogs[index].pdfName = file.name;
-                backlogs[index].pdfData = e.target.result; // base64 stored into website state
+                backlogs[index].pdfData = e.target.result;
+                saveData();
                 renderBacklogs();
             };
             reader.readAsDataURL(file);
         }
 
-        // Open stored PDF safely in a new browser tab/window
         function openStoredPdf(index) {
             const item = backlogs[index];
             if(!item.pdfData) return;
@@ -1228,7 +1241,6 @@
             }
         }
 
-        // Render Syllabus Tracker Modal & Overall Progress Bar
         function renderSyllabusTracker() {
             const container = document.getElementById('syllabusContainer');
             container.innerHTML = "";
@@ -1262,12 +1274,10 @@
 
             const percentage = totalChapters > 0 ? Math.round((completedChapters / totalChapters) * 100) : 0;
             
-            // Update modal header progress
             document.getElementById('modalProgressLabel').textContent = `${percentage}% Completed`;
             document.getElementById('modalProgressCounts').textContent = `${completedChapters} / ${totalChapters} Chapters`;
             document.getElementById('modalProgressBarFill').style.width = `${percentage}%`;
 
-            // Update sidebar progress preview
             document.getElementById('progressLabel').textContent = `${percentage}% Cleared`;
             document.getElementById('progressCounts').textContent = `${completedChapters} / ${totalChapters} Completed`;
             document.getElementById('progressBarFill').style.width = `${percentage}%`;
@@ -1275,10 +1285,10 @@
 
         function toggleSyllabusChapter(sIdx, cIdx) {
             syllabusData[sIdx].chapters[cIdx].completed = !syllabusData[sIdx].chapters[cIdx].completed;
+            saveData();
             renderSyllabusTracker();
         }
 
-        // Render Backlogs Cards
         function renderBacklogs() {
             const grid = document.getElementById('backlogGrid');
             grid.innerHTML = "";
@@ -1320,7 +1330,6 @@
             });
         }
 
-        // Google Calendar Generator with Scheduled Backlogs indicator
         function renderCalendar() {
             const year = parseInt(document.getElementById('calYearSelect').value);
             const month = parseInt(document.getElementById('calMonthSelect').value);
@@ -1352,7 +1361,6 @@
                 const formattedDay = String(day).padStart(2, '0');
                 const dateStr = `${year}-${formattedMonth}-${formattedDay}`;
 
-                // Check if any backlog is scheduled on this day
                 const matchingBacklogs = backlogs.filter(b => b.date === dateStr);
 
                 let dayContent = `<span>${day}</span>`;
@@ -1370,7 +1378,6 @@
                     selectedDateGlobal = dateStr;
                     document.getElementById('selectedDateDisplay').textContent = `Selected Date: ${dateStr}`;
                     
-                    // Update preview text
                     if(matchingBacklogs.length > 0) {
                         document.getElementById('previewScheduleText').textContent = matchingBacklogs.map(b => b.name).join(', ');
                     } else {
@@ -1382,7 +1389,6 @@
                 grid.appendChild(dayDiv);
             }
 
-            // Set initial preview text for selected date
             const initialMatching = backlogs.filter(b => b.date === selectedDateGlobal);
             if(initialMatching.length > 0) {
                 document.getElementById('previewScheduleText').textContent = initialMatching.map(b => b.name).join(', ');
@@ -1394,7 +1400,7 @@
         document.getElementById('calYearSelect').addEventListener('change', renderCalendar);
         document.getElementById('calMonthSelect').addEventListener('change', renderCalendar);
 
-        // Initial setup
+        // Initial setup on page load
         updateProfileUI();
         renderBacklogs();
         renderSyllabusTracker();
