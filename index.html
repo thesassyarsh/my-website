@@ -904,16 +904,34 @@
         <p>&copy; 2026 Backlog Tracker. Designed for Arsh Verma.</p>
     </footer>
 
-    <script>
-        // Load data from LocalStorage or use defaults if first time
-        let profileData = JSON.parse(localStorage.getItem('arsh_profileData')) || {
+    <!-- Firebase SDK Logic & App Engine -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBpjIUiGxJ1Qh1tYMx9Q7Aclqk9WmWZ5mM",
+            authDomain: "projectt-e294b.firebaseapp.com",
+            projectId: "projectt-e294b",
+            storageBucket: "projectt-e294b.firebasestorage.app",
+            messagingSenderId: "528659912026",
+            appId: "1:528659912026:web:63169f39c3c5b1ab3d4f63",
+            measurementId: "G-F2TWEKJ4Y5"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const userDocRef = doc(db, "users", "arsh_verma_data");
+
+        // Application Defaults
+        let profileData = {
             name: "Arsh Verma",
             classLevel: "Class 11",
             address: "Lucknow, India",
             avatarUrl: ""
         };
 
-        let syllabusData = JSON.parse(localStorage.getItem('arsh_syllabusData')) || [
+        let syllabusData = [
             {
                 subject: "Physics",
                 chapters: [
@@ -988,7 +1006,7 @@
             }
         ];
 
-        let backlogs = JSON.parse(localStorage.getItem('arsh_backlogs')) || [
+        let backlogs = [
             {
                 name: "Work, Energy And Power",
                 date: "2026-08-30",
@@ -1005,14 +1023,40 @@
 
         let selectedDateGlobal = new Date().toISOString().split('T')[0];
 
-        // Save functions to push data to browser memory
-        function saveData() {
-            localStorage.setItem('arsh_profileData', JSON.stringify(profileData));
-            localStorage.setItem('arsh_syllabusData', JSON.stringify(syllabusData));
-            localStorage.setItem('arsh_backlogs', JSON.stringify(backlogs));
+        // Save data to Firebase Cloud Firestore
+        async function saveDataToCloud() {
+            try {
+                await setDoc(userDocRef, {
+                    profileData: profileData,
+                    syllabusData: syllabusData,
+                    backlogs: backlogs
+                });
+            } catch (error) {
+                console.error("Error saving to cloud: ", error);
+            }
         }
 
-        // DOM Elements
+        // Load data from Firebase Cloud Firestore on page startup
+        async function loadDataFromCloud() {
+            try {
+                const docSnap = await getDoc(userDocRef);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data.profileData) profileData = data.profileData;
+                    if (data.syllabusData) syllabusData = data.syllabusData;
+                    if (data.backlogs) backlogs = data.backlogs;
+                }
+            } catch (error) {
+                console.error("Error loading from cloud: ", error);
+            } finally {
+                // Initialize UI once data is loaded from cloud
+                updateProfileUI();
+                renderBacklogs();
+                renderSyllabusTracker();
+            }
+        }
+
+        // DOM Elements setup
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');
         const closeSidebar = document.getElementById('closeSidebar');
@@ -1024,11 +1068,9 @@
         const linkModal = document.getElementById('linkModal');
         const deleteModal = document.getElementById('deleteModal');
 
-        // Toggle Sidebar from Left
         menuToggle.addEventListener('click', () => sidebar.classList.add('active'));
         closeSidebar.addEventListener('click', () => sidebar.classList.remove('active'));
 
-        // Open Modals from Sidebar
         document.getElementById('openProfileModal').addEventListener('click', () => {
             document.getElementById('inputName').value = profileData.name;
             document.getElementById('inputClass').value = profileData.classLevel;
@@ -1044,14 +1086,9 @@
             calendarModal.classList.add('active');
             renderCalendar();
         });
-        document.getElementById('openBacklogModal').addEventListener('click', () => {
-            openAddBacklogModal();
-        });
-        document.getElementById('mainAddBtn').addEventListener('click', () => {
-            openAddBacklogModal();
-        });
+        document.getElementById('openBacklogModal').addEventListener('click', openAddBacklogModal);
+        document.getElementById('mainAddBtn').addEventListener('click', openAddBacklogModal);
 
-        // Close all modals
         document.querySelectorAll('.close-modal').forEach(btn => {
             btn.addEventListener('click', () => {
                 profileModal.classList.remove('active');
@@ -1063,17 +1100,16 @@
             });
         });
 
-        // Profile Form Handler
-        document.getElementById('profileForm').addEventListener('submit', (e) => {
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             profileData.name = document.getElementById('inputName').value;
             profileData.classLevel = document.getElementById('inputClass').value;
             profileData.address = document.getElementById('inputAddress').value;
             profileData.avatarUrl = document.getElementById('inputAvatar').value;
 
-            saveData();
             updateProfileUI();
             profileModal.classList.remove('active');
+            await saveDataToCloud();
         });
 
         function updateProfileUI() {
@@ -1088,7 +1124,6 @@
             }
         }
 
-        // Sliders live update listeners
         ['Lecture', 'Module', 'Ref'].forEach(type => {
             const slider = document.getElementById(`slider${type}`);
             const valSpan = document.getElementById(`val${type}`);
@@ -1113,8 +1148,7 @@
             backlogModal.classList.add('active');
         }
 
-        // Backlog Form Handler (Add / Edit)
-        document.getElementById('backlogForm').addEventListener('submit', (e) => {
+        document.getElementById('backlogForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const editIdx = parseInt(document.getElementById('editIndex').value);
             const item = {
@@ -1136,13 +1170,12 @@
                 backlogs.push(item);
             }
 
-            saveData();
             backlogModal.classList.remove('active');
             renderBacklogs();
+            await saveDataToCloud();
         });
 
-        // Link Form Handler
-        document.getElementById('linkForm').addEventListener('submit', (e) => {
+        document.getElementById('linkForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const cardIdx = parseInt(document.getElementById('linkCardIndex').value);
             const title = document.getElementById('linkTitle').value;
@@ -1153,24 +1186,24 @@
             }
 
             backlogs[cardIdx].links.push({ title, url });
-            saveData();
             document.getElementById('linkForm').reset();
             linkModal.classList.remove('active');
             renderBacklogs();
+            await saveDataToCloud();
         });
 
-        function openAddLinkModal(index) {
+        window.openAddLinkModal = function(index) {
             document.getElementById('linkCardIndex').value = index;
             linkModal.classList.add('active');
-        }
+        };
 
-        function toggleFinish(index) {
+        window.toggleFinish = async function(index) {
             backlogs[index].finished = !backlogs[index].finished;
-            saveData();
             renderBacklogs();
-        }
+            await saveDataToCloud();
+        };
 
-        function editBacklog(index) {
+        window.editBacklog = function(index) {
             const item = backlogs[index];
             document.getElementById('editIndex').value = index;
             document.getElementById('backlogModalTitle').textContent = "Edit Backlog Chapter";
@@ -1185,23 +1218,23 @@
             document.getElementById('valRef').textContent = item.ref;
             document.getElementById('chapterNote').value = item.note;
             backlogModal.classList.add('active');
-        }
+        };
 
-        function promptDelete(index) {
+        window.promptDelete = function(index) {
             document.getElementById('deleteTargetIndex').value = index;
             document.getElementById('deleteTargetName').textContent = backlogs[index].name;
             deleteModal.classList.add('active');
-        }
+        };
 
-        document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+        document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
             const idx = parseInt(document.getElementById('deleteTargetIndex').value);
             backlogs.splice(idx, 1);
-            saveData();
             deleteModal.classList.remove('active');
             renderBacklogs();
+            await saveDataToCloud();
         });
 
-        function handlePdfUpload(event, index) {
+        window.handlePdfUpload = async function(event, index) {
             const file = event.target.files[0];
             if (!file) return;
             if (file.type !== "application/pdf") {
@@ -1209,37 +1242,31 @@
                 return;
             }
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = async function(e) {
                 backlogs[index].pdfName = file.name;
                 backlogs[index].pdfData = e.target.result;
-                saveData();
                 renderBacklogs();
+                await saveDataToCloud();
             };
             reader.readAsDataURL(file);
-        }
+        };
 
-        function openStoredPdf(index) {
+        window.openStoredPdf = function(index) {
             const item = backlogs[index];
             if(!item.pdfData) return;
-            
             const win = window.open();
             if(win) {
                 win.document.write(`
                     <!DOCTYPE html>
                     <html lang="en">
-                    <head>
-                        <title>${item.pdfName}</title>
-                        <style>body, html { margin: 0; padding: 0; height: 100%; background: #e0f2fe; }</style>
-                    </head>
-                    <body>
-                        <iframe src="${item.pdfData}" style="width:100%; height:100%; border:none;" allowfullscreen></iframe>
-                    </body>
+                    <head><title>${item.pdfName}</title><style>body,html{margin:0;padding:0;height:100%;background:#e0f2fe;}</style></head>
+                    <body><iframe src="${item.pdfData}" style="width:100%;height:100%;border:none;" allowfullscreen></iframe></body>
                     </html>
                 `);
             } else {
-                alert("Popup blocked! Please allow popups for this site to view the PDF.");
+                alert("Popup blocked! Please allow popups to view the PDF.");
             }
-        }
+        };
 
         function renderSyllabusTracker() {
             const container = document.getElementById('syllabusContainer');
@@ -1260,7 +1287,7 @@
                     chaptersHtml += `
                         <div class="syllabus-chapter-item">
                             <label>
-                                <input type="checkbox" ${ch.completed ? 'checked' : ''} onchange="toggleSyllabusChapter(${sIdx}, ${cIdx})">
+                                <input type="checkbox" ${ch.completed ? 'checked' : ''} onchange="window.toggleSyllabusChapter(${sIdx}, ${cIdx})">
                                 ${ch.name}
                             </label>
                             <span style="font-size: 0.75rem; font-weight: 600; color: ${ch.completed ? 'var(--success-color)' : 'var(--text-secondary)'};">${ch.completed ? 'Completed' : 'Pending'}</span>
@@ -1283,11 +1310,11 @@
             document.getElementById('progressBarFill').style.width = `${percentage}%`;
         }
 
-        function toggleSyllabusChapter(sIdx, cIdx) {
+        window.toggleSyllabusChapter = async function(sIdx, cIdx) {
             syllabusData[sIdx].chapters[cIdx].completed = !syllabusData[sIdx].chapters[cIdx].completed;
-            saveData();
             renderSyllabusTracker();
-        }
+            await saveDataToCloud();
+        };
 
         function renderBacklogs() {
             const grid = document.getElementById('backlogGrid');
@@ -1304,8 +1331,8 @@
                 let linksHtml = item.links.map(l => `<a href="${l.url}" target="_blank" rel="noopener noreferrer" class="link-pill">🔗 ${l.title}</a>`).join('');
                 
                 let pdfHtml = item.pdfData 
-                    ? `<span onclick="openStoredPdf(${index})" class="link-pill" style="background-color: rgba(5, 150, 105, 0.15); color: var(--success-color); border: 0.5px solid rgba(5, 150, 105, 0.3);">📄 ${item.pdfName}</span>`
-                    : `<label class="link-pill" style="cursor: pointer; background-color: rgba(224, 242, 254, 0.8); border: 0.5px dashed var(--accent-color);">+ PDF <input type="file" accept="application/pdf" style="display:none;" onchange="handlePdfUpload(event, ${index})"></label>`;
+                    ? `<span onclick="window.openStoredPdf(${index})" class="link-pill" style="background-color: rgba(5, 150, 105, 0.15); color: var(--success-color); border: 0.5px solid rgba(5, 150, 105, 0.3);">📄 ${item.pdfName}</span>`
+                    : `<label class="link-pill" style="cursor: pointer; background-color: rgba(224, 242, 254, 0.8); border: 0.5px dashed var(--accent-color);">+ PDF <input type="file" accept="application/pdf" style="display:none;" onchange="window.handlePdfUpload(event, ${index})"></label>`;
 
                 card.innerHTML = `
                     <div class="card-header">
@@ -1320,10 +1347,10 @@
                     ${item.note ? `<div class="card-note">${item.note}</div>` : ''}
                     <div class="links-container">${linksHtml} ${pdfHtml}</div>
                     <div class="card-actions">
-                        <button onclick="openAddLinkModal(${index})">+ Link</button>
-                        <button class="finish-btn" onclick="toggleFinish(${index})">${item.finished ? 'Unfinish' : 'Finish'}</button>
-                        <button onclick="editBacklog(${index})">Edit</button>
-                        <button class="delete-btn" onclick="promptDelete(${index})">Delete</button>
+                        <button onclick="window.openAddLinkModal(${index})">+ Link</button>
+                        <button class="finish-btn" onclick="window.toggleFinish(${index})">${item.finished ? 'Unfinish' : 'Finish'}</button>
+                        <button onclick="window.editBacklog(${index})">Edit</button>
+                        <button class="delete-btn" onclick="window.promptDelete(${index})">Delete</button>
                     </div>
                 `;
                 grid.appendChild(card);
@@ -1350,6 +1377,7 @@
             for(let i = 0; i < firstDayIndex; i++) {
                 const emptyDiv = document.createElement('div');
                 emptyDiv.className = 'calendar-day empty';
+                grid.existsSync = false;
                 grid.appendChild(emptyDiv);
             }
 
@@ -1400,10 +1428,8 @@
         document.getElementById('calYearSelect').addEventListener('change', renderCalendar);
         document.getElementById('calMonthSelect').addEventListener('change', renderCalendar);
 
-        // Initial setup on page load
-        updateProfileUI();
-        renderBacklogs();
-        renderSyllabusTracker();
+        // Fetch data from Firebase Cloud on initial load
+        loadDataFromCloud();
     </script>
 </body>
 </html>
