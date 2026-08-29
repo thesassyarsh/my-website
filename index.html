@@ -758,6 +758,8 @@
         let isRegisterMode = false;
         let profileData = { name: "Arsh Verma", classLevel: "Class 11", address: "Lucknow, India", avatarUrl: "", theme: "light" };
         let studyStats = { focusMinutes: 0, streak: 1, badges: ["🏆 Beginner Scholar"] };
+        
+        // Updated with your exact syllabus list from the screenshots
         let syllabusData = [
             {
                 subject: "Physics",
@@ -766,7 +768,12 @@
                     { name: "Kinematics", completed: true },
                     { name: "Newton's Laws Of Motion And Friction", completed: true },
                     { name: "Circular Motion", completed: true },
-                    { name: "Work, Energy And Power", completed: false }
+                    { name: "Work, Energy And Power", completed: false },
+                    { name: "Simple Harmonic Motion (SHM)", completed: false },
+                    { name: "Center Of Mass, Momentum And Collision", completed: false },
+                    { name: "Elasticity, Heat And Thermodynamics", completed: false },
+                    { name: "Fluid Mechanics", completed: false },
+                    { name: "Rotational Dynamics", completed: false }
                 ]
             },
             {
@@ -774,7 +781,26 @@
                 chapters: [
                     { name: "Mole Concept", completed: true },
                     { name: "Atomic Structure", completed: true },
-                    { name: "Periodic Table", completed: true }
+                    { name: "Periodic Table", completed: true },
+                    { name: "Chemical Bonding-I", completed: true },
+                    { name: "Gaseous State (Ideal Gas)", completed: true },
+                    { name: "Redox", completed: true },
+                    { name: "Chemical Equilibrium", completed: false },
+                    { name: "General Chemistry & Quantum Number", completed: false },
+                    { name: "Acidic Strength And Basic Strength", completed: false },
+                    { name: "Chemical Bonding-II", completed: false },
+                    { name: "Classification of Organic Compounds, IUPAC N...", completed: false },
+                    { name: "Concentration Term", completed: false },
+                    { name: "Electronic Displacement Effect", completed: false },
+                    { name: "Hydrocarbon", completed: false },
+                    { name: "Ionic Equilibrium", completed: false },
+                    { name: "Isomerism", completed: false },
+                    { name: "Purification and Characterisation of Organic Co...", completed: false },
+                    { name: "Real Gas", completed: false },
+                    { name: "The p-Block Elements (Group 13–14)", completed: false },
+                    { name: "Thermochemistry", completed: false },
+                    { name: "Thermodynamics 1", completed: false },
+                    { name: "Thermodynamics 2", completed: false }
                 ]
             },
             {
@@ -782,10 +808,33 @@
                 chapters: [
                     { name: "Sets, Numbers And Intervals", completed: true },
                     { name: "Sequences And Series", completed: true },
-                    { name: "Quadratic Equation", completed: true }
+                    { name: "Quadratic Equation", completed: true },
+                    { name: "Solution Of Triangles", completed: true },
+                    { name: "Trigonometric Ratios And Identities", completed: true },
+                    { name: "Trigonometric Equations", completed: true },
+                    { name: "Straight Line", completed: false },
+                    { name: "Fundamentals Of Algebra", completed: false },
+                    { name: "Binomial Theorem", completed: false },
+                    { name: "Circle", completed: false },
+                    { name: "Complex Numbers NCERT", completed: false },
+                    { name: "Ellipse", completed: false },
+                    { name: "Fundamentals Of Geometry", completed: false },
+                    { name: "Heights And Distances", completed: false },
+                    { name: "Hyperbola", completed: false },
+                    { name: "Limits And Derivatives NCERT", completed: false },
+                    { name: "Logarithm", completed: false },
+                    { name: "Mathematical Induction", completed: false },
+                    { name: "Mathematical Reasoning", completed: false },
+                    { name: "Parabola", completed: false },
+                    { name: "Permutations And Combinations", completed: false },
+                    { name: "Probability NCERT", completed: false },
+                    { name: "Relations And Functions NCERT", completed: false },
+                    { name: "Statistics", completed: false },
+                    { name: "Three Dimensional (3D) Geometry NCERT", completed: false }
                 ]
             }
         ];
+        
         let backlogs = [
             { subject: "Physics", name: "Work, Energy And Power", date: "2026-08-30", lecture: 50, module: 30, ref: 40, note: "Practice work-energy theorem problems.", links: [], finished: false }
         ];
@@ -1379,7 +1428,6 @@
                 const userData = docSnap.data();
                 const username = docSnap.id;
                 const userBacklogs = userData.backlogs || [];
-                const lastActive = userData.lastActive || "Never";
 
                 const blockDiv = document.createElement('div');
                 blockDiv.className = 'subject-block-container';
