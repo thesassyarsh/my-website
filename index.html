@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backlog Clearance Dashboard</title>
+    <style>
+        :root {
+            --bg-color: #e0f2fe; /* Light blue base */
+            --surface-color: rgba(224, 242, 254, 0.75);
+            --surface-solid: #bae6fd; /* Little dark blue for blocks */
+            --border-color: rgba(125, 211, 252, 0.6);
+            --text-primary: #0c4a6e;
+            --text-secondary: #0369a1;
+            --accent-color: #0284c7;
+            --accent-hover: #0369a1;
+            --danger-color: #e11d48;
+            --success-color: #059669;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.5;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 15%, rgba(14, 165, 233, 0.18) 0%, transparent 45%),
+                radial-gradient(circle at 90% 85%, rgba(56, 189, 248, 0.15) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(2, 132, 199, 0.08) 0%, transparent 60%);
+            min-height: 100vh;
+        }
+
+        /* Liquid Glass Header */
+        header {
+            display: flex;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: rgba(186, 230, 253, 0.65);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border-bottom: 0.5px solid var(--border-color);
+            box-shadow: 0 4px 30px rgba(2, 132, 199, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding: 5px;
+            margin-right: 1.5rem;
+        }
+
+        .menu-btn span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background-color: var(--text-primary);
+            border-radius: 2px;
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.015em;
+            color: #0369a1;
+        }
+
+        /* Liquid Glass Left Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -380px;
+            width: 360px;
+            height: 100%;
+            background: rgba(186, 230, 253, 0.85);
+            backdrop-filter: blur(35px) saturate(200%);
+            -webkit-backdrop-filter: blur(35px) saturate(200%);
+            box-shadow: 15px 0 50px rgba(2, 132, 199, 0.12);
+            transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            border-right: 0.5px solid var(--border-color);
+            overflow-y: auto;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 0.5px solid var(--border-color);
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .close-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .sidebar-content {
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .sidebar-block {
+            background: linear-gradient(135deg, rgba(186, 230, 253, 0.9) 0%, rgba(125, 211, 252, 0.6) 100%);
+            border: 0.5px solid rgba(14, 165, 233, 0.3);
+            border-radius: 16px;
+            padding: 1.25rem;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(2, 132, 199, 0.08);
+            transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.25s ease;
+        }
+
+        .sidebar-block:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(2, 132, 199, 0.15);
+            border-color: var(--accent-color);
+        }
+
+        .sidebar-block h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Profile Block Preview */
+        .profile-preview {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .profile-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7dd3fc, #38bdf8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            overflow: hidden;
+            color: #ffffff;
+            border: 0.5px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            width: 100%;
+            background-color: rgba(186, 230, 253, 0.6);
+            border-radius: 9999px;
+            height: 8px;
+            overflow: hidden;
+            margin-top: 0.75rem;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0284c7, #059669);
+            width: 0%;
+            transition: width 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            border-radius: 9999px;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(12, 74, 110, 0.25);
+            backdrop-filter: blur(20px) saturate(150%);
+            -webkit-backdrop-filter: blur(20px) saturate(150%);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: rgba(186, 230, 253, 0.92);
+            backdrop-filter: blur(40px) saturate(200%);
+            -webkit-backdrop-filter: blur(40px) saturate(200%);
+            border: 0.5px solid rgba(255, 255, 255, 0.8);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 520px;
+            padding: 2rem;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.95);
+            animation: modalPopUp 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            box-shadow: 0 30px 60px rgba(2, 132, 199, 0.2);
+        }
+
+        @keyframes modalPopUp {
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .modal-content h2 {
+            margin-bottom: 1.5rem;
+            font-size: 1.35rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(224, 242, 254, 0.9);
+            border: 0.5px solid var(--border-color);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
+        }
+
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15);
+        }
+
+        .form-group input[type="range"] {
+            padding: 0;
+            cursor: pointer;
+            accent-color: var(--accent-color);
+            background: transparent;
+            box-shadow: none;
+        }
+
+        .range-value {
+            display: inline-block;
+            margin-left: 0.5rem;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        /* Buttons */
+        .btn {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            color: #ffffff;
+            padding: 0.8rem 1.5rem;
+            border-radius: 14px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
+        }
+
+        .btn:hover {
+            box-shadow: 0 6px 20px rgba(2, 132, 199, 0.4);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background-color: rgba(186, 230, 253, 0.8);
+            color: var(--text-primary);
+            margin-top: 0.75rem;
+            box-shadow: none;
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(125, 211, 252, 0.9);
+            box-shadow: none;
+        }
+
+        .btn-danger {
+            background-color: rgba(225, 29, 72, 0.15);
+            color: var(--danger-color);
+            border: 0.5px solid rgba(225, 29, 72, 0.3);
+            box-shadow: none;
+        }
+        .btn-danger:hover {
+            background-color: rgba(225, 29, 72, 0.25);
+            box-shadow: none;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+        }
+
+        /* Colorful Liquid Glass Backlog Cards (Slightly Darker Blue Blocks) */
+        .backlog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .backlog-card {
+            background: linear-gradient(135deg, rgba(186, 230, 253, 0.85) 0%, rgba(125, 211, 252, 0.6) 100%);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 0.5px solid rgba(14, 165, 233, 0.35);
+            border-radius: 20px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            position: relative;
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease, opacity 0.3s ease;
+            box-shadow: 0 12px 35px rgba(2, 132, 199, 0.08);
+        }
+
+        .backlog-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 45px rgba(2, 132, 199, 0.16);
+            border-color: var(--accent-color);
+        }
+
+        .backlog-card.finished {
+            opacity: 0.65;
+            border-color: rgba(5, 150, 105, 0.3);
+            background: linear-gradient(135deg, rgba(209, 250, 229, 0.8) 0%, rgba(167, 243, 208, 0.4) 100%);
+        }
+
+        .backlog-card.finished h3 {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .card-header h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            color: var(--text-primary);
+        }
+
+        .card-date {
+            font-size: 0.75rem;
+            font-weight: 500;
+            background-color: rgba(2, 132, 199, 0.12);
+            padding: 0.25rem 0.6rem;
+            border-radius: 8px;
+            color: var(--accent-color);
+            border: 0.5px solid rgba(2, 132, 199, 0.25);
+        }
+
+        .sliders-summary {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            background: rgba(224, 242, 254, 0.7);
+            padding: 0.85rem;
+            border-radius: 12px;
+            border: 0.5px solid var(--border-color);
+        }
+
+        .sliders-summary strong {
+            color: var(--text-primary);
+        }
+
+        .card-note {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            background: rgba(224, 242, 254, 0.7);
+            padding: 0.85rem;
+            border-radius: 12px;
+            border-left: 3px solid var(--accent-color);
+            border-top: 0.5px solid var(--border-color);
+            border-right: 0.5px solid var(--border-color);
+            border-bottom: 0.5px solid var(--border-color);
+            white-space: pre-wrap;
+        }
+
+        .links-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .link-pill {
+            background: rgba(224, 242, 254, 0.9);
+            color: var(--accent-color);
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.3rem 0.65rem;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border: 0.5px solid var(--border-color);
+        }
+
+        .link-pill:hover {
+            background: #ffffff;
+            border-color: var(--accent-color);
+        }
+
+        .card-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.4rem;
+            margin-top: auto;
+            padding-top: 0.5rem;
+        }
+
+        .card-actions button, .card-actions label {
+            padding: 0.45rem 0.2rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border-radius: 10px;
+            border: 0.5px solid var(--border-color);
+            background: rgba(224, 242, 254, 0.8);
+            color: var(--text-primary);
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.2s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-actions button:hover, .card-actions label:hover {
+            background: #ffffff;
+            border-color: var(--accent-color);
+        }
+
+        .card-actions button:active {
+            transform: scale(0.96);
+        }
+
+        .card-actions button.finish-btn {
+            background: rgba(5, 150, 105, 0.15);
+            color: var(--success-color);
+            border-color: rgba(5, 150, 105, 0.3);
+        }
+
+        .card-actions button.finish-btn:hover {
+            background: rgba(5, 150, 105, 0.25);
+        }
+
+        .card-actions button.delete-btn {
+            background: rgba(225, 29, 72, 0.15);
+            color: var(--danger-color);
+            border-color: rgba(225, 29, 72, 0.3);
+        }
+
+        .card-actions button.delete-btn:hover {
+            background: rgba(225, 29, 72, 0.25);
+        }
+
+        /* Calendar Styles */
+        .calendar-container {
+            background: rgba(224, 242, 254, 0.7);
+            border: 0.5px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .calendar-day-header {
+            color: var(--text-secondary);
+            font-weight: 600;
+            padding: 4px;
+            font-size: 0.75rem;
+        }
+
+        .calendar-day {
+            padding: 10px 4px;
+            background: rgba(224, 242, 254, 0.9);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            position: relative;
+            min-height: 44px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            border: 0.5px solid var(--border-color);
+        }
+
+        .calendar-day:hover {
+            background: #ffffff;
+            border-color: var(--accent-color);
+        }
+
+        .calendar-day.selected {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            color: #ffffff;
+            font-weight: 600;
+            border-color: var(--accent-color);
+        }
+
+        .calendar-day.empty {
+            background: transparent;
+            border: none;
+            cursor: default;
+        }
+
+        .cal-badge-dot {
+            width: 5px;
+            height: 5px;
+            background-color: var(--success-color);
+            border-radius: 50%;
+            margin-top: 3px;
+        }
+
+        /* Syllabus Modal Tree */
+        .syllabus-subject {
+            background: rgba(224, 242, 254, 0.7);
+            border: 0.5px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .syllabus-subject h3 {
+            color: var(--accent-color);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            border-bottom: 0.5px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .syllabus-chapter-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(224, 242, 254, 0.9);
+            padding: 0.6rem 0.85rem;
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+            border: 0.5px solid var(--border-color);
+        }
+
+        .syllabus-chapter-item:hover {
+            background: #ffffff;
+            border-color: var(--accent-color);
+        }
+
+        .syllabus-chapter-item label {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+
+        .syllabus-chapter-item input[type="checkbox"] {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent-color);
+            border-radius: 4px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            border-top: 0.5px solid var(--border-color);
+            margin-top: 5rem;
+            background: rgba(186, 230, 253, 0.5);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <button class="menu-btn" id="menuToggle" aria-label="Toggle Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <div class="logo">BacklogTracker</div>
+    </header>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Dashboard Menu</h2>
+            <button class="close-btn" id="closeSidebar">&times;</button>
+        </div>
+        <div class="sidebar-content">
+            <div class="sidebar-block" id="openProfileModal">
+                <h3>Profile Info</h3>
+                <div class="profile-preview">
+                    <div class="profile-avatar" id="sidebarAvatar">AV</div>
+                    <div>
+                        <div style="font-weight: 600;" id="sidebarName">Arsh Verma</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);" id="sidebarClass">Class 11</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-block" id="openProgressModal">
+                <h3>Progress Tracker</h3>
+                <div class="progress-text">
+                    <span id="progressLabel">0% Cleared</span>
+                    <span id="progressCounts">0 / 0 Completed</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="progressBarFill"></div>
+                </div>
+            </div>
+
+            <div class="sidebar-block" id="openCalendarModal">
+                <h3>Calendar</h3>
+                <p style="font-size: 0.8rem; color: var(--text-secondary);" id="selectedDateDisplay">Selected Date: None</p>
+            </div>
+
+            <div class="sidebar-block" id="openBacklogModal">
+                <h3>+ Add New Backlog Chapter</h3>
+                <p style="font-size: 0.8rem; color: var(--text-secondary);">Configure chapter sliders, notes & schedule.</p>
+            </div>
+        </div>
+    </aside>
+
+    <div class="container">
+        <div class="dashboard-header">
+            <h1>My Backlog Chapters</h1>
+            <button class="btn" style="width: auto;" id="mainAddBtn">+ Add Backlog</button>
+        </div>
+
+        <div class="backlog-grid" id="backlogGrid">
+            </div>
+    </div>
+
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <h2>Customize Profile</h2>
+            <form id="profileForm">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="inputName" value="Arsh Verma">
+                </div>
+                <div class="form-group">
+                    <label>Class / Grade</label>
+                    <input type="text" id="inputClass" value="Class 11">
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <input type="text" id="inputAddress" value="Lucknow, India">
+                </div>
+                <div class="form-group">
+                    <label>Profile Picture URL (or initials)</label>
+                    <input type="text" id="inputAvatar" placeholder="https://image-url.com/pic.jpg">
+                </div>
+                <button type="submit" class="btn">Save Profile</button>
+                <button type="button" class="btn btn-secondary close-modal">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="progressModal">
+        <div class="modal-content" style="max-width: 650px;">
+            <h2>Syllabus & Progress Tracker</h2>
+            <div style="background: rgba(224, 242, 254, 0.85); padding: 1.25rem; border-radius: 16px; border: 0.5px solid var(--border-color); margin-bottom: 1.5rem;">
+                <div class="progress-text" style="margin-top: 0; font-size: 0.95rem; font-weight: 600;">
+                    <span id="modalProgressLabel" style="color: var(--accent-color);">0% Completed</span>
+                    <span id="modalProgressCounts">0 / 0 Chapters</span>
+                </div>
+                <div class="progress-bar-container" style="height: 12px; margin-top: 0.75rem;">
+                    <div class="progress-bar-fill" id="modalProgressBarFill"></div>
+                </div>
+            </div>
+
+            <div id="syllabusContainer" style="max-height: 50vh; overflow-y: auto; padding-right: 0.5rem;">
+                </div>
+
+            <button type="button" class="btn close-modal" style="margin-top: 1rem;">Close Tracker</button>
+        </div>
+    </div>
+
+    <div class="modal" id="calendarModal">
+        <div class="modal-content" style="max-width: 650px;">
+            <h2>Backlog Schedule Calendar</h2>
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                    <label>Year</label>
+                    <select id="calYearSelect">
+                        <option value="2026" selected>2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                        <option value="2029">2029</option>
+                        <option value="2030">2030</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                    <label>Month</label>
+                    <select id="calMonthSelect">
+                        <option value="0">January</option><option value="1">February</option>
+                        <option value="2">March</option><option value="3">April</option>
+                        <option value="4">May</option><option value="5">June</option>
+                        <option value="6">July</option><option value="7" selected>August</option>
+                        <option value="8">September</option><option value="9">October</option>
+                        <option value="10">November</option><option value="11">December</option>
+                    </select>
+                </div>
+            </div>
+            <div class="calendar-container">
+                <div class="calendar-grid" id="calendarGrid">
+                    </div>
+            </div>
+            <div id="daySchedulePreview" style="background: rgba(224, 242, 254, 0.85); padding: 1rem; border-radius: 12px; margin-bottom: 1rem; border: 0.5px solid var(--border-color); font-size: 0.85rem;">
+                <strong>Scheduled on selected date:</strong> <span id="previewScheduleText">None</span>
+            </div>
+            <button type="button" class="btn close-modal">Close Calendar</button>
+        </div>
+    </div>
+
+    <div class="modal" id="backlogModal">
+        <div class="modal-content">
+            <h2 id="backlogModalTitle">Add New Backlog Chapter</h2>
+            <form id="backlogForm">
+                <input type="hidden" id="editIndex" value="-1">
+                <div class="form-group">
+                    <label>Chapter Name</label>
+                    <input type="text" id="chapterName" placeholder="e.g., Kinematics" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Scheduled Date</label>
+                    <input type="date" id="chapterDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Lectures Progress: <span class="range-value" id="valLecture">50</span>%</label>
+                    <input type="range" id="sliderLecture" min="0" max="100" value="50">
+                </div>
+
+                <div class="form-group">
+                    <label>Modules Progress: <span class="range-value" id="valModule">50</span>%</label>
+                    <input type="range" id="sliderModule" min="0" max="100" value="50">
+                </div>
+
+                <div class="form-group">
+                    <label>Reference Book Progress: <span class="range-value" id="valRef">50</span>%</label>
+                    <input type="range" id="sliderRef" min="0" max="100" value="50">
+                </div>
+
+                <div class="form-group">
+                    <label>Notes / Details</label>
+                    <textarea id="chapterNote" rows="3" placeholder="Type formulas, reminders, or anything about this chapter..."></textarea>
+                </div>
+
+                <button type="submit" class="btn" id="saveBacklogBtn">Add Chapter</button>
+                <button type="button" class="btn btn-secondary close-modal">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="linkModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <h2>Add Useful Link</h2>
+            <form id="linkForm">
+                <input type="hidden" id="linkCardIndex" value="">
+                <div class="form-group">
+                    <label>Link Title / Label</label>
+                    <input type="text" id="linkTitle" placeholder="e.g. NCERT PDF, Lecture Video" required>
+                </div>
+                <div class="form-group">
+                    <label>URL Address</label>
+                    <input type="url" id="linkUrl" placeholder="https://example.com" required>
+                </div>
+                <button type="submit" class="btn">Add Link</button>
+                <button type="button" class="btn btn-secondary close-modal">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="deleteModal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <input type="hidden" id="deleteTargetIndex" value="">
+            <h2 style="color: var(--danger-color); margin-bottom: 1rem;">Delete Backlog?</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.9rem;">Are you sure you want to remove <strong id="deleteTargetName" style="color: var(--text-primary);"></strong>? This action cannot be undone.</p>
+            <button type="button" class="btn btn-danger" id="confirmDeleteBtn" style="margin-bottom: 0.75rem;">Yes, Delete Permanently</button>
+            <button type="button" class="btn btn-secondary close-modal" style="margin-top: 0;">Cancel</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Backlog Tracker. Designed for Arsh Verma.</p>
+    </footer>
+
+    <script>
+        // Data State
+        let profileData = {
+            name: "Arsh Verma",
+            classLevel: "Class 11",
+            address: "Lucknow, India",
+            avatarUrl: ""
+        };
+
+        let syllabusData = [
+            {
+                subject: "Physics",
+                chapters: [
+                    { name: "Units And Dimensions, Basic Mathematics", completed: true },
+                    { name: "Kinematics", completed: true },
+                    { name: "Newton's Laws Of Motion And Friction", completed: true },
+                    { name: "Circular Motion", completed: true },
+                    { name: "Work, Energy And Power", completed: false },
+                    { name: "Simple Harmonic Motion (SHM)", completed: false },
+                    { name: "Center Of Mass, Momentum And Collision", completed: false },
+                    { name: "Elasticity, Heat And Thermodynamics", completed: false },
+                    { name: "Fluid Mechanics", completed: false },
+                    { name: "Rotational Dynamics", completed: false }
+                ]
+            },
+            {
+                subject: "Chemistry",
+                chapters: [
+                    { name: "Mole Concept", completed: true },
+                    { name: "Atomic Structure", completed: true },
+                    { name: "Periodic Table", completed: true },
+                    { name: "Chemical Bonding-I", completed: true },
+                    { name: "Gaseous State (Ideal Gas)", completed: true },
+                    { name: "Redox", completed: true },
+                    { name: "Chemical Equilibrium", completed: false },
+                    { name: "General Chemistry & Quantum Number", completed: false },
+                    { name: "Acidic Strength And Basic Strength", completed: false },
+                    { name: "Chemical Bonding-II", completed: false },
+                    { name: "Classification of Organic Compounds, IUPAC Naming", completed: false },
+                    { name: "Concentration Term", completed: false },
+                    { name: "Electronic Displacement Effect", completed: false },
+                    { name: "Hydrocarbon", completed: false },
+                    { name: "Ionic Equilibrium", completed: false },
+                    { name: "Isomerism", completed: false },
+                    { name: "Purification and Characterisation of Organic Compounds", completed: false },
+                    { name: "Real Gas", completed: false },
+                    { name: "The p-Block Elements (Group 13-14)", completed: false },
+                    { name: "Thermochemistry", completed: false },
+                    { name: "Thermodynamics 1", completed: false },
+                    { name: "Thermodynamics 2", completed: false }
+                ]
+            },
+            {
+                subject: "Maths",
+                chapters: [
+                    { name: "Sets, Numbers And Intervals", completed: true },
+                    { name: "Sequences And Series", completed: true },
+                    { name: "Quadratic Equation", completed: true },
+                    { name: "Solution Of Triangles", completed: true },
+                    { name: "Trigonometric Ratios And Identities", completed: true },
+                    { name: "Trigonometric Equations", completed: true },
+                    { name: "Straight Line", completed: false },
+                    { name: "Fundamentals Of Algebra", completed: false },
+                    { name: "Binomial Theorem", completed: false },
+                    { name: "Circle", completed: false },
+                    { name: "Complex Numbers NCERT", completed: false },
+                    { name: "Ellipse", completed: false },
+                    { name: "Fundamentals Of Geometry", completed: false },
+                    { name: "Heights And Distances", completed: false },
+                    { name: "Hyperbola", completed: false },
+                    { name: "Limits And Derivatives NCERT", completed: false },
+                    { name: "Logarithm", completed: false },
+                    { name: "Mathematical Induction", completed: false },
+                    { name: "Mathematical Reasoning", completed: false },
+                    { name: "Parabola", completed: false },
+                    { name: "Permutations And Combinations", completed: false },
+                    { name: "Probability NCERT", completed: false },
+                    { name: "Relations And Functions NCERT", completed: false },
+                    { name: "Statistics", completed: false },
+                    { name: "Three Dimensional (3D) Geometry NCERT", completed: false }
+                ]
+            }
+        ];
+
+        let backlogs = [
+            {
+                name: "Work, Energy And Power",
+                date: "2026-08-30",
+                lecture: 50,
+                module: 30,
+                ref: 40,
+                note: "Practice work-energy theorem problems.",
+                links: [],
+                pdfName: "",
+                pdfData: "",
+                finished: false
+            }
+        ];
+
+        let selectedDateGlobal = new Date().toISOString().split('T')[0];
+
+        // DOM Elements
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const closeSidebar = document.getElementById('closeSidebar');
+
+        const profileModal = document.getElementById('profileModal');
+        const progressModal = document.getElementById('progressModal');
+        const calendarModal = document.getElementById('calendarModal');
+        const backlogModal = document.getElementById('backlogModal');
+        const linkModal = document.getElementById('linkModal');
+        const deleteModal = document.getElementById('deleteModal');
+
+        // Toggle Sidebar from Left
+        menuToggle.addEventListener('click', () => sidebar.classList.add('active'));
+        closeSidebar.addEventListener('click', () => sidebar.classList.remove('active'));
+
+        // Open Modals from Sidebar
+        document.getElementById('openProfileModal').addEventListener('click', () => profileModal.classList.add('active'));
+        document.getElementById('openProgressModal').addEventListener('click', () => {
+            progressModal.classList.add('active');
+            renderSyllabusTracker();
+        });
+        document.getElementById('openCalendarModal').addEventListener('click', () => {
+            calendarModal.classList.add('active');
+            renderCalendar();
+        });
+        document.getElementById('openBacklogModal').addEventListener('click', () => {
+            openAddBacklogModal();
+        });
+        document.getElementById('mainAddBtn').addEventListener('click', () => {
+            openAddBacklogModal();
+        });
+
+        // Close all modals
+        document.querySelectorAll('.close-modal').forEach(btn => {
+            btn.addEventListener('click', () => {
+                profileModal.classList.remove('active');
+                progressModal.classList.remove('active');
+                calendarModal.classList.remove('active');
+                backlogModal.classList.remove('active');
+                linkModal.classList.remove('active');
+                deleteModal.classList.remove('active');
+            });
+        });
+
+        // Profile Form Handler
+        document.getElementById('profileForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            profileData.name = document.getElementById('inputName').value;
+            profileData.classLevel = document.getElementById('inputClass').value;
+            profileData.address = document.getElementById('inputAddress').value;
+            profileData.avatarUrl = document.getElementById('inputAvatar').value;
+
+            updateProfileUI();
+            profileModal.classList.remove('active');
+        });
+
+        function updateProfileUI() {
+            document.getElementById('sidebarName').textContent = profileData.name;
+            document.getElementById('sidebarClass').textContent = profileData.classLevel;
+            const avatarEl = document.getElementById('sidebarAvatar');
+            if(profileData.avatarUrl.trim() !== "") {
+                avatarEl.innerHTML = `<img src="${profileData.avatarUrl}" alt="Avatar">`;
+            } else {
+                const initials = profileData.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                avatarEl.textContent = initials || 'AV';
+            }
+        }
+
+        // Sliders live update listeners
+        ['Lecture', 'Module', 'Ref'].forEach(type => {
+            const slider = document.getElementById(`slider${type}`);
+            const valSpan = document.getElementById(`val${type}`);
+            slider.addEventListener('input', (e) => {
+                valSpan.textContent = e.target.value;
+            });
+        });
+
+        function openAddBacklogModal() {
+            document.getElementById('editIndex').value = -1;
+            document.getElementById('backlogModalTitle').textContent = "Add New Backlog Chapter";
+            document.getElementById('saveBacklogBtn').textContent = "Add Chapter";
+            document.getElementById('chapterName').value = "";
+            document.getElementById('chapterDate').value = selectedDateGlobal;
+            document.getElementById('sliderLecture').value = 50;
+            document.getElementById('valLecture').textContent = 50;
+            document.getElementById('sliderModule').value = 50;
+            document.getElementById('valModule').textContent = 50;
+            document.getElementById('sliderRef').value = 50;
+            document.getElementById('valRef').textContent = 50;
+            document.getElementById('chapterNote').value = "";
+            backlogModal.classList.add('active');
+        }
+
+        // Backlog Form Handler (Add / Edit)
+        document.getElementById('backlogForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const editIdx = parseInt(document.getElementById('editIndex').value);
+            const item = {
+                name: document.getElementById('chapterName').value,
+                date: document.getElementById('chapterDate').value,
+                lecture: parseInt(document.getElementById('sliderLecture').value),
+                module: parseInt(document.getElementById('sliderModule').value),
+                ref: parseInt(document.getElementById('sliderRef').value),
+                note: document.getElementById('chapterNote').value,
+                links: editIdx >= 0 ? backlogs[editIdx].links : [],
+                pdfName: editIdx >= 0 ? backlogs[editIdx].pdfName : "",
+                pdfData: editIdx >= 0 ? backlogs[editIdx].pdfData : "",
+                finished: editIdx >= 0 ? backlogs[editIdx].finished : false
+            };
+
+            if(editIdx >= 0) {
+                backlogs[editIdx] = item;
+            } else {
+                backlogs.push(item);
+            }
+
+            backlogModal.classList.remove('active');
+            renderBacklogs();
+        });
+
+        // Link Form Handler
+        document.getElementById('linkForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const cardIdx = parseInt(document.getElementById('linkCardIndex').value);
+            const title = document.getElementById('linkTitle').value;
+            let url = document.getElementById('linkUrl').value;
+
+            if(!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+            }
+
+            backlogs[cardIdx].links.push({ title, url });
+            document.getElementById('linkForm').reset();
+            linkModal.classList.remove('active');
+            renderBacklogs();
+        });
+
+        function openAddLinkModal(index) {
+            document.getElementById('linkCardIndex').value = index;
+            linkModal.classList.add('active');
+        }
+
+        function toggleFinish(index) {
+            backlogs[index].finished = !backlogs[index].finished;
+            renderBacklogs();
+        }
+
+        function editBacklog(index) {
+            const item = backlogs[index];
+            document.getElementById('editIndex').value = index;
+            document.getElementById('backlogModalTitle').textContent = "Edit Backlog Chapter";
+            document.getElementById('saveBacklogBtn').textContent = "Update Chapter";
+            document.getElementById('chapterName').value = item.name;
+            document.getElementById('chapterDate').value = item.date;
+            document.getElementById('sliderLecture').value = item.lecture;
+            document.getElementById('valLecture').textContent = item.lecture;
+            document.getElementById('sliderModule').value = item.module;
+            document.getElementById('valModule').textContent = item.module;
+            document.getElementById('sliderRef').value = item.ref;
+            document.getElementById('valRef').textContent = item.ref;
+            document.getElementById('chapterNote').value = item.note;
+            backlogModal.classList.add('active');
+        }
+
+        // Delete with Accidental Prevention Modal
+        function promptDelete(index) {
+            document.getElementById('deleteTargetIndex').value = index;
+            document.getElementById('deleteTargetName').textContent = backlogs[index].name;
+            deleteModal.classList.add('active');
+        }
+
+        document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+            const idx = parseInt(document.getElementById('deleteTargetIndex').value);
+            backlogs.splice(idx, 1);
+            deleteModal.classList.remove('active');
+            renderBacklogs();
+        });
+
+        // Handle PDF File Upload & Local Storage
+        function handlePdfUpload(event, index) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if (file.type !== "application/pdf") {
+                alert("Please select a valid PDF file.");
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                backlogs[index].pdfName = file.name;
+                backlogs[index].pdfData = e.target.result; // base64 stored into website state
+                renderBacklogs();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Open stored PDF safely in a new browser tab/window
+        function openStoredPdf(index) {
+            const item = backlogs[index];
+            if(!item.pdfData) return;
+            
+            const win = window.open();
+            if(win) {
+                win.document.write(`
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <title>${item.pdfName}</title>
+                        <style>body, html { margin: 0; padding: 0; height: 100%; background: #e0f2fe; }</style>
+                    </head>
+                    <body>
+                        <iframe src="${item.pdfData}" style="width:100%; height:100%; border:none;" allowfullscreen></iframe>
+                    </body>
+                    </html>
+                `);
+            } else {
+                alert("Popup blocked! Please allow popups for this site to view the PDF.");
+            }
+        }
+
+        // Render Syllabus Tracker Modal & Overall Progress Bar
+        function renderSyllabusTracker() {
+            const container = document.getElementById('syllabusContainer');
+            container.innerHTML = "";
+
+            let totalChapters = 0;
+            let completedChapters = 0;
+
+            syllabusData.forEach((subj, sIdx) => {
+                const subDiv = document.createElement('div');
+                subDiv.className = 'syllabus-subject';
+                
+                let chaptersHtml = `<h3>${subj.subject}</h3>`;
+                subj.chapters.forEach((ch, cIdx) => {
+                    totalChapters++;
+                    if(ch.completed) completedChapters++;
+
+                    chaptersHtml += `
+                        <div class="syllabus-chapter-item">
+                            <label>
+                                <input type="checkbox" ${ch.completed ? 'checked' : ''} onchange="toggleSyllabusChapter(${sIdx}, ${cIdx})">
+                                ${ch.name}
+                            </label>
+                            <span style="font-size: 0.75rem; font-weight: 600; color: ${ch.completed ? 'var(--success-color)' : 'var(--text-secondary)'};">${ch.completed ? 'Completed' : 'Pending'}</span>
+                        </div>
+                    `;
+                });
+
+                subDiv.innerHTML = chaptersHtml;
+                container.appendChild(subDiv);
+            });
+
+            const percentage = totalChapters > 0 ? Math.round((completedChapters / totalChapters) * 100) : 0;
+            
+            // Update modal header progress
+            document.getElementById('modalProgressLabel').textContent = `${percentage}% Completed`;
+            document.getElementById('modalProgressCounts').textContent = `${completedChapters} / ${totalChapters} Chapters`;
+            document.getElementById('modalProgressBarFill').style.width = `${percentage}%`;
+
+            // Update sidebar progress preview
+            document.getElementById('progressLabel').textContent = `${percentage}% Cleared`;
+            document.getElementById('progressCounts').textContent = `${completedChapters} / ${totalChapters} Completed`;
+            document.getElementById('progressBarFill').style.width = `${percentage}%`;
+        }
+
+        function toggleSyllabusChapter(sIdx, cIdx) {
+            syllabusData[sIdx].chapters[cIdx].completed = !syllabusData[sIdx].chapters[cIdx].completed;
+            renderSyllabusTracker();
+        }
+
+        // Render Backlogs Cards
+        function renderBacklogs() {
+            const grid = document.getElementById('backlogGrid');
+            grid.innerHTML = "";
+
+            if(backlogs.length === 0) {
+                grid.innerHTML = `<p style="color: var(--text-secondary); grid-column: 1/-1; text-align: center;">No backlogs added yet. Click "+ Add Backlog" to begin!</p>`;
+            }
+
+            backlogs.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = `backlog-card ${item.finished ? 'finished' : ''}`;
+                
+                let linksHtml = item.links.map(l => `<a href="${l.url}" target="_blank" rel="noopener noreferrer" class="link-pill">🔗 ${l.title}</a>`).join('');
+                
+                let pdfHtml = item.pdfData 
+                    ? `<span onclick="openStoredPdf(${index})" class="link-pill" style="background-color: rgba(5, 150, 105, 0.15); color: var(--success-color); border: 0.5px solid rgba(5, 150, 105, 0.3);">📄 ${item.pdfName}</span>`
+                    : `<label class="link-pill" style="cursor: pointer; background-color: rgba(224, 242, 254, 0.8); border: 0.5px dashed var(--accent-color);">+ PDF <input type="file" accept="application/pdf" style="display:none;" onchange="handlePdfUpload(event, ${index})"></label>`;
+
+                card.innerHTML = `
+                    <div class="card-header">
+                        <h3>${item.name}</h3>
+                        <span class="card-date">📅 ${item.date}</span>
+                    </div>
+                    <div class="sliders-summary">
+                        <div>Lectures: <strong>${item.lecture}%</strong></div>
+                        <div>Modules: <strong>${item.module}%</strong></div>
+                        <div>Reference Book: <strong>${item.ref}%</strong></div>
+                    </div>
+                    ${item.note ? `<div class="card-note">${item.note}</div>` : ''}
+                    <div class="links-container">${linksHtml} ${pdfHtml}</div>
+                    <div class="card-actions">
+                        <button onclick="openAddLinkModal(${index})">+ Link</button>
+                        <button class="finish-btn" onclick="toggleFinish(${index})">${item.finished ? 'Unfinish' : 'Finish'}</button>
+                        <button onclick="editBacklog(${index})">Edit</button>
+                        <button class="delete-btn" onclick="promptDelete(${index})">Delete</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Google Calendar Generator with Scheduled Backlogs indicator
+        function renderCalendar() {
+            const year = parseInt(document.getElementById('calYearSelect').value);
+            const month = parseInt(document.getElementById('calMonthSelect').value);
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = "";
+
+            const daysOfWeek = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+            daysOfWeek.forEach(d => {
+                const div = document.createElement('div');
+                div.className = 'calendar-day-header';
+                div.textContent = d;
+                grid.appendChild(div);
+            });
+
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            const totalDays = new Date(year, month + 1, 0).getDate();
+
+            for(let i = 0; i < firstDayIndex; i++) {
+                const emptyDiv = document.createElement('div');
+                emptyDiv.className = 'calendar-day empty';
+                grid.appendChild(emptyDiv);
+            }
+
+            for(let day = 1; day <= totalDays; day++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'calendar-day';
+
+                const formattedMonth = String(month + 1).padStart(2, '0');
+                const formattedDay = String(day).padStart(2, '0');
+                const dateStr = `${year}-${formattedMonth}-${formattedDay}`;
+
+                // Check if any backlog is scheduled on this day
+                const matchingBacklogs = backlogs.filter(b => b.date === dateStr);
+
+                let dayContent = `<span>${day}</span>`;
+                if(matchingBacklogs.length > 0) {
+                    dayContent += `<div class="cal-badge-dot" title="${matchingBacklogs.length} backlog(s) scheduled"></div>`;
+                }
+
+                dayDiv.innerHTML = dayContent;
+
+                if(dateStr === selectedDateGlobal) {
+                    dayDiv.classList.add('selected');
+                }
+
+                dayDiv.addEventListener('click', () => {
+                    selectedDateGlobal = dateStr;
+                    document.getElementById('selectedDateDisplay').textContent = `Selected Date: ${dateStr}`;
+                    
+                    // Update preview text
+                    if(matchingBacklogs.length > 0) {
+                        document.getElementById('previewScheduleText').textContent = matchingBacklogs.map(b => b.name).join(', ');
+                    } else {
+                        document.getElementById('previewScheduleText').textContent = "None";
+                    }
+                    renderCalendar();
+                });
+
+                grid.appendChild(dayDiv);
+            }
+
+            // Set initial preview text for selected date
+            const initialMatching = backlogs.filter(b => b.date === selectedDateGlobal);
+            if(initialMatching.length > 0) {
+                document.getElementById('previewScheduleText').textContent = initialMatching.map(b => b.name).join(', ');
+            } else {
+                document.getElementById('previewScheduleText').textContent = "None";
+            }
+        }
+
+        document.getElementById('calYearSelect').addEventListener('change', renderCalendar);
+        document.getElementById('calMonthSelect').addEventListener('change', renderCalendar);
+
+        // Initial setup
+        updateProfileUI();
+        renderBacklogs();
+        renderSyllabusTracker();
+    </script>
+</body>
+</html>
