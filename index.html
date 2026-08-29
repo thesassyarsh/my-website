@@ -7,7 +7,7 @@
     <style>
         :root {
             --bg-color: #e0f2fe;
-            --surface-color: rgba(224, 242, 254, 0.7);
+            --surface-color: rgba(224, 242, 254, 0.75);
             --surface-solid: #bae6fd;
             --border-color: rgba(125, 211, 252, 0.5);
             --text-primary: #0c4a6e;
@@ -23,7 +23,7 @@
 
         [data-theme="dark"] {
             --bg-color: #060913;
-            --surface-color: rgba(15, 23, 42, 0.75);
+            --surface-color: rgba(15, 23, 42, 0.85);
             --surface-solid: #1e293b;
             --border-color: rgba(51, 65, 85, 0.7);
             --text-primary: #f8fafc;
@@ -84,112 +84,105 @@
             background: var(--surface-color);
             backdrop-filter: blur(30px) saturate(200%);
             border: 1px solid var(--border-color);
-            border-radius: 30px;
+            border-radius: 24px;
             width: 100%;
-            max-width: 420px;
-            padding: 3rem 2.5rem;
-            box-shadow: 0 40px 80px rgba(2, 132, 199, 0.35), inset 0 1px 0 rgba(255,255,255,0.7);
+            max-width: 400px;
+            padding: 2rem 1.5rem;
+            box-shadow: 0 30px 60px rgba(2, 132, 199, 0.35), inset 0 1px 0 rgba(255,255,255,0.7);
             text-align: center;
-            animation: glassGlow 6s infinite;
         }
 
         header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 1rem 2rem;
+            padding: 0.75rem 1rem;
             background: var(--surface-color);
             backdrop-filter: blur(35px) saturate(200%);
-            -webkit-backdrop-filter: blur(35px) saturate(200%);
             border-bottom: 1px solid var(--border-color);
-            box-shadow: 0 10px 35px rgba(2, 132, 199, 0.12), inset 0 -1px 0 rgba(255,255,255,0.5);
             position: sticky;
             top: 0;
             z-index: 999;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
-        .header-left { display: flex; align-items: center; gap: 12px; }
-        .menu-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; gap: 5px; padding: 5px; transition: transform 0.2s; }
-        .menu-btn:hover { transform: scale(1.1); }
-        .menu-btn span { display: block; width: 22px; height: 2px; background-color: var(--text-primary); border-radius: 2px; }
-        .logo-img { height: 38px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 8px rgba(2,132,199,0.3)); }
-        .logo-text { font-size: 1.4rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em; }
+        .header-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .menu-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; gap: 4px; padding: 5px; }
+        .menu-btn span { display: block; width: 20px; height: 2px; background-color: var(--text-primary); border-radius: 2px; }
+        .logo-img { height: 32px; width: auto; object-fit: contain; }
+        .logo-text { font-size: 1.15rem; font-weight: 800; color: var(--text-primary); }
 
         .dev-badge {
-            font-size: 0.75rem;
+            font-size: 0.65rem;
             background: linear-gradient(135deg, var(--accent-color), var(--success-color));
             color: #ffffff;
-            padding: 0.3rem 0.8rem;
+            padding: 0.2rem 0.6rem;
             border-radius: 20px;
             font-weight: 700;
-            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3), inset 0 1px 0 rgba(255,255,255,0.5);
-            letter-spacing: 0.03em;
         }
 
         .user-badge {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             background: var(--surface-solid);
-            backdrop-filter: blur(10px);
-            padding: 0.4rem 0.9rem;
-            border-radius: 14px;
+            padding: 0.3rem 0.6rem;
+            border-radius: 10px;
             color: var(--text-primary);
             font-weight: 600;
             border: 1px solid var(--border-color);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
         }
+
+        .container { max-width: 1200px; margin: 1.5rem auto; padding: 0 1rem; }
 
         .home-progress-banner {
             background: var(--surface-color);
             backdrop-filter: blur(30px);
             border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 1.75rem 2.25rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 20px 45px rgba(2, 132, 199, 0.15), inset 0 1px 0 rgba(255,255,255,0.7);
+            border-radius: 20px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
         }
 
         .dashboard-widgets-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .dashboard-widgets-grid { grid-template-columns: repeat(2, 1fr); }
+            header { padding: 1rem 2rem; }
+            .logo-text { font-size: 1.4rem; }
         }
 
         .widget-card {
             background: var(--surface-color);
             backdrop-filter: blur(25px);
             border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 1.75rem;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
+            border-radius: 20px;
+            padding: 1.25rem;
             text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .widget-card:hover { transform: translateY(-4px); box-shadow: 0 22px 50px rgba(2, 132, 199, 0.2), inset 0 1px 0 rgba(255,255,255,0.8); }
-        .widget-card h3 { font-size: 1.15rem; margin-bottom: 1rem; color: var(--text-primary); }
+        .widget-card h3 { font-size: 1.05rem; margin-bottom: 0.75rem; color: var(--text-primary); }
 
         .subject-block-container {
-            margin-bottom: 2rem;
-            border-radius: 24px;
+            margin-bottom: 1.5rem;
+            border-radius: 20px;
             overflow: hidden;
             border: 1px solid var(--border-color);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.06);
         }
 
         .subject-header {
-            padding: 1.25rem 1.75rem;
-            font-size: 1.25rem;
+            padding: 1rem 1.25rem;
+            font-size: 1.1rem;
             font-weight: 700;
             color: #ffffff;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            backdrop-filter: blur(10px);
-            transition: filter 0.2s;
         }
-        .subject-header:hover { filter: brightness(1.1); }
-
         .subject-header.physics { background-color: var(--physics-color); }
         .subject-header.chemistry { background-color: var(--chemistry-color); }
         .subject-header.maths { background-color: var(--maths-color); }
@@ -198,139 +191,133 @@
         .subject-content {
             background: var(--surface-color);
             backdrop-filter: blur(30px);
-            padding: 1.75rem;
+            padding: 1rem;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .subject-content { grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); padding: 1.5rem; }
         }
 
         .subject-content.collapsed { display: none; }
 
         .sidebar {
             position: fixed;
-            top: 0; left: -380px; width: 360px; height: 100%;
+            top: 0; left: -100%; width: 100%; max-width: 320px; height: 100%;
             background: var(--surface-color);
             backdrop-filter: blur(45px) saturate(240%);
-            -webkit-backdrop-filter: blur(45px) saturate(240%);
-            box-shadow: 30px 0 70px rgba(2, 132, 199, 0.25), inset -1px 0 0 rgba(255,255,255,0.7);
-            transition: left 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 30px 0 70px rgba(2, 132, 199, 0.25);
+            transition: left 0.35s ease;
             z-index: 1000;
             display: flex;
             flex-direction: column;
             border-right: 1px solid var(--border-color);
             overflow-y: auto;
         }
-
         .sidebar.active { left: 0; }
-        .sidebar-header { display: flex; justify-content: space-between; align-items: center; padding: 1.75rem; border-bottom: 1px solid var(--border-color); }
-        .sidebar-content { padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+        .sidebar-header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem; border-bottom: 1px solid var(--border-color); }
+        .sidebar-content { padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
         .sidebar-block {
             background: var(--surface-solid);
-            backdrop-filter: blur(15px);
             border: 1px solid var(--border-color);
-            border-radius: 18px;
-            padding: 1.25rem;
+            border-radius: 14px;
+            padding: 1rem;
             cursor: pointer;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.6);
-            transition: all 0.25s ease;
         }
-        .sidebar-block:hover { transform: translateY(-3px); border-color: var(--accent-color); box-shadow: 0 12px 30px rgba(2,132,199,0.15), inset 0 1px 0 rgba(255,255,255,0.9); }
-        .sidebar-block h3 { font-size: 0.95rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.4rem; }
+        .sidebar-block h3 { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem; }
 
-        .profile-preview { display: flex; align-items: center; gap: 1rem; }
-        .profile-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--accent-color); display: flex; align-items: center; justify-content: center; font-weight: 600; color: #ffffff; box-shadow: 0 4px 12px rgba(2,132,199,0.3); }
+        .profile-preview { display: flex; align-items: center; gap: 0.75rem; }
+        .profile-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--accent-color); display: flex; align-items: center; justify-content: center; font-weight: 600; color: #ffffff; font-size: 0.85rem; }
 
-        .progress-bar-container { width: 100%; background-color: var(--surface-solid); border-radius: 9999px; height: 9px; overflow: hidden; margin-top: 0.75rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.06); }
-        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-color), var(--success-color)); width: 0%; transition: width 0.8s cubic-bezier(0.25, 1, 0.5, 1); border-radius: 9999px; }
-        .progress-text { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem; }
+        .progress-bar-container { width: 100%; background-color: var(--surface-solid); border-radius: 9999px; height: 8px; overflow: hidden; margin-top: 0.5rem; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-color), var(--success-color)); width: 0%; transition: width 0.8s ease; border-radius: 9999px; }
+        .progress-text { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.4rem; }
 
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(12, 74, 110, 0.45);
-            backdrop-filter: blur(30px);
-            z-index: 2000; justify-content: center; align-items: center; padding: 1rem;
+            background-color: rgba(12, 74, 110, 0.5);
+            backdrop-filter: blur(20px);
+            z-index: 2000; justify-content: center; align-items: center; padding: 0.75rem;
         }
         .modal.active { display: flex; }
         .modal-content {
             background: var(--surface-color);
             backdrop-filter: blur(45px);
             border: 1px solid var(--border-color);
-            border-radius: 32px;
-            width: 100%; max-width: 750px; padding: 2.5rem; max-height: 90vh; overflow-y: auto;
-            box-shadow: 0 45px 90px rgba(2, 132, 199, 0.35), inset 0 1px 0 rgba(255,255,255,0.8);
+            border-radius: 24px;
+            width: 100%; max-width: 650px; padding: 1.5rem; max-height: 85vh; overflow-y: auto;
         }
 
-        .form-group { margin-bottom: 1.25rem; }
-        .form-group label { display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.85rem; font-weight: 500; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.4rem; color: var(--text-secondary); font-size: 0.8rem; font-weight: 500; }
         .form-group input, .form-group textarea, .form-group select {
-            width: 100%; padding: 0.85rem 1.1rem; background: var(--surface-solid);
-            border: 1px solid var(--border-color); border-radius: 14px; color: var(--text-primary); font-size: 0.95rem;
-            backdrop-filter: blur(10px);
+            width: 100%; padding: 0.75rem 1rem; background: var(--surface-solid);
+            border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-primary); font-size: 0.9rem;
         }
 
         .btn {
             background: linear-gradient(135deg, var(--accent-color), var(--text-secondary));
-            color: #ffffff; padding: 0.85rem 1.5rem; border-radius: 14px; border: none; font-weight: 600; cursor: pointer; width: 100%; text-align: center;
-            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.3), inset 0 1px 0 rgba(255,255,255,0.4);
-            transition: transform 0.2s, filter 0.2s;
+            color: #ffffff; padding: 0.75rem 1.25rem; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; width: 100%; text-align: center;
+            font-size: 0.9rem;
         }
-        .btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
-        .btn-secondary { background-color: var(--surface-solid); color: var(--text-primary); margin-top: 0.75rem; box-shadow: none; }
-        .btn-danger { background-color: rgba(225, 29, 72, 0.25); color: var(--danger-color); border: 1px solid var(--border-color); box-shadow: none; }
-        .btn-success { background-color: rgba(5, 150, 105, 0.25); color: var(--success-color); border: 1px solid var(--border-color); box-shadow: none; }
+        .btn-secondary { background-color: var(--surface-solid); color: var(--text-primary); margin-top: 0.5rem; }
+        .btn-danger { background-color: rgba(225, 29, 72, 0.2); color: var(--danger-color); border: 1px solid var(--border-color); }
+        .btn-success { background-color: rgba(5, 150, 105, 0.2); color: var(--success-color); border: 1px solid var(--border-color); }
 
-        .container { max-width: 1200px; margin: 2.5rem auto; padding: 0 1.5rem; }
-        .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-        .dashboard-header h1 { font-size: 2.1rem; font-weight: 800; color: var(--text-primary); }
+        .dashboard-header { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; }
+        @media (min-width: 640px) {
+            .dashboard-header { flex-direction: row; justify-content: space-between; align-items: center; }
+        }
+        .dashboard-header h1 { font-size: 1.5rem; font-weight: 800; color: var(--text-primary); }
+        @media (min-width: 768px) { .dashboard-header h1 { font-size: 1.9rem; } }
 
         .backlog-card {
             background: var(--surface-color);
             backdrop-filter: blur(25px);
             border: 1px solid var(--border-color);
-            border-radius: 22px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.5);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 18px; padding: 1.25rem; display: flex; flex-direction: column; gap: 0.85rem;
         }
-        .backlog-card:hover { transform: translateY(-4px); box-shadow: 0 20px 50px rgba(2, 132, 199, 0.18), inset 0 1px 0 rgba(255,255,255,0.8); }
-        .backlog-card.finished { opacity: 0.65; background: rgba(5, 150, 105, 0.2); }
+        .backlog-card.finished { opacity: 0.65; background: rgba(5, 150, 105, 0.15); }
         .backlog-card.finished h3 { text-decoration: line-through; }
 
-        .card-header { display: flex; justify-content: space-between; align-items: flex-start; }
-        .card-header h3 { font-size: 1.15rem; font-weight: 600; color: var(--text-primary); }
-        .card-date { font-size: 0.75rem; background: var(--surface-solid); padding: 0.25rem 0.6rem; border-radius: 8px; color: var(--accent-color); border: 1px solid var(--border-color); }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+        .card-header h3 { font-size: 1.05rem; font-weight: 600; color: var(--text-primary); word-break: break-word; }
+        .card-date { font-size: 0.7rem; background: var(--surface-solid); padding: 0.2rem 0.5rem; border-radius: 6px; color: var(--accent-color); border: 1px solid var(--border-color); white-space: nowrap; }
 
-        .sliders-summary { display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.85rem; color: var(--text-secondary); background: var(--surface-solid); padding: 0.85rem; border-radius: 12px; border: 1px solid var(--border-color); }
-        .card-note { font-size: 0.85rem; color: var(--text-secondary); background: var(--surface-solid); padding: 0.85rem; border-radius: 12px; border-left: 3px solid var(--accent-color); border: 1px solid var(--border-color); }
+        .sliders-summary { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.8rem; color: var(--text-secondary); background: var(--surface-solid); padding: 0.75rem; border-radius: 10px; border: 1px solid var(--border-color); }
+        .card-note { font-size: 0.8rem; color: var(--text-secondary); background: var(--surface-solid); padding: 0.75rem; border-radius: 10px; border-left: 3px solid var(--accent-color); border: 1px solid var(--border-color); word-break: break-word; }
 
-        .links-container { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.2rem; }
-        .link-pill { background: var(--surface-solid); color: var(--accent-color); font-size: 0.75rem; padding: 0.3rem 0.65rem; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--border-color); cursor: pointer; transition: filter 0.2s; }
-        .link-pill:hover { filter: brightness(1.15); }
+        .links-container { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+        .link-pill { background: var(--surface-solid); color: var(--accent-color); font-size: 0.7rem; padding: 0.25rem 0.55rem; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--border-color); }
 
-        .card-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.3rem; margin-top: auto; padding-top: 0.5rem; }
-        .card-actions button { padding: 0.45rem 0.1rem; font-size: 0.7rem; font-weight: 600; border-radius: 10px; border: 1px solid var(--border-color); background: var(--surface-solid); cursor: pointer; color: var(--text-primary); text-align: center; transition: filter 0.2s; }
-        .card-actions button:hover { filter: brightness(1.08); }
-        .finish-btn { background: rgba(5, 150, 105, 0.25) !important; color: var(--success-color); }
-        .edit-btn { background: rgba(2, 132, 199, 0.25) !important; color: var(--accent-color); }
-        .link-btn { background: rgba(217, 119, 6, 0.25) !important; color: #d97706; }
-        .delete-btn { background: rgba(225, 29, 72, 0.25) !important; color: var(--danger-color); }
+        .card-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.4rem; margin-top: auto; padding-top: 0.4rem; }
+        @media(min-width: 400px) { .card-actions { grid-template-columns: repeat(4, 1fr); } }
+        .card-actions button { padding: 0.5rem 0.2rem; font-size: 0.75rem; font-weight: 600; border-radius: 8px; border: 1px solid var(--border-color); background: var(--surface-solid); cursor: pointer; color: var(--text-primary); text-align: center; }
+        .finish-btn { background: rgba(5, 150, 105, 0.2) !important; color: var(--success-color); }
+        .edit-btn { background: rgba(2, 132, 199, 0.2) !important; color: var(--accent-color); }
+        .link-btn { background: rgba(217, 119, 6, 0.2) !important; color: #d97706; }
+        .delete-btn { background: rgba(225, 29, 72, 0.2) !important; color: var(--danger-color); }
 
-        .admin-table, .schedule-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 0.85rem; }
-        .admin-table th, .admin-table td, .schedule-table th, .schedule-table td { padding: 0.75rem; border: 1px solid var(--border-color); text-align: left; }
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 0.5rem; }
+        .admin-table, .schedule-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 320px; }
+        .admin-table th, .admin-table td, .schedule-table th, .schedule-table td { padding: 0.6rem; border: 1px solid var(--border-color); text-align: left; }
         .admin-table th, .schedule-table th { background: var(--surface-solid); color: var(--text-primary); }
 
-        .syllabus-subject { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 18px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: inset 0 1px 0 rgba(255,255,255,0.4); }
-        .syllabus-subject-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 0.75rem; }
-        .syllabus-subject h3 { color: var(--accent-color); font-size: 1.05rem; font-weight: 700; margin: 0; }
-        .syllabus-chapter-item { display: flex; align-items: center; justify-content: space-between; background: var(--surface-solid); padding: 0.6rem 0.85rem; border-radius: 12px; margin-bottom: 0.5rem; font-size: 0.85rem; border: 1px solid var(--border-color); }
+        .syllabus-subject { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 14px; padding: 1rem; margin-bottom: 0.85rem; }
+        .syllabus-subject-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem; margin-bottom: 0.6rem; }
+        .syllabus-subject h3 { color: var(--accent-color); font-size: 0.95rem; font-weight: 700; margin: 0; }
+        .syllabus-chapter-item { display: flex; align-items: center; justify-content: space-between; background: var(--surface-solid); padding: 0.5rem 0.75rem; border-radius: 10px; margin-bottom: 0.4rem; font-size: 0.8rem; border: 1px solid var(--border-color); gap: 8px; }
 
-        footer { text-align: center; padding: 2rem; color: var(--text-secondary); font-size: 0.8rem; border-top: 1px solid var(--border-color); margin-top: 5rem; background: var(--surface-color); backdrop-filter: blur(20px); }
+        footer { text-align: center; padding: 1.5rem 1rem; color: var(--text-secondary); font-size: 0.75rem; border-top: 1px solid var(--border-color); margin-top: 3rem; background: var(--surface-color); }
     </style>
 </head>
 <body>
 
     <div id="authScreen">
         <div class="auth-card">
-            <h2 id="authTitle" style="color:var(--text-primary); margin-bottom:1.5rem;">Backlog Burster Login</h2>
+            <h2 id="authTitle" style="color:var(--text-primary); margin-bottom:1.25rem; font-size: 1.35rem;">Backlog Burster Login</h2>
             <form id="authForm">
                 <div class="form-group">
                     <label>Username</label>
@@ -353,11 +340,11 @@
             </button>
             <img src="logo.png" alt="Logo" class="logo-img">
             <div class="logo-text">Backlog Burster</div>
-            <div class="dev-badge">Developed by Arsh Verma</div>
+            <div class="dev-badge">Arsh Verma</div>
         </div>
-        <div style="display: flex; gap: 1rem; align-items: center;">
-            <div class="user-badge" id="headerUserBadge">User: Guest</div>
-            <button class="btn btn-danger" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem;" id="logoutBtn">Logout</button>
+        <div style="display: flex; gap: 8px; align-items: center;">
+            <div class="user-badge" id="headerUserBadge">Guest</div>
+            <button class="btn btn-danger" style="width: auto; padding: 0.35rem 0.6rem; font-size: 0.75rem;" id="logoutBtn">Logout</button>
         </div>
     </header>
 
@@ -372,37 +359,37 @@
                 <div class="profile-preview">
                     <div class="profile-avatar" id="sidebarAvatar">AV</div>
                     <div>
-                        <div style="font-weight: 600;" id="sidebarName">Arsh Verma</div>
-                        <div style="font-size: 0.8rem; color: var(--text-secondary);" id="sidebarClass">Class 11</div>
+                        <div style="font-weight: 600; font-size: 0.85rem;" id="sidebarName">Arsh Verma</div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary);" id="sidebarClass">Class 11</div>
                     </div>
                 </div>
             </div>
 
             <div class="sidebar-block" onclick="window.open('https://pwthor.live', '_blank')">
                 <h3>🎓 PW Batches Subscription</h3>
-                <p style="font-size: 0.8rem; color: var(--text-secondary);">Direct portal link to pwthor.live</p>
+                <p style="font-size: 0.75rem; color: var(--text-secondary);">Direct portal link to pwthor.live</p>
             </div>
 
             <div class="sidebar-block" id="openNotesModal">
                 <h3>📚 Notes Repository</h3>
-                <p style="font-size: 0.8rem; color: var(--text-secondary);">Manage study links & references.</p>
+                <p style="font-size: 0.75rem; color: var(--text-secondary);">Manage study links & references.</p>
             </div>
 
             <div class="sidebar-block" id="openAnalyticsModal">
                 <h3>📊 Study & Clearance Analytics</h3>
-                <p style="font-size: 0.8rem; color: var(--text-secondary);">View visual graphs comparing total studied vs backlog clearance.</p>
+                <p style="font-size: 0.75rem; color: var(--text-secondary);">View visual graphs comparing stats.</p>
             </div>
 
             <div class="sidebar-block" id="openAiSolverModal">
                 <h3>🤖 Gemini AI Assistant</h3>
-                <p style="font-size: 0.8rem; color: var(--text-secondary);">Open interactive Gemini miniplayer for instant doubt solving.</p>
+                <p style="font-size: 0.75rem; color: var(--text-secondary);">Open interactive Gemini miniplayer.</p>
             </div>
 
             <div class="sidebar-block" id="openProgressModal">
                 <h3>Syllabus Progress Tracker</h3>
                 <div class="progress-text">
                     <span id="progressLabel">0% Cleared</span>
-                    <span id="progressCounts">0 / 0 Completed</span>
+                    <span id="progressCounts">0 / 0</span>
                 </div>
                 <div class="progress-bar-container">
                     <div class="progress-bar-fill" id="progressBarFill"></div>
@@ -411,29 +398,29 @@
 
             <div class="sidebar-block" id="openCalendarScheduleModal">
                 <h3>📅 Calendar vs Backlog Schedule</h3>
-                <p style="font-size: 0.8rem; color: var(--text-secondary);">View calendar dates mapped to daily backlogs.</p>
+                <p style="font-size: 0.75rem; color: var(--text-secondary);">View calendar dates mapped to backlogs.</p>
             </div>
 
             <div class="sidebar-block" id="openAdminModal" style="display: none; background: linear-gradient(135deg, rgba(254, 202, 202, 0.9), rgba(252, 165, 165, 0.6));">
                 <h3>⚙️ Admin Panel & Approvals</h3>
-                <p style="font-size: 0.8rem; color: var(--text-secondary);">Approve new users & manage access.</p>
+                <p style="font-size: 0.75rem; color: var(--text-secondary);">Approve new users & manage access.</p>
             </div>
 
             <div class="sidebar-block" id="sidebarAddBacklogBtn">
                 <h3>+ Add New Study Item</h3>
-                <p style="font-size: 0.8rem; color: var(--text-secondary);">Configure chapter sliders, notes & schedule.</p>
+                <p style="font-size: 0.75rem; color: var(--text-secondary);">Configure chapter sliders & schedule.</p>
             </div>
         </div>
     </aside>
 
     <div class="container">
         <div class="home-progress-banner" id="homeProgressBannerContainer">
-            <h3 style="font-size: 1.15rem; margin-bottom: 0.5rem; color: var(--text-primary);">⚡ Overall Comprehensive Study & Backlog Clearance</h3>
+            <h3 style="font-size: 1.05rem; margin-bottom: 0.4rem; color: var(--text-primary);">⚡ Overall Comprehensive Progress</h3>
             <div class="progress-text" style="font-weight: 600;">
                 <span id="bannerProgressLabel">0% Cleared</span>
-                <span id="bannerProgressCounts">0 Chapters Finished</span>
+                <span id="bannerProgressCounts">0 / 0 Completed</span>
             </div>
-            <div class="progress-bar-container" style="height: 12px; margin-top: 0.5rem;">
+            <div class="progress-bar-container" style="height: 10px; margin-top: 0.4rem;">
                 <div class="progress-bar-fill" id="bannerProgressBarFill"></div>
             </div>
         </div>
@@ -441,33 +428,33 @@
         <div class="dashboard-widgets-grid" id="userWidgetsContainer">
             <div class="widget-card">
                 <h3>⏳ Pomodoro Focus Timer</h3>
-                <div id="pomodoroDisplay" style="font-size: 2.2rem; font-weight: 800; color: var(--accent-color); margin-bottom: 0.75rem;">25:00</div>
-                <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">Total Focus Time Logged: <strong id="totalFocusMinutes">0</strong> mins</div>
-                <div style="display: flex; gap: 0.5rem;">
-                    <button class="btn" onclick="startPomodoro()">Start Focus</button>
-                    <button class="btn btn-secondary" onclick="resetPomodoro()" style="margin-top:0;">Reset</button>
+                <div id="pomodoroDisplay" style="font-size: 1.8rem; font-weight: 800; color: var(--accent-color); margin-bottom: 0.5rem;">25:00</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.75rem;">Total Logged: <strong id="totalFocusMinutes">0</strong> mins</div>
+                <div style="display: flex; gap: 0.4rem;">
+                    <button class="btn" style="padding: 0.5rem;" onclick="startPomodoro()">Start Focus</button>
+                    <button class="btn btn-secondary" style="padding: 0.5rem; margin-top:0;" onclick="resetPomodoro()">Reset</button>
                 </div>
             </div>
 
             <div class="widget-card">
                 <h3>🔥 Study Streaks & Badges</h3>
-                <div style="font-size: 1.5rem; font-weight: 700; color: var(--success-color); margin-bottom: 0.5rem;"><span id="streakCount">1</span> Day Streak! 🔥</div>
-                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">Unlock milestones by studying regularly and clearing chapters.</p>
-                <div id="badgesContainer" style="display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center;">
-                    <span style="font-size: 0.75rem; background: var(--surface-solid); padding: 0.3rem 0.6rem; border-radius: 8px; border: 1px solid var(--border-color);">🏆 Beginner Scholar</span>
+                <div style="font-size: 1.25rem; font-weight: 700; color: var(--success-color); margin-bottom: 0.3rem;"><span id="streakCount">1</span> Day Streak! 🔥</div>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.75rem;">Unlock milestones by studying regularly.</p>
+                <div id="badgesContainer" style="display: flex; flex-wrap: wrap; gap: 0.4rem; justify-content: center;">
+                    <span style="font-size: 0.7rem; background: var(--surface-solid); padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid var(--border-color);">🏆 Beginner Scholar</span>
                 </div>
             </div>
         </div>
 
         <div class="dashboard-header">
-            <h1 id="mainDashboardTitle">My Complete Study & Backlog Workspace</h1>
+            <h1 id="mainDashboardTitle">My Study & Backlog Workspace</h1>
             <button class="btn" style="width: auto;" id="mainAddBtn">+ Add Backlog</button>
         </div>
 
         <div id="userSubjectBlocksContainer">
             <div class="subject-block-container">
                 <div class="subject-header physics" onclick="toggleSubjectBlock('physicsContent')">
-                    <span>⚛️ Physics Workspace (Purple Block)</span>
+                    <span>⚛️ Physics Workspace</span>
                     <span>▼</span>
                 </div>
                 <div class="subject-content" id="physicsContent"></div>
@@ -475,7 +462,7 @@
 
             <div class="subject-block-container">
                 <div class="subject-header chemistry" onclick="toggleSubjectBlock('chemistryContent')">
-                    <span>🧪 Chemistry Workspace (Green Block)</span>
+                    <span>🧪 Chemistry Workspace</span>
                     <span>▼</span>
                 </div>
                 <div class="subject-content" id="chemistryContent"></div>
@@ -483,7 +470,7 @@
 
             <div class="subject-block-container">
                 <div class="subject-header maths" onclick="toggleSubjectBlock('mathsContent')">
-                    <span>📐 Maths Workspace (Red Block)</span>
+                    <span>📐 Maths Workspace</span>
                     <span>▼</span>
                 </div>
                 <div class="subject-content" id="mathsContent"></div>
@@ -493,9 +480,10 @@
         <div id="adminMasterUserBlocksContainer" style="display: none;"></div>
     </div>
 
+    <!-- Modals -->
     <div class="modal" id="profileModal">
         <div class="modal-content">
-            <h2>Customize Profile & Theme</h2>
+            <h2 style="font-size: 1.25rem; margin-bottom: 1rem;">Customize Profile & Theme</h2>
             <form id="profileForm">
                 <div class="form-group">
                     <label>Full Name</label>
@@ -527,47 +515,44 @@
     </div>
 
     <div class="modal" id="analyticsModal">
-        <div class="modal-content" style="max-width: 700px;">
-            <h2>📊 Comprehensive Study & Clearance Analytics</h2>
-            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Visual comparison analysis tracking total studied curriculum progress versus active backlog clearances:</p>
-            
-            <div style="background: var(--surface-solid); padding: 1rem; border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 1.5rem; text-align: center;">
-                <canvas id="analyticsCanvas" width="600" height="260" style="width: 100%; height: auto; max-height: 260px;"></canvas>
+        <div class="modal-content">
+            <h2 style="font-size: 1.25rem; margin-bottom: 0.75rem;">📊 Analytics Overview</h2>
+            <div style="background: var(--surface-solid); padding: 0.75rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 1rem; text-align: center;">
+                <canvas id="analyticsCanvas" width="500" height="220" style="width: 100%; height: auto; max-height: 200px;"></canvas>
             </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
-                <div style="background: var(--surface-solid); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color);">
-                    <div style="font-weight: 600; margin-bottom: 0.4rem; color: var(--text-primary);">Overall Workload Stats</div>
-                    <div id="analyticsWorkloadText" style="font-size: 0.85rem; color: var(--text-secondary);">Calculating...</div>
+            <div style="display: grid; grid-template-columns: 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+                <div style="background: var(--surface-solid); padding: 0.75rem; border-radius: 10px; border: 1px solid var(--border-color);">
+                    <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 0.25rem;">Workload Stats</div>
+                    <div id="analyticsWorkloadText" style="font-size: 0.75rem; color: var(--text-secondary);">Calculating...</div>
                 </div>
-                <div style="background: var(--surface-solid); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color);">
-                    <div style="font-weight: 600; margin-bottom: 0.4rem; color: var(--text-primary);">Productivity & Focus Performance</div>
-                    <div id="analyticsFocusText" style="font-size: 0.85rem; color: var(--text-secondary);">Calculating...</div>
+                <div style="background: var(--surface-solid); padding: 0.75rem; border-radius: 10px; border: 1px solid var(--border-color);">
+                    <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 0.25rem;">Focus Performance</div>
+                    <div id="analyticsFocusText" style="font-size: 0.75rem; color: var(--text-secondary);">Calculating...</div>
                 </div>
             </div>
-            <button type="button" class="btn close-modal">Close Analytics</button>
+            <button type="button" class="btn close-modal">Close</button>
         </div>
     </div>
 
     <div class="modal" id="aiSolverModal">
-        <div class="modal-content" style="max-width: 850px; height: 80vh; display: flex; flex-direction: column;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <h2 style="margin-bottom: 0;">🤖 Gemini AI Assistant (Live Miniplayer)</h2>
-                <button type="button" class="btn close-modal" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem; margin-top:0;">Close</button>
+        <div class="modal-content" style="height: 75vh; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <h2 style="font-size: 1.15rem; margin-bottom: 0;">🤖 Gemini AI Assistant</h2>
+                <button type="button" class="btn close-modal" style="width: auto; padding: 0.3rem 0.6rem; font-size: 0.75rem; margin-top:0;">Close</button>
             </div>
-            <div style="flex: 1; width: 100%; border-radius: 14px; overflow: hidden; border: 1px solid var(--border-color);">
+            <div style="flex: 1; width: 100%; border-radius: 10px; overflow: hidden; border: 1px solid var(--border-color);">
                 <iframe src="https://gemini.google.com" style="width: 100%; height: 100%; border: none; background: #ffffff;" allow="microphone"></iframe>
             </div>
         </div>
     </div>
 
     <div class="modal" id="notesModal">
-        <div class="modal-content" style="max-width: 750px;">
-            <h2>📚 Notes & Document Repository</h2>
-            <form id="notesForm" style="background: var(--surface-solid); padding: 1.25rem; border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 1.5rem;">
-                <h3 style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-primary);">Add New Note Link</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div class="form-group">
+        <div class="modal-content">
+            <h2 style="font-size: 1.25rem; margin-bottom: 0.75rem;">📚 Notes Repository</h2>
+            <form id="notesForm" style="background: var(--surface-solid); padding: 1rem; border-radius: 14px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
+                <h3 style="font-size: 0.9rem; margin-bottom: 0.75rem; color: var(--text-primary);">Add Note Link</h3>
+                <div style="display: grid; grid-template-columns: 1fr; gap: 0.75rem;">
+                    <div class="form-group" style="margin-bottom:0;">
                         <label>Subject</label>
                         <select id="noteSubject" required>
                             <option value="Physics">Physics</option>
@@ -576,40 +561,40 @@
                             <option value="Other">Other</option>
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="margin-bottom:0;">
                         <label>Period / Term</label>
-                        <input type="text" id="notePeriod" placeholder="e.g. Period 1 / Term 2" required>
+                        <input type="text" id="notePeriod" placeholder="e.g. Term 1" required>
                     </div>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div class="form-group">
-                        <label>Topic Name</label>
-                        <input type="text" id="noteTopic" placeholder="e.g. Thermodynamics" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Visibility Status</label>
+                <div class="form-group" style="margin-top: 0.75rem; margin-bottom:0.75rem;">
+                    <label>Topic Name</label>
+                    <input type="text" id="noteTopic" placeholder="e.g. Thermodynamics" required>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Visibility</label>
                         <select id="noteVisibility" required>
-                            <option value="public">Public (Visible to All Users)</option>
+                            <option value="public">Public</option>
                             <option value="private">Private</option>
                         </select>
                     </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label>Document URL</label>
+                        <input type="url" id="noteLink" placeholder="https://..." required>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Document / PDF Link (URL)</label>
-                    <input type="url" id="noteLink" placeholder="https://drive.google.com/..." required>
-                </div>
-                <button type="submit" class="btn">Save Note Link</button>
+                <button type="submit" class="btn" style="margin-top: 0.5rem;">Save Note Link</button>
             </form>
-            <h3 style="font-size: 1.1rem; margin-bottom: 0.75rem; color: var(--text-primary);">Available Notes Library</h3>
-            <div id="notesListContainer" style="max-height: 35vh; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem; padding-right: 0.5rem;"></div>
-            <button type="button" class="btn close-modal" style="margin-top: 1.5rem;">Close Notes</button>
+            <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">Available Library</h3>
+            <div id="notesListContainer" style="max-height: 30vh; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;"></div>
+            <button type="button" class="btn close-modal" style="margin-top: 1rem;">Close</button>
         </div>
     </div>
 
     <div class="modal" id="calendarScheduleModal">
-        <div class="modal-content" style="max-width: 700px;">
-            <h2>📅 Calendar & Daily Study Schedule</h2>
-            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+        <div class="modal-content">
+            <h2 style="font-size: 1.25rem; margin-bottom: 0.75rem;">📅 Daily Schedule</h2>
+            <div style="display: flex; gap: 0.75rem; margin-bottom: 0.75rem;">
                 <div class="form-group" style="flex: 1; margin-bottom: 0;">
                     <label>Year</label>
                     <select id="calYearSelect"><option value="2026" selected>2026</option><option value="2027">2027</option></select>
@@ -617,101 +602,101 @@
                 <div class="form-group" style="flex: 1; margin-bottom: 0;">
                     <label>Month</label>
                     <select id="calMonthSelect">
-                        <option value="0">January</option><option value="1">February</option><option value="2">March</option>
-                        <option value="3">April</option><option value="4">May</option><option value="5">June</option>
-                        <option value="6">July</option><option value="7" selected>August</option>
-                        <option value="8">September</option><option value="9">October</option><option value="10">November</option><option value="11">December</option>
+                        <option value="0">Jan</option><option value="1">Feb</option><option value="2">Mar</option>
+                        <option value="3">Apr</option><option value="4">May</option><option value="5">Jun</option>
+                        <option value="6">Jul</option><option value="7" selected>Aug</option>
+                        <option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option>
                     </select>
                 </div>
             </div>
-            <div style="max-height: 40vh; overflow-y: auto;">
+            <div class="table-responsive" style="max-height: 35vh;">
                 <table class="schedule-table">
-                    <thead><tr><th>Calendar Date</th><th>Scheduled Study / Backlog Information</th></tr></thead>
+                    <thead><tr><th>Date</th><th>Scheduled Study / Backlog</th></tr></thead>
                     <tbody id="scheduleTableBody"></tbody>
                 </table>
             </div>
-            <button type="button" class="btn close-modal" style="margin-top: 1.5rem;">Close Schedule</button>
+            <button type="button" class="btn close-modal" style="margin-top: 1rem;">Close</button>
         </div>
     </div>
 
     <div class="modal" id="adminModal">
-        <div class="modal-content" style="max-width: 750px;">
-            <h2>⚙️ Admin Panel & Account Approvals</h2>
-            <h3 style="font-size: 1rem; color: var(--danger-color); margin-bottom: 0.5rem;">Pending Registrations (Needs Approval)</h3>
-            <div style="max-height: 30vh; overflow-y: auto; margin-bottom: 1.5rem;">
+        <div class="modal-content">
+            <h2 style="font-size: 1.25rem; margin-bottom: 0.75rem;">⚙️ Admin Approvals</h2>
+            <h3 style="font-size: 0.9rem; color: var(--danger-color); margin-bottom: 0.4rem;">Pending Requests</h3>
+            <div class="table-responsive" style="max-height: 25vh; margin-bottom: 1rem;">
                 <table class="admin-table">
                     <thead><tr><th>Username</th><th>Action</th></tr></thead>
                     <tbody id="pendingUserTableBody"><tr><td colspan="2" style="text-align:center;">No pending requests</td></tr></tbody>
                 </table>
             </div>
-            <h3 style="font-size: 1rem; color: var(--text-primary); margin-bottom: 0.5rem;">Manage All Accounts & Last Active Times</h3>
-            <div style="max-height: 35vh; overflow-y: auto;">
+            <h3 style="font-size: 0.9rem; color: var(--text-primary); margin-bottom: 0.4rem;">Manage Accounts</h3>
+            <div class="table-responsive" style="max-height: 30vh;">
                 <table class="admin-table">
-                    <thead><tr><th>Username</th><th>Role</th><th>Last Active</th><th>Manage</th></tr></thead>
+                    <thead><tr><th>User</th><th>Role</th><th>Active</th><th>Actions</th></tr></thead>
                     <tbody id="adminUserTableBody"></tbody>
                 </table>
             </div>
-            <button type="button" class="btn close-modal" style="margin-top: 1.5rem;">Close Admin Panel</button>
+            <button type="button" class="btn close-modal" style="margin-top: 1rem;">Close</button>
         </div>
     </div>
 
     <div class="modal" id="progressModal">
-        <div class="modal-content" style="max-width: 650px;">
-            <h2>Syllabus Progress Tracker</h2>
-            <div style="background: var(--surface-solid); padding: 1.25rem; border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 1.5rem;">
-                <div class="progress-text" style="margin-top: 0; font-size: 0.95rem; font-weight: 600;">
+        <div class="modal-content">
+            <h2 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Syllabus Tracker</h2>
+            <div style="background: var(--surface-solid); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
+                <div class="progress-text" style="margin-top: 0; font-size: 0.85rem; font-weight: 600;">
                     <span id="modalProgressLabel" style="color: var(--accent-color);">0% Completed</span>
-                    <span id="modalProgressCounts">0 / 0 Chapters</span>
+                    <span id="modalProgressCounts">0 / 0</span>
                 </div>
-                <div class="progress-bar-container" style="height: 12px; margin-top: 0.75rem;">
+                <div class="progress-bar-container" style="height: 10px; margin-top: 0.5rem;">
                     <div class="progress-bar-fill" id="modalProgressBarFill"></div>
                 </div>
             </div>
-            <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
-                <input type="text" id="newSubjectInput" placeholder="New Subject Name..." style="flex:1; padding:0.6rem; border-radius:8px; border:1px solid var(--border-color);">
-                <button type="button" class="btn" style="width:auto; padding:0.6rem 1rem;" onclick="window.addSubject()">+ Add Subject</button>
+            <div style="display: flex; gap: 0.4rem; margin-bottom: 1rem;">
+                <input type="text" id="newSubjectInput" placeholder="New Subject..." style="flex:1; padding:0.5rem; border-radius:8px; border:1px solid var(--border-color); font-size: 0.85rem;">
+                <button type="button" class="btn" style="width:auto; padding:0.5rem 0.75rem; font-size:0.85rem;" onclick="window.addSubject()">+ Subject</button>
             </div>
-            <div id="syllabusContainer" style="max-height: 45vh; overflow-y: auto; padding-right: 0.5rem;"></div>
-            <button type="button" class="btn close-modal" style="margin-top: 1rem;">Close Tracker</button>
+            <div id="syllabusContainer" style="max-height: 40vh; overflow-y: auto; padding-right: 0.25rem;"></div>
+            <button type="button" class="btn close-modal" style="margin-top: 1rem;">Close</button>
         </div>
     </div>
 
     <div class="modal" id="backlogModal">
         <div class="modal-content">
-            <h2 id="backlogModalTitle">Add New Study / Backlog Item</h2>
+            <h2 id="backlogModalTitle" style="font-size: 1.25rem; margin-bottom: 1rem;">Add Study Item</h2>
             <form id="backlogForm">
                 <input type="hidden" id="editIndex" value="-1">
                 <div class="form-group">
                     <label>Subject Category</label>
                     <select id="chapterSubject" required>
-                        <option value="Physics">Physics (Purple)</option>
-                        <option value="Chemistry">Chemistry (Green)</option>
-                        <option value="Maths">Maths (Red)</option>
+                        <option value="Physics">Physics</option>
+                        <option value="Chemistry">Chemistry</option>
+                        <option value="Maths">Maths</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Chapter / Task Name</label>
-                    <input type="text" id="chapterName" placeholder="e.g., Kinematics / Revision Task" required>
+                    <input type="text" id="chapterName" placeholder="e.g., Kinematics" required>
                 </div>
                 <div class="form-group">
                     <label>Scheduled Date</label>
                     <input type="date" id="chapterDate" required>
                 </div>
                 <div class="form-group">
-                    <label>Lectures Progress: <span class="range-value" id="valLecture">50</span>%</label>
+                    <label>Lectures Progress: <span id="valLecture">50</span>%</label>
                     <input type="range" id="sliderLecture" min="0" max="100" value="50">
                 </div>
                 <div class="form-group">
-                    <label>Modules Progress: <span class="range-value" id="valModule">50</span>%</label>
+                    <label>Modules Progress: <span id="valModule">50</span>%</label>
                     <input type="range" id="sliderModule" min="0" max="100" value="50">
                 </div>
                 <div class="form-group">
-                    <label>Reference Book Progress: <span class="range-value" id="valRef">50</span>%</label>
+                    <label>Reference Book Progress: <span id="valRef">50</span>%</label>
                     <input type="range" id="sliderRef" min="0" max="100" value="50">
                 </div>
                 <div class="form-group">
                     <label>Notes / Details</label>
-                    <textarea id="chapterNote" rows="3" placeholder="Type formulas or reminders..."></textarea>
+                    <textarea id="chapterNote" rows="2" placeholder="Formulas or reminders..."></textarea>
                 </div>
                 <button type="submit" class="btn" id="saveBacklogBtn">Save Item</button>
                 <button type="button" class="btn btn-secondary close-modal">Cancel</button>
@@ -720,17 +705,17 @@
     </div>
 
     <div class="modal" id="cardLinkModal">
-        <div class="modal-content" style="max-width: 400px;">
-            <h2>Add Useful Link</h2>
+        <div class="modal-content" style="max-width: 380px;">
+            <h2 style="font-size: 1.15rem; margin-bottom: 0.75rem;">Add Useful Link</h2>
             <form id="cardLinkForm">
                 <input type="hidden" id="linkCardIndex" value="">
                 <div class="form-group">
                     <label>Link Title</label>
-                    <input type="text" id="cardLinkTitle" placeholder="e.g. Lecture Notes PDF" required>
+                    <input type="text" id="cardLinkTitle" placeholder="e.g. Notes PDF" required>
                 </div>
                 <div class="form-group">
                     <label>URL Address</label>
-                    <input type="url" id="cardLinkUrl" placeholder="https://example.com" required>
+                    <input type="url" id="cardLinkUrl" placeholder="https://..." required>
                 </div>
                 <button type="submit" class="btn">Add Link</button>
                 <button type="button" class="btn btn-secondary close-modal">Cancel</button>
@@ -739,17 +724,17 @@
     </div>
 
     <div class="modal" id="deleteModal">
-        <div class="modal-content" style="max-width: 400px; text-align: center;">
+        <div class="modal-content" style="max-width: 360px; text-align: center;">
             <input type="hidden" id="deleteTargetIndex" value="">
-            <h2 style="color: var(--danger-color); margin-bottom: 1rem;">Delete Study Item?</h2>
-            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Are you sure you want to remove <strong id="deleteTargetName"></strong>?</p>
-            <button type="button" class="btn btn-danger" id="confirmDeleteBtn" style="margin-bottom: 0.75rem;">Yes, Delete</button>
+            <h2 style="color: var(--danger-color); font-size: 1.15rem; margin-bottom: 0.75rem;">Delete Item?</h2>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Remove <strong id="deleteTargetName"></strong>?</p>
+            <button type="button" class="btn btn-danger" id="confirmDeleteBtn" style="margin-bottom: 0.5rem;">Yes, Delete</button>
             <button type="button" class="btn btn-secondary close-modal" style="margin-top: 0;">Cancel</button>
         </div>
     </div>
 
     <footer>
-        <p>&copy; 2026 Backlog Burster. Developed by Arsh Verma. All-in-One Comprehensive Study Management Suite.</p>
+        <p>&copy; 2026 Backlog Burster. Developed by Arsh Verma.</p>
     </footer>
 
     <script type="module">
@@ -806,7 +791,6 @@
         ];
         let notesData = [];
 
-        // Pomodoro Timer State (without fullscreen lockdown)
         let pomodoroTimer = null;
         let timeLeft = 25 * 60;
         let isTimerRunning = false;
@@ -814,7 +798,6 @@
         window.startPomodoro = function() {
             if (isTimerRunning) return;
             isTimerRunning = true;
-
             pomodoroTimer = setInterval(async () => {
                 if (timeLeft > 0) {
                     timeLeft--;
@@ -843,8 +826,7 @@
         function updatePomodoroDisplay() {
             const mins = Math.floor(timeLeft / 60);
             const secs = timeLeft % 60;
-            const timeStr = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
-            document.getElementById('pomodoroDisplay').textContent = timeStr;
+            document.getElementById('pomodoroDisplay').textContent = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
         }
 
         async function ensureDefaultAdmin() {
@@ -891,7 +873,7 @@
 
             if(isRegisterMode) {
                 if(userSnap.exists()) {
-                    alert("Username already exists! Choose another or login.");
+                    alert("Username already exists!");
                     return;
                 }
                 const newUserData = {
@@ -905,7 +887,7 @@
                     backlogs: backlogs
                 };
                 await setDoc(userRef, newUserData);
-                alert("Account registered successfully! Waiting for Admin approval before you can log in.");
+                alert("Account registered successfully! Waiting for Admin approval.");
                 isRegisterMode = false;
                 authTitle.textContent = "Backlog Burster Login";
                 authSubmitBtn.textContent = "Login";
@@ -922,7 +904,7 @@
                     return;
                 }
                 if(userData.approved === false) {
-                    alert("Your account is pending admin approval. Please wait for the administrator to accept your request.");
+                    alert("Your account is pending admin approval.");
                     return;
                 }
 
@@ -968,7 +950,6 @@
                 const userRef = doc(db, "users", currentUser.username);
                 const userSnap = await getDoc(userRef);
                 const existingData = userSnap.exists() ? userSnap.data() : {};
-
                 await setDoc(userRef, {
                     ...existingData,
                     lastActive: new Date().toLocaleString(),
@@ -981,12 +962,12 @@
         }
 
         function initDashboard() {
-            document.getElementById('headerUserBadge').textContent = `User: ${currentUser.username} (${currentUser.role})`;
+            document.getElementById('headerUserBadge').textContent = `${currentUser.username}`;
             applyTheme(profileData.theme || 'light');
 
             if(currentUser.role === 'admin') {
                 document.getElementById('openAdminModal').style.display = 'block';
-                document.getElementById('mainDashboardTitle').textContent = "All Users Study & Backlog Overview";
+                document.getElementById('mainDashboardTitle').textContent = "All Users Overview";
                 document.getElementById('mainAddBtn').style.display = 'none';
                 document.getElementById('homeProgressBannerContainer').style.display = 'none';
                 document.getElementById('userWidgetsContainer').style.display = 'none';
@@ -995,7 +976,7 @@
                 renderAdminMasterHomeView();
             } else {
                 document.getElementById('openAdminModal').style.display = 'none';
-                document.getElementById('mainDashboardTitle').textContent = "My Complete Study & Backlog Workspace";
+                document.getElementById('mainDashboardTitle').textContent = "My Study Workspace";
                 document.getElementById('mainAddBtn').style.display = 'block';
                 document.getElementById('homeProgressBannerContainer').style.display = 'block';
                 document.getElementById('userWidgetsContainer').style.display = 'grid';
@@ -1004,24 +985,19 @@
                 renderBacklogs();
                 updateStatsUI();
             }
-
             updateProfileUI();
             renderSyllabusTracker();
         }
 
         function applyTheme(themeName) {
-            if (themeName === 'dark') {
-                document.documentElement.setAttribute('data-theme', 'dark');
-            } else {
-                document.documentElement.removeAttribute('data-theme');
-            }
+            if (themeName === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+            else document.documentElement.removeAttribute('data-theme');
         }
 
         function updateStatsUI() {
             document.getElementById('totalFocusMinutes').textContent = studyStats.focusMinutes;
             document.getElementById('streakCount').textContent = studyStats.streak;
-            const bContainer = document.getElementById('badgesContainer');
-            bContainer.innerHTML = studyStats.badges.map(b => `<span style="font-size: 0.75rem; background: var(--surface-solid); padding: 0.3rem 0.6rem; border-radius: 8px; border: 1px solid var(--border-color);">${b}</span>`).join('');
+            document.getElementById('badgesContainer').innerHTML = studyStats.badges.map(b => `<span style="font-size: 0.7rem; background: var(--surface-solid); padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid var(--border-color);">${b}</span>`).join('');
         }
 
         const menuToggle = document.getElementById('menuToggle');
@@ -1071,7 +1047,7 @@
 
         document.getElementById('mainAddBtn').addEventListener('click', () => {
             document.getElementById('editIndex').value = -1;
-            document.getElementById('backlogModalTitle').textContent = "Add New Study / Backlog Item";
+            document.getElementById('backlogModalTitle').textContent = "Add Study Item";
             document.getElementById('saveBacklogBtn').textContent = "Save Item";
             document.getElementById('chapterName').value = "";
             document.getElementById('chapterDate').value = new Date().toISOString().split('T')[0];
@@ -1087,7 +1063,7 @@
 
         document.getElementById('sidebarAddBacklogBtn').addEventListener('click', () => {
             document.getElementById('editIndex').value = -1;
-            document.getElementById('backlogModalTitle').textContent = "Add New Study / Backlog Item";
+            document.getElementById('backlogModalTitle').textContent = "Add Study Item";
             document.getElementById('saveBacklogBtn').textContent = "Save Item";
             document.getElementById('chapterName').value = "";
             document.getElementById('chapterDate').value = new Date().toISOString().split('T')[0];
@@ -1129,8 +1105,7 @@
             const finishedBacklogs = backlogs.filter(b => b.finished).length;
             const activeBacklogs = totalBacklogs - finishedBacklogs;
 
-            let totalSyllabus = 0;
-            let completedSyllabus = 0;
+            let totalSyllabus = 0, completedSyllabus = 0;
             syllabusData.forEach(s => {
                 s.chapters.forEach(c => {
                     totalSyllabus++;
@@ -1139,39 +1114,37 @@
             });
 
             document.getElementById('analyticsWorkloadText').innerHTML = `
-                • Total Syllabus Chapters: <strong>${totalSyllabus}</strong><br>
-                • Studied Curriculum: <strong style="color:var(--success-color);">${completedSyllabus} Completed</strong><br>
-                • Active Backlogs: <strong style="color:var(--danger-color);">${activeBacklogs} Remaining</strong>
+                • Total Chapters: <strong>${totalSyllabus}</strong><br>
+                • Completed: <strong style="color:var(--success-color);">${completedSyllabus}</strong><br>
+                • Active Backlogs: <strong style="color:var(--danger-color);">${activeBacklogs}</strong>
             `;
             document.getElementById('analyticsFocusText').innerHTML = `
-                • Total Focus Time: <strong>${studyStats.focusMinutes} mins</strong><br>
-                • Active Study Streak: <strong>${studyStats.streak} Days</strong><br>
-                • Earned Milestones: ${studyStats.badges.join(', ')}
+                • Focus Time: <strong>${studyStats.focusMinutes} mins</strong><br>
+                • Streak: <strong>${studyStats.streak} Days</strong>
             `;
 
             const canvas = document.getElementById('analyticsCanvas');
             const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
             ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--surface-solid').trim() || '#bae6fd';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            const categories = ['Syllabus Studied', 'Backlogs Cleared', 'Active Backlogs'];
+            const categories = ['Studied', 'Cleared', 'Active'];
             const values = [completedSyllabus, finishedBacklogs, activeBacklogs];
             const barColors = ['#059669', '#0284c7', '#e11d48'];
             const maxVal = Math.max(...values, 5);
 
-            const startX = 60;
-            const barWidth = 120;
-            const spacing = 60;
-            const maxHeight = 160;
+            const startX = 40;
+            const barWidth = 90;
+            const spacing = 45;
+            const maxHeight = 120;
 
-            ctx.font = "12px sans-serif";
+            ctx.font = "11px sans-serif";
             ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-primary').trim() || '#0c4a6e';
 
             ctx.beginPath();
-            ctx.moveTo(40, 200);
-            ctx.lineTo(560, 200);
+            ctx.moveTo(25, 160);
+            ctx.lineTo(475, 160);
             ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--border-color').trim() || '#7dd3fc';
             ctx.stroke();
 
@@ -1179,15 +1152,15 @@
                 const x = startX + i * (barWidth + spacing);
                 const val = values[i];
                 const h = (val / maxVal) * maxHeight;
-                const y = 200 - h;
+                const y = 160 - h;
 
                 ctx.fillStyle = barColors[i];
                 ctx.fillRect(x, y, barWidth, h);
 
                 ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-primary').trim() || '#0c4a6e';
                 ctx.textAlign = 'center';
-                ctx.fillText(val, x + barWidth / 2, y - 8);
-                ctx.fillText(cat, x + barWidth / 2, 222);
+                ctx.fillText(val, x + barWidth / 2, y - 6);
+                ctx.fillText(cat, x + barWidth / 2, 178);
             });
         }
 
@@ -1220,21 +1193,21 @@
             });
 
             if(visibleNotes.length === 0) {
-                container.innerHTML = `<p style="color:var(--text-secondary); text-align:center;">No notes available.</p>`;
+                container.innerHTML = `<p style="color:var(--text-secondary); text-align:center; font-size:0.8rem;">No notes available.</p>`;
                 return;
             }
 
             visibleNotes.forEach((note) => {
                 const item = document.createElement('div');
-                item.style.cssText = "background:var(--surface-solid); padding:1rem; border-radius:12px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;";
+                item.style.cssText = "background:var(--surface-solid); padding:0.75rem; border-radius:10px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; gap:8px;";
                 item.innerHTML = `
-                    <div>
-                        <div style="font-weight:600; color:var(--text-primary); font-size:0.95rem;">[${note.subject}] ${note.topic}</div>
-                        <div style="font-size:0.8rem; color:var(--text-secondary);">Period: ${note.period} | By: ${note.uploader} | <span style="color:${note.visibility==='public'?'var(--success-color)':'var(--danger-color)'}; font-weight:600;">${note.visibility.toUpperCase()}</span></div>
+                    <div style="overflow:hidden;">
+                        <div style="font-weight:600; color:var(--text-primary); font-size:0.85rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">[${note.subject}] ${note.topic}</div>
+                        <div style="font-size:0.7rem; color:var(--text-secondary);">By: ${note.uploader}</div>
                     </div>
-                    <div style="display:flex; gap:0.5rem;">
-                        <a href="${note.linkUrl}" target="_blank" class="btn" style="padding:0.4rem 0.8rem; font-size:0.75rem; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">Open Link</a>
-                        ${(currentUser.role === 'admin' || currentUser.username === note.uploader) ? `<button class="btn btn-danger" style="padding:0.4rem 0.6rem; font-size:0.75rem; width:auto;" onclick="window.deleteNote(${note.id})">Delete</button>` : ''}
+                    <div style="display:flex; gap:0.4rem; flex-shrink:0;">
+                        <a href="${note.linkUrl}" target="_blank" class="btn" style="padding:0.3rem 0.6rem; font-size:0.7rem; text-decoration:none;">Open</a>
+                        ${(currentUser.role === 'admin' || currentUser.username === note.uploader) ? `<button class="btn btn-danger" style="padding:0.3rem 0.5rem; font-size:0.7rem; width:auto;" onclick="window.deleteNote(${note.id})">Del</button>` : ''}
                     </div>
                 `;
                 container.appendChild(item);
@@ -1242,7 +1215,7 @@
         }
 
         window.deleteNote = async function(id) {
-            if(confirm("Are you sure you want to delete this note?")) {
+            if(confirm("Delete this note?")) {
                 notesData = notesData.filter(n => n.id !== id);
                 await saveGlobalNotes();
                 renderNotesRepository();
@@ -1270,11 +1243,8 @@
                 finished: editIdx >= 0 ? backlogs[editIdx].finished : false
             };
 
-            if (editIdx >= 0) {
-                backlogs[editIdx] = item;
-            } else {
-                backlogs.push(item);
-            }
+            if (editIdx >= 0) backlogs[editIdx] = item;
+            else backlogs.push(item);
 
             document.getElementById('backlogModal').classList.remove('active');
             renderBacklogs();
@@ -1284,7 +1254,7 @@
         window.editBacklog = function(index) {
             const item = backlogs[index];
             document.getElementById('editIndex').value = index;
-            document.getElementById('backlogModalTitle').textContent = "Edit Study / Backlog Item";
+            document.getElementById('backlogModalTitle').textContent = "Edit Item";
             document.getElementById('saveBacklogBtn').textContent = "Save Changes";
             document.getElementById('chapterSubject').value = item.subject;
             document.getElementById('chapterName').value = item.name;
@@ -1312,9 +1282,7 @@
             const title = document.getElementById('cardLinkTitle').value.trim();
             const url = document.getElementById('cardLinkUrl').value.trim();
 
-            if (!backlogs[idx].links) {
-                backlogs[idx].links = [];
-            }
+            if (!backlogs[idx].links) backlogs[idx].links = [];
             backlogs[idx].links.push({ title, url });
 
             document.getElementById('cardLinkModal').classList.remove('active');
@@ -1328,10 +1296,8 @@
 
         window.toggleFinish = async function(index) {
             backlogs[index].finished = !backlogs[index].finished;
-            if (backlogs[index].finished) {
-                if (!studyStats.badges.includes("⭐ Backlog Slayer")) {
-                    studyStats.badges.push("⭐ Backlog Slayer");
-                }
+            if (backlogs[index].finished && !studyStats.badges.includes("⭐ Backlog Slayer")) {
+                studyStats.badges.push("⭐ Backlog Slayer");
             }
             renderBacklogs();
             updateStatsUI();
@@ -1366,17 +1332,16 @@
             let percent = totalItems > 0 ? Math.round((finishedItems / totalItems) * 100) : 0;
 
             document.getElementById('bannerProgressLabel').textContent = `${percent}% Cleared`;
-            document.getElementById('bannerProgressCounts').textContent = `${finishedItems} / ${totalItems} Items Completed`;
+            document.getElementById('bannerProgressCounts').textContent = `${finishedItems} / ${totalItems} Completed`;
             document.getElementById('bannerProgressBarFill').style.width = `${percent}%`;
 
             if(totalItems === 0) {
-                physicsGrid.innerHTML = `<p style="color:var(--text-secondary)">No items added.</p>`;
+                physicsGrid.innerHTML = `<p style="color:var(--text-secondary); font-size:0.85rem;">No items added.</p>`;
             }
 
             backlogs.forEach((item, index) => {
                 const card = document.createElement('div');
                 card.className = `backlog-card ${item.finished ? 'finished' : ''}`;
-                
                 let linksHtml = (item.links || []).map(l => `<a href="${l.url}" target="_blank" class="link-pill">🔗 ${l.title}</a>`).join('');
 
                 card.innerHTML = `
@@ -1392,10 +1357,10 @@
                     ${item.note ? `<div class="card-note">${item.note}</div>` : ''}
                     <div class="links-container">${linksHtml}</div>
                     <div class="card-actions">
-                        <button onclick="window.toggleFinish(${index})" class="finish-btn">${item.finished ? 'Unfinish' : 'Finish'}</button>
+                        <button onclick="window.toggleFinish(${index})" class="finish-btn">${item.finished ? 'Undo' : 'Finish'}</button>
                         <button onclick="window.editBacklog(${index})" class="edit-btn">Edit</button>
                         <button onclick="window.openCardLinkModal(${index})" class="link-btn">+ Link</button>
-                        <button onclick="window.promptDelete(${index})" class="delete-btn">Delete</button>
+                        <button onclick="window.promptDelete(${index})" class="delete-btn">Del</button>
                     </div>
                 `;
 
@@ -1421,7 +1386,7 @@
 
                 let cardsHtml = "";
                 if(userBacklogs.length === 0) {
-                    cardsHtml = `<p style="color:var(--text-secondary); grid-column:1/-1;">No records found for this user.</p>`;
+                    cardsHtml = `<p style="color:var(--text-secondary); grid-column:1/-1; font-size:0.85rem;">No records found.</p>`;
                 } else {
                     userBacklogs.forEach((item) => {
                         let linksHtml = (item.links || []).map(l => `<a href="${l.url}" target="_blank" class="link-pill">🔗 ${l.title}</a>`).join('');
@@ -1445,7 +1410,7 @@
 
                 blockDiv.innerHTML = `
                     <div class="subject-header admin-user-block" onclick="window.toggleSubjectBlock('userBlock_${username}')">
-                        <span>👤 User: <strong>${username.toUpperCase()}</strong> (Records: ${userBacklogs.length}) | Last Active: ${lastActive}</span>
+                        <span style="font-size:0.95rem;">👤 <strong>${username.toUpperCase()}</strong> (${userBacklogs.length})</span>
                         <span>▼</span>
                     </div>
                     <div class="subject-content" id="userBlock_${username}">${cardsHtml}</div>
@@ -1462,14 +1427,11 @@
 
             const totalDays = new Date(year, month + 1, 0).getDate();
             for(let day = 1; day <= totalDays; day++) {
-                const formattedMonth = String(month + 1).padStart(2, '0');
-                const formattedDay = String(day).padStart(2, '0');
-                const dateStr = `${year}-${formattedMonth}-${formattedDay}`;
-
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                 const matchingBacklogs = backlogs.filter(b => b.date === dateStr);
                 const infoText = matchingBacklogs.length > 0 
-                    ? matchingBacklogs.map(b => `[${b.subject}] ${b.name} (Lectures: ${b.lecture}%, Modules: ${b.module}%)`).join('<br>') 
-                    : '<span style="color:var(--text-secondary);">No study schedule for this day</span>';
+                    ? matchingBacklogs.map(b => `[${b.subject}] ${b.name}`).join('<br>') 
+                    : '<span style="color:var(--text-secondary);">No schedule</span>';
 
                 const row = document.createElement('tr');
                 row.innerHTML = `<td><strong>${dateStr}</strong></td><td>${infoText}</td>`;
@@ -1494,7 +1456,6 @@
                 const username = docSnap.id;
                 const role = userData.role || "user";
                 const approved = userData.approved !== false;
-                const lastActive = userData.lastActive || "Never";
 
                 if (!approved) {
                     pendingCount++;
@@ -1502,8 +1463,8 @@
                     row.innerHTML = `
                         <td><strong>${username}</strong></td>
                         <td>
-                            <button class="btn btn-success" style="padding:0.3rem 0.6rem; font-size:0.75rem; width:auto; margin-right:5px;" onclick="window.approveUser('${username}', true)">Accept</button>
-                            <button class="btn btn-danger" style="padding:0.3rem 0.6rem; font-size:0.75rem; width:auto;" onclick="window.approveUser('${username}', false)">Decline</button>
+                            <button class="btn btn-success" style="padding:0.25rem 0.5rem; font-size:0.7rem; width:auto; margin-right:4px;" onclick="window.approveUser('${username}', true)">Accept</button>
+                            <button class="btn btn-danger" style="padding:0.25rem 0.5rem; font-size:0.7rem; width:auto;" onclick="window.approveUser('${username}', false)">Decline</button>
                         </td>
                     `;
                     pendingTableBody.appendChild(row);
@@ -1511,11 +1472,11 @@
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td><strong>${username}</strong></td>
-                        <td><span style="padding:0.2rem 0.5rem; background:var(--surface-solid); border-radius:6px;">${role.toUpperCase()}</span></td>
-                        <td><span style="font-size:0.8rem; color:var(--text-secondary);">${lastActive}</span></td>
+                        <td>${role.toUpperCase()}</td>
+                        <td><span style="font-size:0.75rem; color:var(--text-secondary);">${userData.lastActive || 'Never'}</span></td>
                         <td>
-                            <button class="btn" style="padding:0.3rem 0.5rem; font-size:0.75rem; width:auto; margin-right:4px;" onclick="window.toggleAdminRole('${username}', '${role}')">${role === 'admin' ? 'Demote' : 'Make Admin'}</button>
-                            <button class="btn btn-danger" style="padding:0.3rem 0.5rem; font-size:0.75rem; width:auto;" onclick="window.deleteAccount('${username}')">Delete</button>
+                            <button class="btn" style="padding:0.25rem 0.4rem; font-size:0.7rem; width:auto; margin-right:3px;" onclick="window.toggleAdminRole('${username}', '${role}')">${role === 'admin' ? 'Demote' : 'Admin'}</button>
+                            <button class="btn btn-danger" style="padding:0.25rem 0.4rem; font-size:0.7rem; width:auto;" onclick="window.deleteAccount('${username}')">Del</button>
                         </td>
                     `;
                     activeTableBody.appendChild(row);
@@ -1531,34 +1492,27 @@
             const userRef = doc(db, "users", username);
             const snap = await getDoc(userRef);
             if(snap.exists()) {
-                if (accept) {
-                    await setDoc(userRef, { ...snap.data(), approved: true });
-                    alert(`User ${username} has been ACCEPTED.`);
-                } else {
-                    await deleteDoc(userRef);
-                    alert(`User ${username} request has been DECLINED and removed.`);
-                }
+                if (accept) await setDoc(userRef, { ...snap.data(), approved: true });
+                else await deleteDoc(userRef);
                 renderAdminPanel();
             }
         };
 
         window.toggleAdminRole = async function(username, currentRole) {
-            if (username === currentUser.username) { alert("You cannot change your own admin role!"); return; }
+            if (username === currentUser.username) { alert("Cannot change your own role!"); return; }
             const newRole = currentRole === 'admin' ? 'user' : 'admin';
             const userRef = doc(db, "users", username);
             const snap = await getDoc(userRef);
             if(snap.exists()) {
                 await setDoc(userRef, { ...snap.data(), role: newRole });
-                alert(`User ${username} role updated to ${newRole.toUpperCase()}`);
                 renderAdminPanel();
             }
         };
 
         window.deleteAccount = async function(username) {
-            if (username === currentUser.username) { alert("You cannot delete your own active admin account!"); return; }
-            if (confirm(`Are you sure you want to delete account: ${username}?`)) {
+            if (username === currentUser.username) { alert("Cannot delete your own account!"); return; }
+            if (confirm(`Delete account ${username}?`)) {
                 await deleteDoc(doc(db, "users", username));
-                alert(`Account ${username} deleted.`);
                 renderAdminPanel();
             }
         };
@@ -1574,7 +1528,7 @@
                 let chaptersHtml = `
                     <div class="syllabus-subject-header">
                         <h3>${subj.subject}</h3>
-                        <button class="btn btn-danger" style="padding:0.25rem 0.5rem; font-size:0.7rem; width:auto;" onclick="window.removeSubject(${sIdx})">Delete Subject</button>
+                        <button class="btn btn-danger" style="padding:0.2rem 0.4rem; font-size:0.65rem; width:auto;" onclick="window.removeSubject(${sIdx})">Delete</button>
                     </div>
                 `;
                 subj.chapters.forEach((ch, cIdx) => {
@@ -1582,15 +1536,15 @@
                     if(ch.completed) completedChapters++;
                     chaptersHtml += `
                         <div class="syllabus-chapter-item">
-                            <label><input type="checkbox" ${ch.completed ? 'checked' : ''} onchange="window.toggleSyllabusChapter(${sIdx}, ${cIdx})"> ${ch.name}</label>
-                            <button class="btn btn-danger" style="padding:0.15rem 0.4rem; font-size:0.65rem; width:auto;" onclick="window.removeChapter(${sIdx}, ${cIdx})">Remove</button>
+                            <label style="word-break:break-word; font-size:0.8rem;"><input type="checkbox" ${ch.completed ? 'checked' : ''} onchange="window.toggleSyllabusChapter(${sIdx}, ${cIdx})"> ${ch.name}</label>
+                            <button class="btn btn-danger" style="padding:0.15rem 0.35rem; font-size:0.6rem; width:auto; flex-shrink:0;" onclick="window.removeChapter(${sIdx}, ${cIdx})">X</button>
                         </div>
                     `;
                 });
                 chaptersHtml += `
-                    <div style="display: flex; gap: 0.4rem; margin-top: 0.75rem;">
-                        <input type="text" id="newChapterInput_${sIdx}" placeholder="New chapter name..." style="flex:1; padding:0.4rem; font-size:0.8rem; border-radius:6px; border:1px solid var(--border-color);">
-                        <button class="btn" style="width:auto; padding:0.4rem 0.7rem; font-size:0.8rem;" onclick="window.addChapter(${sIdx})">+ Add Chapter</button>
+                    <div style="display: flex; gap: 0.3rem; margin-top: 0.5rem;">
+                        <input type="text" id="newChapterInput_${sIdx}" placeholder="New chapter..." style="flex:1; padding:0.35rem; font-size:0.75rem; border-radius:6px; border:1px solid var(--border-color);">
+                        <button class="btn" style="width:auto; padding:0.35rem 0.6rem; font-size:0.75rem;" onclick="window.addChapter(${sIdx})">+ Add</button>
                     </div>
                 `;
                 subDiv.innerHTML = chaptersHtml;
@@ -1599,10 +1553,10 @@
 
             const percentage = totalChapters > 0 ? Math.round((completedChapters / totalChapters) * 100) : 0;
             document.getElementById('modalProgressLabel').textContent = `${percentage}% Completed`;
-            document.getElementById('modalProgressCounts').textContent = `${completedChapters} / ${totalChapters} Chapters`;
+            document.getElementById('modalProgressCounts').textContent = `${completedChapters} / ${totalChapters}`;
             document.getElementById('modalProgressBarFill').style.width = `${percentage}%`;
             document.getElementById('progressLabel').textContent = `${percentage}% Cleared`;
-            document.getElementById('progressCounts').textContent = `${completedChapters} / ${totalChapters} Completed`;
+            document.getElementById('progressCounts').textContent = `${completedChapters} / ${totalChapters}`;
             document.getElementById('progressBarFill').style.width = `${percentage}%`;
         }
 
@@ -1623,7 +1577,7 @@
         };
 
         window.removeSubject = async function(sIdx) {
-            if(confirm(`Are you sure you want to delete subject "${syllabusData[sIdx].subject}"?`)) {
+            if(confirm(`Delete subject "${syllabusData[sIdx].subject}"?`)) {
                 syllabusData.splice(sIdx, 1);
                 renderSyllabusTracker();
                 await saveDataToCloud();
