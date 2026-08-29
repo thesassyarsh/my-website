@@ -47,11 +47,6 @@
             100% { background-position: 0% 50%; }
         }
 
-        @keyframes glassGlow {
-            0%, 100% { box-shadow: 0 0 25px rgba(2, 132, 199, 0.25), inset 0 1px 1px rgba(255,255,255,0.6); }
-            50% { box-shadow: 0 0 45px rgba(56, 189, 248, 0.45), inset 0 1px 2px rgba(255,255,255,0.9); }
-        }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
@@ -759,8 +754,8 @@
         let profileData = { name: "Arsh Verma", classLevel: "Class 11", address: "Lucknow, India", avatarUrl: "", theme: "light" };
         let studyStats = { focusMinutes: 0, streak: 1, badges: ["🏆 Beginner Scholar"] };
         
-        // Updated with your exact syllabus list from the screenshots
-        let syllabusData = [
+        // Master definition of your Class 11 syllabus chapters
+        const defaultSyllabusMaster = [
             {
                 subject: "Physics",
                 chapters: [
@@ -834,11 +829,32 @@
                 ]
             }
         ];
-        
+
+        let syllabusData = JSON.parse(JSON.stringify(defaultSyllabusMaster));
         let backlogs = [
             { subject: "Physics", name: "Work, Energy And Power", date: "2026-08-30", lecture: 50, module: 30, ref: 40, note: "Practice work-energy theorem problems.", links: [], finished: false }
         ];
         let notesData = [];
+
+        // Auto-sync function to ensure all default master chapters exist on user load
+        function syncSyllabusWithMaster(userSyllabus) {
+            if (!userSyllabus || !Array.isArray(userSyllabus)) return JSON.parse(JSON.stringify(defaultSyllabusMaster));
+            
+            defaultSyllabusMaster.forEach(masterSub => {
+                let userSub = userSyllabus.find(s => s.subject === masterSub.subject);
+                if (!userSub) {
+                    userSyllabus.push(JSON.parse(JSON.stringify(masterSub)));
+                } else {
+                    masterSub.chapters.forEach(masterChap => {
+                        let exists = userSub.chapters.some(c => c.name.toLowerCase() === masterChap.name.toLowerCase());
+                        if (!exists) {
+                            userSub.chapters.push({ name: masterChap.name, completed: masterChap.completed });
+                        }
+                    });
+                }
+            });
+            return userSyllabus;
+        }
 
         let pomodoroTimer = null;
         let timeLeft = 25 * 60;
@@ -889,7 +905,7 @@
                     lastActive: new Date().toLocaleString(),
                     profileData: { name: "Administrator", classLevel: "Admin Portal", address: "System", avatarUrl: "", theme: "light" },
                     studyStats: { focusMinutes: 120, streak: 5, badges: ["🏆 Master Admin"] },
-                    syllabusData: syllabusData,
+                    syllabusData: defaultSyllabusMaster,
                     backlogs: []
                 });
             }
@@ -932,7 +948,7 @@
                     lastActive: new Date().toLocaleString(),
                     profileData: { name: username, classLevel: "Class 11", address: "India", avatarUrl: "", theme: "light" },
                     studyStats: { focusMinutes: 0, streak: 1, badges: ["🏆 Beginner Scholar"] },
-                    syllabusData: syllabusData,
+                    syllabusData: defaultSyllabusMaster,
                     backlogs: backlogs
                 };
                 await setDoc(userRef, newUserData);
@@ -960,10 +976,12 @@
                 currentUser = { username: username, role: userData.role || "user" };
                 profileData = userData.profileData || profileData;
                 studyStats = userData.studyStats || studyStats;
-                syllabusData = userData.syllabusData || syllabusData;
+                
+                // Sync user syllabus with master list so all chapters show up instantly
+                syllabusData = syncSyllabusWithMaster(userData.syllabusData);
                 backlogs = userData.backlogs || backlogs;
 
-                await setDoc(userRef, { ...userData, lastActive: new Date().toLocaleString() });
+                await setDoc(userRef, { ...userData, syllabusData: syllabusData, lastActive: new Date().toLocaleString() });
                 await fetchGlobalNotes();
 
                 authScreen.style.display = 'none';
