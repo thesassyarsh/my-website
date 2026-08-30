@@ -4,26 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Backlog Burster - Ultimate Study Management Suite</title>
-    <!-- Include QRCode.js for generating live UPI QR codes -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <!-- Include stable qrcode.js library from cdnjs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
-            --bg-gradient-1: #f0fdf4;
-            --bg-gradient-2: #e0f2fe;
-            --bg-gradient-3: #fae8ff;
-            --surface-color: rgba(255, 255, 255, 0.75);
-            --surface-solid: rgba(255, 255, 255, 0.95);
-            --border-color: rgba(2, 132, 199, 0.25);
-            --text-primary: #082f49;
-            --text-secondary: #0369a1;
-            --accent-color: #0284c7;
-            --accent-hover: #0369a1;
-            --neon-glow: 0 0 25px rgba(2, 132, 199, 0.25);
-            --danger-color: #e11d48;
+            --bg-gradient-1: #ffffff;
+            --bg-gradient-2: #fef2f2;
+            --bg-gradient-3: #ffffff;
+            --surface-color: rgba(255, 255, 255, 0.9);
+            --surface-solid: #ffffff;
+            --border-color: rgba(239, 68, 68, 0.25);
+            --text-primary: #7f1d1d;
+            --text-secondary: #991b1b;
+            --accent-color: #dc2626;
+            --accent-hover: #b91c1c;
+            --neon-glow: 0 0 20px rgba(220, 38, 38, 0.15);
+            --danger-color: #dc2626;
             --success-color: #059669;
             --physics-color: #7c3aed;
             --chemistry-color: #059669;
             --maths-color: #dc2626;
+            --bio-color: #15803d;
         }
 
         [data-theme="dark"] {
@@ -127,26 +128,6 @@
         .menu-btn span { display: block; width: 22px; height: 2px; background-color: var(--text-primary); border-radius: 2px; }
         .logo-text { font-size: 1.35rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em; }
 
-        .dev-badge {
-            font-size: 0.7rem;
-            background: linear-gradient(135deg, #ec4899, #8b5cf6, #3b82f6);
-            color: #ffffff;
-            padding: 0.25rem 0.8rem;
-            border-radius: 20px;
-            font-weight: 700;
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
-        }
-
-        .user-badge {
-            font-size: 0.75rem;
-            background: var(--surface-solid);
-            padding: 0.35rem 0.8rem;
-            border-radius: 12px;
-            color: var(--text-primary);
-            font-weight: 600;
-            border: 1px solid var(--border-color);
-        }
-
         .container { max-width: 1200px; margin: 2rem auto; padding: 0 1.25rem; }
 
         .home-progress-banner {
@@ -206,6 +187,7 @@
         .subject-header.physics { background: linear-gradient(135deg, #7c3aed, #4f46e5); }
         .subject-header.chemistry { background: linear-gradient(135deg, #059669, #0d9488); }
         .subject-header.maths { background: linear-gradient(135deg, #dc2626, #ea580c); }
+        .subject-header.biology { background: linear-gradient(135deg, #15803d, #16a34a); }
         .subject-header.admin-user-block { background: linear-gradient(135deg, #0284c7, #2563eb); }
 
         .subject-content {
@@ -255,7 +237,7 @@
         .profile-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--accent-color); display: flex; align-items: center; justify-content: center; font-weight: 600; color: #ffffff; font-size: 0.85rem; box-shadow: 0 4px 15px rgba(2,132,199,0.4); }
 
         .progress-bar-container { width: 100%; background: var(--surface-solid); border-radius: 9999px; height: 9px; overflow: hidden; margin-top: 0.5rem; box-shadow: inset 0 2px 4px rgba(0,0,0,0.08); }
-        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #38bdf8, #10b981); width: 0%; transition: width 0.8s ease; border-radius: 9999px; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-color), var(--success-color)); width: 0%; transition: width 0.8s ease; border-radius: 9999px; }
         .progress-text { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.4rem; }
 
         .modal {
@@ -270,7 +252,7 @@
             backdrop-filter: blur(40px);
             border: 1px solid var(--border-color);
             border-radius: 30px;
-            width: 100%; max-width: 750px; padding: 2.25rem; max-height: 85vh; overflow-y: auto;
+            width: 100%; max-width: 650px; padding: 2.25rem; max-height: 85vh; overflow-y: auto;
             box-shadow: var(--neon-glow), 0 30px 60px rgba(0,0,0,0.3);
         }
 
@@ -281,16 +263,12 @@
             border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-primary); font-size: 0.9rem;
             outline: none; transition: border-color 0.2s;
         }
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
-            border-color: var(--accent-color);
-            box-shadow: 0 0 10px rgba(2, 132, 199, 0.2);
-        }
 
         .btn {
             background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
             color: #ffffff; padding: 0.75rem 1.25rem; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; width: 100%; text-align: center;
             font-size: 0.9rem;
-            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.35);
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.2);
             transition: transform 0.2s, filter 0.2s;
         }
         .btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
@@ -374,7 +352,6 @@
                 <span></span><span></span><span></span>
             </button>
             <div class="logo-text">Backlog Burster</div>
-            <div class="dev-badge">Arsh Verma</div>
         </div>
         <div style="display: flex; gap: 8px; align-items: center;">
             <button class="btn btn-secondary" style="width: auto; padding: 0.35rem 0.6rem; font-size: 0.75rem; margin-top:0;" id="themeToggleBtn" onclick="toggleThemePreference()">🌙 Dark</button>
@@ -403,6 +380,11 @@
             <div class="sidebar-block" onclick="window.open('https://pwthor.live', '_blank')">
                 <h3>🎓 PW Batches Subscription</h3>
                 <p style="font-size: 0.75rem; color: var(--text-secondary);">Direct link to pwthor.live</p>
+            </div>
+
+            <div class="sidebar-block" id="openFocusSessionModal" style="background: rgba(220, 38, 38, 0.08); border-color: var(--accent-color);">
+                <h3>🎯 Focus Session</h3>
+                <p style="font-size: 0.75rem; color: var(--text-secondary);">Timer or Stopwatch with custom breaks & pause options.</p>
             </div>
 
             <div class="sidebar-block" id="openClubModal" style="background: rgba(124, 58, 237, 0.08); border-color: var(--physics-color);">
@@ -533,14 +515,91 @@
                 </div>
                 <div class="subject-content" id="mathsContent"></div>
             </div>
+
+            <div class="subject-block-container">
+                <div class="subject-header biology" onclick="toggleSubjectBlock('biologyContent')">
+                    <span>🧬 Bio Workspace</span>
+                    <span>▼</span>
+                </div>
+                <div class="subject-content" id="biologyContent"></div>
+            </div>
         </div>
 
         <div id="adminMasterUserBlocksContainer" style="display: none;"></div>
     </div>
 
     <!-- Modals -->
+    <!-- Focus Session Modal -->
+    <div class="modal" id="focusSessionModal">
+        <div class="modal-content" style="max-width: 550px; text-align: center;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">🎯 Focus Session</h2>
+                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+            </div>
+
+            <!-- Setup View -->
+            <div id="focusSetupView" style="display: block;">
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Configure your focus session using either a Timer or Stopwatch, with custom break allotments (up to 5 breaks).</p>
+                
+                <div class="form-group" style="text-align: left;">
+                    <label>Select Focus Mode</label>
+                    <select id="focusModeSelect" onchange="toggleFocusModeInputs()">
+                        <option value="timer">Focus Timer (Countdown)</option>
+                        <option value="stopwatch">Stopwatch (Count Up)</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="timerDurationGroup" style="text-align: left;">
+                    <label>Focus Duration (Minutes)</label>
+                    <input type="number" id="focusDurationInput" value="25" min="1" max="180">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; text-align: left;">
+                    <div class="form-group">
+                        <label>Number of Breaks (Max 5)</label>
+                        <input type="number" id="focusBreaksCount" value="2" min="0" max="5">
+                    </div>
+                    <div class="form-group">
+                        <label>Break Duration (Mins)</label>
+                        <input type="number" id="focusBreakDuration" value="5" min="1" max="30">
+                    </div>
+                </div>
+
+                <button class="btn" style="margin-top: 0.75rem;" onclick="startFocusSessionEngine()">🚀 Start Focus Session</button>
+            </div>
+
+            <!-- Active Running View -->
+            <div id="focusActiveView" style="display: none;">
+                <div id="focusClockDisplay" style="font-size: 3.2rem; font-weight: 800; color: var(--accent-color); margin: 1.5rem 0;">25:00</div>
+                <div id="focusStatusSubtitle" style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem;">Focus in progress... Stay locked in!</div>
+
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn btn-success" style="width: auto; padding: 0.6rem 1.25rem;" id="takeBreakBtn" onclick="triggerBreakPrompt()">☕ Take a Break</button>
+                    <button class="btn btn-danger" style="width: auto; padding: 0.6rem 1.25rem;" onclick="pauseFocusSession()">⏸️ Pause</button>
+                </div>
+            </div>
+
+            <!-- Pause Menu View -->
+            <div id="focusPauseView" style="display: none;">
+                <div style="font-size: 1.2rem; font-weight: 700; color: var(--danger-color); margin: 1rem 0;">Session Paused</div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.5rem;">Would you like to resume your focus session or stop completely?</p>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button class="btn" style="width: auto; padding: 0.6rem 1.25rem;" onclick="resumeFocusSession()">▶️ Resume Focus</button>
+                    <button class="btn btn-danger" style="width: auto; padding: 0.6rem 1.25rem;" onclick="stopFocusSessionCompletely()">⏹️ Stop Focus</button>
+                </div>
+            </div>
+
+            <!-- Break Active View -->
+            <div id="focusBreakView" style="display: none;">
+                <div style="font-size: 1.1rem; font-weight: 700; color: var(--success-color); margin-top: 1rem;">☕ Break Time Active</div>
+                <div id="breakClockDisplay" style="font-size: 2.8rem; font-weight: 800; color: var(--success-color); margin: 1rem 0;">05:00</div>
+                <button class="btn" style="width: auto; padding: 0.5rem 1rem; margin-top: 0.5rem;" onclick="endBreakEarly()">End Break Early</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal" id="clubModal">
-        <div class="modal-content" style="max-width: 750px;">
+        <div class="modal-content" style="max-width: 700px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
                 <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">👥 Club Studying Room</h2>
                 <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
@@ -917,6 +976,7 @@
                         <option value="Physics">Physics</option>
                         <option value="Chemistry">Chemistry</option>
                         <option value="Maths">Maths</option>
+                        <option value="Biology">Biology</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -1031,12 +1091,7 @@
                     { name: "Kinematics", completed: true },
                     { name: "Newton's Laws Of Motion And Friction", completed: true },
                     { name: "Circular Motion", completed: true },
-                    { name: "Work, Energy And Power", completed: false },
-                    { name: "Simple Harmonic Motion (SHM)", completed: false },
-                    { name: "Center Of Mass, Momentum And Collision", completed: false },
-                    { name: "Elasticity, Heat And Thermodynamics", completed: false },
-                    { name: "Fluid Mechanics", completed: false },
-                    { name: "Rotational Dynamics", completed: false }
+                    { name: "Work, Energy And Power", completed: false }
                 ]
             },
             {
@@ -1044,26 +1099,7 @@
                 chapters: [
                     { name: "Mole Concept", completed: true },
                     { name: "Atomic Structure", completed: true },
-                    { name: "Periodic Table", completed: true },
-                    { name: "Chemical Bonding-I", completed: true },
-                    { name: "Gaseous State (Ideal Gas)", completed: true },
-                    { name: "Redox", completed: true },
-                    { name: "Chemical Equilibrium", completed: false },
-                    { name: "General Chemistry & Quantum Number", completed: false },
-                    { name: "Acidic Strength And Basic Strength", completed: false },
-                    { name: "Chemical Bonding-II", completed: false },
-                    { name: "Classification of Organic Compounds, IUPAC N...", completed: false },
-                    { name: "Concentration Term", completed: false },
-                    { name: "Electronic Displacement Effect", completed: false },
-                    { name: "Hydrocarbon", completed: false },
-                    { name: "Ionic Equilibrium", completed: false },
-                    { name: "Isomerism", completed: false },
-                    { name: "Purification and Characterisation of Organic Co...", completed: false },
-                    { name: "Real Gas", completed: false },
-                    { name: "The p-Block Elements (Group 13–14)", completed: false },
-                    { name: "Thermochemistry", completed: false },
-                    { name: "Thermodynamics 1", completed: false },
-                    { name: "Thermodynamics 2", completed: false }
+                    { name: "Periodic Table", completed: true }
                 ]
             },
             {
@@ -1071,29 +1107,15 @@
                 chapters: [
                     { name: "Sets, Numbers And Intervals", completed: true },
                     { name: "Sequences And Series", completed: true },
-                    { name: "Quadratic Equation", completed: true },
-                    { name: "Solution Of Triangles", completed: true },
-                    { name: "Trigonometric Ratios And Identities", completed: true },
-                    { name: "Trigonometric Equations", completed: true },
-                    { name: "Straight Line", completed: false },
-                    { name: "Fundamentals Of Algebra", completed: false },
-                    { name: "Binomial Theorem", completed: false },
-                    { name: "Circle", completed: false },
-                    { name: "Complex Numbers NCERT", completed: false },
-                    { name: "Ellipse", completed: false },
-                    { name: "Fundamentals Of Geometry", completed: false },
-                    { name: "Heights And Distances", completed: false },
-                    { name: "Hyperbola", completed: false },
-                    { name: "Limits And Derivatives NCERT", completed: false },
-                    { name: "Logarithm", completed: false },
-                    { name: "Mathematical Induction", completed: false },
-                    { name: "Mathematical Reasoning", completed: false },
-                    { name: "Parabola", completed: false },
-                    { name: "Permutations And Combinations", completed: false },
-                    { name: "Probability NCERT", completed: false },
-                    { name: "Relations And Functions NCERT", completed: false },
-                    { name: "Statistics", completed: false },
-                    { name: "Three Dimensional (3D) Geometry NCERT", completed: false }
+                    { name: "Quadratic Equation", completed: true }
+                ]
+            },
+            {
+                subject: "Biology",
+                chapters: [
+                    { name: "The Living World", completed: true },
+                    { name: "Biological Classification", completed: false },
+                    { name: "Plant Kingdom", completed: false }
                 ]
             }
         ];
@@ -1104,6 +1126,127 @@
         ];
         let notesData = [];
         let pendingAiSchedule = [];
+
+        // Focus Session State Engine
+        let focusTimerInterval = null;
+        let focusTimeRemaining = 25 * 60;
+        let focusStopwatchSeconds = 0;
+        let focusActiveMode = 'timer';
+        let breaksRemainingMax = 2;
+        let breakDurationMins = 5;
+
+        window.toggleFocusModeInputs = function() {
+            const mode = document.getElementById('focusModeSelect').value;
+            document.getElementById('timerDurationGroup').style.display = (mode === 'timer') ? 'block' : 'none';
+        };
+
+        window.startFocusSessionEngine = function() {
+            safeExecute(() => {
+                focusActiveMode = document.getElementById('focusModeSelect').value;
+                breaksRemainingMax = Math.min(5, parseInt(document.getElementById('focusBreaksCount').value) || 2);
+                breakDurationMins = parseInt(document.getElementById('focusBreakDuration').value) || 5;
+
+                if (focusActiveMode === 'timer') {
+                    const mins = parseInt(document.getElementById('focusDurationInput').value) || 25;
+                    focusTimeRemaining = mins * 60;
+                } else {
+                    focusStopwatchSeconds = 0;
+                }
+
+                document.getElementById('focusSetupView').style.display = 'none';
+                document.getElementById('focusActiveView').style.display = 'block';
+                document.getElementById('focusPauseView').style.display = 'none';
+                document.getElementById('focusBreakView').style.display = 'none';
+
+                if (focusTimerInterval) clearInterval(focusTimerInterval);
+                focusTimerInterval = setInterval(runFocusTick, 1000);
+            });
+        };
+
+        function runFocusTick() {
+            if (focusActiveMode === 'timer') {
+                if (focusTimeRemaining > 0) {
+                    focusTimeRemaining--;
+                    let m = Math.floor(focusTimeRemaining / 60);
+                    let s = focusTimeRemaining % 60;
+                    document.getElementById('focusClockDisplay').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                } else {
+                    clearInterval(focusTimerInterval);
+                    alert("Focus session completed successfully!");
+                    closeFocusModal();
+                }
+            } else {
+                focusStopwatchSeconds++;
+                let m = Math.floor(focusStopwatchSeconds / 60);
+                let s = focusStopwatchSeconds % 60;
+                document.getElementById('focusClockDisplay').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            }
+        }
+
+        window.pauseFocusSession = function() {
+            if (focusTimerInterval) clearInterval(focusTimerInterval);
+            document.getElementById('focusActiveView').style.display = 'none';
+            document.getElementById('focusPauseView').style.display = 'block';
+        };
+
+        window.resumeFocusSession = function() {
+            document.getElementById('focusPauseView').style.display = 'none';
+            document.getElementById('focusActiveView').style.display = 'block';
+            if (focusTimerInterval) clearInterval(focusTimerInterval);
+            focusTimerInterval = setInterval(runFocusTick, 1000);
+        };
+
+        window.stopFocusSessionCompletely = function() {
+            if (focusTimerInterval) clearInterval(focusTimerInterval);
+            closeFocusModal();
+        };
+
+        window.triggerBreakPrompt = function() {
+            if (breaksRemainingMax <= 0) {
+                alert("Maximum allowed breaks (5 or configured limit) reached!");
+                return;
+            }
+            if (confirm(`Do you want to take a ${breakDurationMins}-minute break now? (${breaksRemainingMax} breaks remaining)`)) {
+                if (focusTimerInterval) clearInterval(focusTimerInterval);
+                breaksRemainingMax--;
+                
+                document.getElementById('focusActiveView').style.display = 'none';
+                document.getElementById('focusBreakView').style.display = 'block';
+
+                let breakSeconds = breakDurationMins * 60;
+                document.getElementById('breakClockDisplay').textContent = `${String(breakDurationMins).padStart(2,'0')}:00`;
+
+                const breakInterval = setInterval(() => {
+                    if (breakSeconds > 0) {
+                        breakSeconds--;
+                        let bm = Math.floor(breakSeconds / 60);
+                        let bs = breakSeconds % 60;
+                        document.getElementById('breakClockDisplay').textContent = `${String(bm).padStart(2,'0')}:${String(bs).padStart(2,'0')}`;
+                    } else {
+                        clearInterval(breakInterval);
+                        alert("Break time over! Resuming focus session.");
+                        endBreakEarly();
+                    }
+                }, 1000);
+                window.activeBreakInterval = breakInterval;
+            }
+        };
+
+        window.endBreakEarly = function() {
+            if (window.activeBreakInterval) clearInterval(window.activeBreakInterval);
+            document.getElementById('focusBreakView').style.display = 'none';
+            document.getElementById('focusActiveView').style.display = 'block';
+            focusTimerInterval = setInterval(runFocusTick, 1000);
+        };
+
+        function closeFocusModal() {
+            if (focusTimerInterval) clearInterval(focusTimerInterval);
+            document.getElementById('focusSessionModal').classList.remove('active');
+            document.getElementById('focusSetupView').style.display = 'block';
+            document.getElementById('focusActiveView').style.display = 'none';
+            document.getElementById('focusPauseView').style.display = 'none';
+            document.getElementById('focusBreakView').style.display = 'none';
+        }
 
         function syncSyllabusWithMaster(userSyllabus) {
             if (!userSyllabus || !Array.isArray(userSyllabus)) return JSON.parse(JSON.stringify(defaultSyllabusMaster));
@@ -1239,6 +1382,7 @@
             });
         }
 
+        // Pomodoro Timer Engine
         let pomodoroTimer = null;
         let timeLeft = 25 * 60;
         let isTimerRunning = false;
@@ -1367,7 +1511,6 @@
                     syllabusData = syncSyllabusWithMaster(userData.syllabusData);
                     backlogs = userData.backlogs || backlogs;
 
-                    // Save session state to localStorage to survive page reloads smoothly
                     localStorage.setItem('bb_active_user', username);
 
                     await setDoc(userRef, { ...userData, syllabusData: syllabusData, lastActive: new Date().toLocaleString() });
@@ -1387,7 +1530,6 @@
             authForm.reset();
         });
 
-        // Auto-restore session on page reload
         window.addEventListener('load', async () => {
             const savedUser = localStorage.getItem('bb_active_user');
             if (savedUser) {
@@ -1500,6 +1642,10 @@
 
         document.getElementById('openClubModal').addEventListener('click', () => {
             document.getElementById('clubModal').classList.add('active');
+        });
+
+        document.getElementById('openFocusSessionModal').addEventListener('click', () => {
+            document.getElementById('focusSessionModal').classList.add('active');
         });
 
         document.getElementById('openFeedbackModal').addEventListener('click', () => {
@@ -1956,10 +2102,12 @@
                 const physicsGrid = document.getElementById('physicsContent');
                 const chemistryGrid = document.getElementById('chemistryContent');
                 const mathsGrid = document.getElementById('mathsContent');
+                const biologyGrid = document.getElementById('biologyContent');
 
                 physicsGrid.innerHTML = "";
                 chemistryGrid.innerHTML = "";
                 mathsGrid.innerHTML = "";
+                if(biologyGrid) biologyGrid.innerHTML = "";
 
                 let totalItems = backlogs.length;
                 let finishedItems = backlogs.filter(b => b.finished).length;
@@ -2001,6 +2149,7 @@
                     if(item.subject === "Physics") physicsGrid.appendChild(card);
                     else if(item.subject === "Chemistry") chemistryGrid.appendChild(card);
                     else if(item.subject === "Maths") mathsGrid.appendChild(card);
+                    else if(item.subject === "Biology" && biologyGrid) biologyGrid.appendChild(card);
                 });
             });
         }
