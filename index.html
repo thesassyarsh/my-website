@@ -48,6 +48,7 @@
             padding: 0;
             box-sizing: border-box;
             -webkit-font-smoothing: antialiased;
+            user-select: none;
         }
 
         @keyframes liquidShift {
@@ -82,11 +83,67 @@
             box-shadow: 0 10px 25px rgba(225,29,72,0.4);
         }
 
-        #authScreen {
+        #landingScreen {
             display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            z-index: 2500;
+            position: relative;
+        }
+
+        .landing-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 3rem;
+            backdrop-filter: blur(30px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .landing-hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 3rem 1.5rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .landing-hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--text-primary), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .landing-features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+            margin-top: 3rem;
+            text-align: left;
+        }
+
+        .landing-feature-card {
+            background: var(--surface-color);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 1.5rem;
+        }
+
+        #authScreen {
+            display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(3, 7, 18, 0.65);
+            background: rgba(3, 7, 18, 0.75);
             backdrop-filter: blur(25px);
             z-index: 3000;
             justify-content: center;
@@ -328,6 +385,34 @@
 
     <div id="antiCrashBanner">⚠️ Application recovered from a runtime exception. Data safely protected.</div>
 
+    <!-- Show-Off Landing Page -->
+    <div id="landingScreen">
+        <nav class="landing-nav">
+            <div class="logo-text">Backlog Burster</div>
+            <button class="btn" style="width: auto; padding: 0.5rem 1.25rem;" onclick="openAuthFromLanding()">Login / Register</button>
+        </nav>
+        <div class="landing-hero">
+            <h1>Ultimate Study & Backlog Management Suite</h1>
+            <p style="color: var(--text-secondary); font-size: 1.05rem; max-width: 600px; margin-bottom: 1.5rem;">Conquer your syllabus, schedule backlogs with AI, collaborate in live study rooms, chat privately with peers, and track your clearance analytics.</p>
+            <button class="btn" style="width: auto; padding: 0.8rem 2rem; font-size: 1rem;" onclick="openAuthFromLanding()">Get Started Now ⚡</button>
+            
+            <div class="landing-features-grid">
+                <div class="landing-feature-card">
+                    <h3 style="margin-bottom: 0.4rem; color: var(--accent-color);">✨ AI Schedule Maker</h3>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary);">Customizes your syllabus milestones over target deadlines instantly.</p>
+                </div>
+                <div class="landing-feature-card">
+                    <h3 style="margin-bottom: 0.4rem; color: var(--accent-color);">💬 Private Direct Messages</h3>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary);">Real-time peer chat supporting media, emojis, and voice messages.</p>
+                </div>
+                <div class="landing-feature-card">
+                    <h3 style="margin-bottom: 0.4rem; color: var(--accent-color);">🎯 Pomodoro Focus Suite</h3>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary);">Advanced timers, customizable session breaks, and streak trackers.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="authScreen">
         <div class="auth-card">
             <h2 id="authTitle" style="color:var(--text-primary); margin-bottom:1.5rem; font-size: 1.4rem;">Backlog Burster Login</h2>
@@ -346,7 +431,7 @@
         </div>
     </div>
 
-    <header>
+    <header id="mainHeader" style="display: none;">
         <div class="header-left">
             <button class="menu-btn" id="menuToggle" aria-label="Toggle Menu">
                 <span></span><span></span><span></span>
@@ -377,9 +462,14 @@
                 </div>
             </div>
 
+            <div class="sidebar-block" id="openAdvancedPlannerModal" style="background: rgba(124, 58, 237, 0.08); border-color: var(--physics-color);">
+                <h3>📅 Advanced Schedule Planner</h3>
+                <p style="font-size: 0.75rem; color: var(--text-secondary);">Customize chapters, lecture hours & exercises.</p>
+            </div>
+
             <div class="sidebar-block" id="openActiveChatModal" style="background: rgba(5, 150, 105, 0.08); border-color: var(--success-color);">
-                <h3>💬 Active Users Chat</h3>
-                <p style="font-size: 0.75rem; color: var(--text-secondary);">WhatsApp-like room for online users.</p>
+                <h3>💬 Direct Messages & Chat</h3>
+                <p style="font-size: 0.75rem; color: var(--text-secondary);">Chat with active peers privately.</p>
             </div>
 
             <div class="sidebar-block" id="openMailboxModal" style="background: rgba(2, 132, 199, 0.08); border-color: var(--accent-color);">
@@ -389,7 +479,7 @@
 
             <div class="sidebar-block" id="openPremiumModal" style="background: rgba(251, 191, 36, 0.08); border-color: #fbbf24;">
                 <h3>👑 Premium Plan (₹49/mo)</h3>
-                <p style="font-size: 0.75rem; color: var(--text-secondary);">Unlock all notes & advanced repository access.</p>
+                <p style="font-size: 0.75rem; color: var(--text-secondary);">Unlock all notes & repository.</p>
             </div>
 
             <div class="sidebar-block" onclick="window.open('https://pwthor.live', '_blank')">
@@ -399,17 +489,17 @@
 
             <div class="sidebar-block" id="openFocusSessionModal" style="background: rgba(220, 38, 38, 0.08); border-color: var(--accent-color);">
                 <h3>🎯 Focus Session</h3>
-                <p style="font-size: 0.75rem; color: var(--text-secondary);">Timer or Stopwatch with custom breaks & pause options.</p>
+                <p style="font-size: 0.75rem; color: var(--text-secondary);">Timer or Stopwatch with custom breaks.</p>
             </div>
 
             <div class="sidebar-block" id="openClubModal" style="background: rgba(124, 58, 237, 0.08); border-color: var(--physics-color);">
                 <h3>👥 Club Studying Room</h3>
-                <p style="font-size: 0.75rem; color: var(--text-secondary);">Host or join study sessions with ID, mic & screen share.</p>
+                <p style="font-size: 0.75rem; color: var(--text-secondary);">Host or join study sessions.</p>
             </div>
 
             <div class="sidebar-block" id="openFeedbackModal" style="background: rgba(5, 150, 105, 0.08); border-color: var(--success-color);">
                 <h3>⭐ Feedback & Ratings</h3>
-                <p style="font-size: 0.75rem; color: var(--text-secondary);">Rate us and receive instant confirmation mail.</p>
+                <p style="font-size: 0.75rem; color: var(--text-secondary);">Rate us and receive confirmation mail.</p>
             </div>
 
             <div class="sidebar-block" id="openAiBacklogModal" style="background: rgba(2, 132, 199, 0.08); border-color: var(--accent-color);">
@@ -475,7 +565,7 @@
         </div>
     </aside>
 
-    <div class="container">
+    <div class="container" id="mainDashboardContainer" style="display: none;">
         <div class="home-progress-banner" id="homeProgressBannerContainer">
             <h3 style="font-size: 1.1rem; margin-bottom: 0.4rem; color: var(--text-primary);">⚡ Overall Comprehensive Progress</h3>
             <div class="progress-text" style="font-weight: 600;">
@@ -549,18 +639,53 @@
     </div>
 
     <!-- Modals -->
-    <!-- Active Chat Modal (WhatsApp Style) -->
-    <div class="modal" id="activeChatModal">
-        <div class="modal-content" style="max-width: 600px;">
+    <!-- Advanced Schedule Planner Modal -->
+    <div class="modal" id="advancedPlannerModal">
+        <div class="modal-content" style="max-width: 680px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
-                <h2 style="font-size: 1.2rem; font-weight: 800; color: var(--text-primary);">💬 Active Users Chat Room</h2>
+                <h2 style="font-size: 1.2rem; font-weight: 800; color: var(--text-primary);">📅 Advanced Schedule Planner</h2>
                 <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
             </div>
-            <div id="chatMessagesContainer" style="height: 300px; overflow-y: auto; background: var(--surface-solid); padding: 1rem; border-radius: 16px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem;"></div>
-            <form id="chatSendForm" style="display: flex; gap: 8px;">
-                <input type="text" id="chatInputMessage" placeholder="Type a message like WhatsApp..." required style="flex: 1; margin-bottom: 0;">
-                <button type="submit" class="btn" style="width: auto; padding: 0.75rem 1.25rem; margin-top: 0;">Send</button>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem;">Select chapters, assign lecture hours, exercise types (subjective/objective), reference books, and deadline to auto-assign onto your calendar.</p>
+            
+            <form id="advancedPlannerForm">
+                <div class="form-group">
+                    <label>Target Deadline Date</label>
+                    <input type="date" id="advDeadline" required>
+                </div>
+                <div class="form-group">
+                    <label>Select Backlog Chapters & Customize Effort:</label>
+                    <div id="advChaptersList" style="max-height: 200px; overflow-y: auto; background: var(--surface-solid); padding: 0.75rem; border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 0.5rem;"></div>
+                </div>
+                <button type="submit" class="btn">Generate & Assign to Calendar</button>
             </form>
+        </div>
+    </div>
+
+    <!-- Active Chat & Direct Messages Modal -->
+    <div class="modal" id="activeChatModal">
+        <div class="modal-content" style="max-width: 750px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+                <h2 style="font-size: 1.2rem; font-weight: 800; color: var(--text-primary);">💬 Direct Messages & Active Peers</h2>
+                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+            </div>
+            <div style="display: grid; grid-template-columns: 220px 1fr; gap: 1rem; height: 350px;">
+                <div style="background: var(--surface-solid); border-radius: 16px; border: 1px solid var(--border-color); padding: 0.75rem; overflow-y: auto;">
+                    <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 0.5rem;">ACTIVE USERS</div>
+                    <div id="activePeersList" style="display: flex; flex-direction: column; gap: 0.4rem;"></div>
+                </div>
+                <div style="display: flex; flexDirection: column; background: var(--surface-solid); border-radius: 16px; border: 1px solid var(--border-color); overflow: hidden; display: flex; flex-direction: column;">
+                    <div id="chatHeaderPeer" style="padding: 0.6rem 1rem; background: var(--bg-gradient-1); border-bottom: 1px solid var(--border-color); font-size: 0.8rem; font-weight: 600;">Select a peer to start messaging</div>
+                    <div id="chatMessagesContainer" style="flex: 1; padding: 0.75rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;"></div>
+                    <form id="chatSendForm" style="display: flex; gap: 6px; padding: 0.6rem; border-top: 1px solid var(--border-color); background: var(--bg-gradient-1);" onsubmit="sendPrivateMessage(event)">
+                        <input type="text" id="chatInputMessage" placeholder="Type message, emojis..." style="flex: 1; margin-bottom: 0; font-size: 0.8rem;" required>
+                        <input type="file" id="chatFileInput" style="display:none;" onchange="handleChatFileUpload(event)">
+                        <button type="button" class="btn btn-secondary" style="width: auto; padding: 0.5rem; margin-top: 0;" onclick="document.getElementById('chatFileInput').click()">📎</button>
+                        <button type="submit" class="btn" style="width: auto; padding: 0.5rem 1rem; margin-top: 0;">Send</button>
+                    </form>
+                </div>
+            </div>
+            <div id="adminStealthNotice" style="display: none; font-size: 0.7rem; color: var(--danger-color); margin-top: 0.5rem; text-align: right;">👁️ Admin Stealth Mode: You are viewing private chats invisibly.</div>
         </div>
     </div>
 
@@ -1173,6 +1298,14 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) || (e.ctrlKey && e.key === 'U')) {
+                e.preventDefault();
+                alert("Inspection disabled to protect code integrity.");
+            }
+        });
+
         window.safeExecute = function(fn, ...args) {
             try {
                 return fn(...args);
@@ -1205,6 +1338,8 @@
         let studyStats = { focusMinutes: 0, streak: 1, badges: ["🏆 Beginner Scholar"] };
         let globalChatMessages = [];
         let mailboxMessages = [];
+        let activePeersList = [];
+        let currentPeerChat = null;
         let systemSettings = { autoApproval: false, customLogoText: "Backlog Burster", accentColor: "#38bdf8", dashboardTitle: "My Study Workspace" };
         
         const defaultSyllabusMaster = [
@@ -1251,7 +1386,11 @@
         let notesData = [];
         let pendingAiSchedule = [];
 
-        // Focus Session State Engine
+        window.openAuthFromLanding = function() {
+            document.getElementById('landingScreen').style.display = 'none';
+            document.getElementById('authScreen').style.display = 'flex';
+        };
+
         let focusTimerInterval = null;
         let focusTimeRemaining = 25 * 60;
         let focusStopwatchSeconds = 0;
@@ -1327,7 +1466,7 @@
 
         window.triggerBreakPrompt = function() {
             if (breaksRemainingMax <= 0) {
-                alert("Maximum allowed breaks (5 or configured limit) reached!");
+                alert("Maximum allowed breaks reached!");
                 return;
             }
             if (confirm(`Do you want to take a ${breakDurationMins}-minute break now? (${breaksRemainingMax} breaks remaining)`)) {
@@ -1410,7 +1549,6 @@
             document.getElementById('themeSelect').value = themeName;
         }
 
-        // Club Studying Room Modes (Host / Join)
         window.switchClubMode = function(mode) {
             const hostSec = document.getElementById('clubHostSection');
             const joinSec = document.getElementById('clubJoinSection');
@@ -1499,14 +1637,13 @@
                 backlogs.forEach(item => {
                     if (!item.finished && item.date === todayStr) {
                         new Notification("📚 Backlog Due Today!", {
-                            body: `Time to study [${item.subject}] ${item.name}!`
+                            body: `Time to study [${item.subject}] ${item.name} scheduled for today!`
                         });
                     }
                 });
             });
         }
 
-        // Pomodoro Timer Engine
         let pomodoroTimer = null;
         let timeLeft = 25 * 60;
         let isTimerRunning = false;
@@ -1652,6 +1789,8 @@
                     await fetchGlobalData();
 
                     authScreen.style.display = 'none';
+                    document.getElementById('mainHeader').style.display = 'flex';
+                    document.getElementById('mainDashboardContainer').style.display = 'block';
                     initDashboard();
                     checkBacklogNotifications();
                 }
@@ -1661,7 +1800,9 @@
         document.getElementById('logoutBtn').addEventListener('click', () => {
             currentUser = null;
             localStorage.removeItem('bb_active_user');
-            authScreen.style.display = 'flex';
+            document.getElementById('mainHeader').style.display = 'none';
+            document.getElementById('mainDashboardContainer').style.display = 'none';
+            document.getElementById('landingScreen').style.display = 'flex';
             authForm.reset();
         });
 
@@ -1679,7 +1820,10 @@
                     backlogs = userData.backlogs || backlogs;
 
                     await fetchGlobalData();
+                    document.getElementById('landingScreen').style.display = 'none';
                     authScreen.style.display = 'none';
+                    document.getElementById('mainHeader').style.display = 'flex';
+                    document.getElementById('mainDashboardContainer').style.display = 'block';
                     initDashboard();
                 }
             }
@@ -1705,6 +1849,14 @@
                 const sysRef = doc(db, "system", "config");
                 const sysSnap = await getDoc(sysRef);
                 if (sysSnap.exists()) systemSettings = sysSnap.data();
+
+                const querySnapshot = await getDocs(collection(db, "users"));
+                activePeersList = [];
+                querySnapshot.forEach(docSnap => {
+                    if (docSnap.id !== currentUser.username) {
+                        activePeersList.push({ username: docSnap.id, active: true, lastActive: docSnap.data().lastActive || 'Online' });
+                    }
+                });
             });
         }
 
@@ -1759,7 +1911,6 @@
                 document.getElementById('myComputerIdDisplay').textContent = window.myComputerId;
                 applyTheme(profileData.theme || 'dark');
 
-                // Apply system customizations
                 if(systemSettings.customLogoText) {
                     document.querySelectorAll('.logo-text').forEach(el => el.textContent = systemSettings.customLogoText);
                 }
@@ -1815,10 +1966,169 @@
             document.getElementById('profileModal').classList.add('active');
         });
 
+        document.getElementById('openAdvancedPlannerModal').addEventListener('click', () => {
+            document.getElementById('advancedPlannerModal').classList.add('active');
+            renderAdvancedPlannerChapters();
+        });
+
+        function renderAdvancedPlannerChapters() {
+            const listContainer = document.getElementById('advChaptersList');
+            listContainer.innerHTML = "";
+            document.getElementById('advDeadline').value = new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+            let count = 0;
+            syllabusData.forEach(subj => {
+                subj.chapters.forEach(ch => {
+                    if(!ch.completed) {
+                        count++;
+                        const div = document.createElement('div');
+                        div.style.cssText = "display: flex; flex-direction: column; gap: 4px; background: var(--bg-gradient-1); padding: 0.5rem; border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.75rem;";
+                        div.innerHTML = `
+                            <label style="font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                                <input type="checkbox" class="adv-chap-chk" data-subject="${subj.subject}" data-name="${ch.name}" checked> [${subj.subject}] ${ch.name}
+                            </label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; margin-top: 4px;">
+                                <input type="number" class="adv-chap-hours" placeholder="Lecture Hrs" value="3" min="1" max="50" style="padding: 0.2rem; font-size: 0.7rem;">
+                                <select class="adv-chap-exercise" style="padding: 0.2rem; font-size: 0.7rem;">
+                                    <option value="Objective">Exercise Objective</option>
+                                    <option value="Subjective">Exercise Subjective</option>
+                                </select>
+                                <input type="text" class="adv-chap-ref" placeholder="Ref Book" value="Standard Text" style="padding: 0.2rem; font-size: 0.7rem;">
+                            </div>
+                        `;
+                        listContainer.appendChild(div);
+                    }
+                });
+            });
+            if(count === 0) {
+                listContainer.innerHTML = `<p style="text-align:center; color:var(--text-secondary); font-size:0.75rem;">All chapters completed!</p>`;
+            }
+        }
+
+        document.getElementById('advancedPlannerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const deadline = document.getElementById('advDeadline').value;
+            const checkedBoxes = document.querySelectorAll('.adv-chap-chk:checked');
+            if(checkedBoxes.length === 0) { alert("Please select at least one chapter!"); return; }
+
+            checkedBoxes.forEach(chk => {
+                const parent = chk.closest('div');
+                const hours = parent.querySelector('.adv-chap-hours').value;
+                const exercise = parent.querySelector('.adv-chap-exercise').value;
+                const ref = parent.querySelector('.adv-chap-ref').value;
+
+                backlogs.push({
+                    subject: chk.getAttribute('data-subject'),
+                    name: chk.getAttribute('data-name'),
+                    date: deadline,
+                    lecture: parseInt(hours) * 10,
+                    module: exercise === 'Objective' ? 75 : 50,
+                    ref: 60,
+                    note: `Adv Planner: ${exercise} | Ref: ${ref} (${hours} hrs)`,
+                    links: [],
+                    finished: false
+                });
+            });
+
+            document.getElementById('advancedPlannerModal').classList.remove('active');
+            renderBacklogs();
+            await saveDataToCloud();
+            alert("Advanced schedule planner tasks successfully assigned to calendar and workspace!");
+            document.getElementById('calendarScheduleModal').classList.add('active');
+            renderDailyScheduleTable();
+        });
+
         document.getElementById('openActiveChatModal').addEventListener('click', () => {
             document.getElementById('activeChatModal').classList.add('active');
-            renderActiveChatMessages();
+            renderActivePeersSidebar();
+            if(currentUser.role === 'admin') {
+                document.getElementById('adminStealthNotice').style.display = 'block';
+            }
         });
+
+        function renderActivePeersSidebar() {
+            const list = document.getElementById('activePeersList');
+            list.innerHTML = "";
+            activePeersList.forEach(peer => {
+                const btn = document.createElement('div');
+                btn.style.cssText = `padding: 0.5rem; border-radius: 8px; cursor: pointer; font-size: 0.75rem; background: ${currentPeerChat === peer.username ? 'var(--accent-color)' : 'var(--surface-solid)'}; color: ${currentPeerChat === peer.username ? '#fff' : 'var(--text-primary)'}; border: 1px solid var(--border-color);`;
+                btn.innerHTML = `🟢 <strong>${peer.username}</strong><br><span style="font-size:0.65rem; opacity:0.7;">Last active: ${peer.lastActive}</span>`;
+                btn.onclick = () => selectPeerChat(peer.username);
+                list.appendChild(btn);
+            });
+        }
+
+        window.selectPeerChat = function(peerName) {
+            currentPeerChat = peerName;
+            document.getElementById('chatHeaderPeer').textContent = `Private Chat with @${peerName}`;
+            renderActivePeersSidebar();
+            renderPrivateChatMessages();
+        };
+
+        window.sendPrivateMessage = async function(e) {
+            e.preventDefault();
+            if(!currentPeerChat) { alert("Select a peer first!"); return; }
+            const input = document.getElementById('chatInputMessage');
+            const text = input.value.trim();
+            if(!text) return;
+
+            globalChatMessages.push({
+                sender: currentUser.username,
+                recipient: currentPeerChat,
+                text: text,
+                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            });
+            await saveGlobalChat();
+            input.value = "";
+            renderPrivateChatMessages();
+        };
+
+        window.handleChatFileUpload = async function(e) {
+            if(!currentPeerChat) { alert("Select a peer first!"); return; }
+            const file = e.target.files[0];
+            if(!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(uploadEvent) {
+                globalChatMessages.push({
+                    sender: currentUser.username,
+                    recipient: currentPeerChat,
+                    text: `📎 File Shared: <a href="${uploadEvent.target.result}" target="_blank" style="color:inherit; text-decoration:underline;">${file.name}</a>`,
+                    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+                });
+                await saveGlobalChat();
+                renderPrivateChatMessages();
+            };
+            reader.readAsDataURL(file);
+        };
+
+        function renderPrivateChatMessages() {
+            const container = document.getElementById('chatMessagesContainer');
+            container.innerHTML = "";
+            if(!currentPeerChat) {
+                container.innerHTML = `<p style="text-align:center; color:var(--text-secondary); font-size:0.75rem;">Select a user from the left pane.</p>`;
+                return;
+            }
+
+            const thread = globalChatMessages.filter(m => {
+                if(currentUser.role === 'admin') return true;
+                return (m.sender === currentUser.username && m.recipient === currentPeerChat) || (m.sender === currentPeerChat && m.recipient === currentUser.username);
+            });
+
+            if(thread.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:var(--text-secondary); font-size:0.75rem;">No messages exchanged with ${currentPeerChat} yet.</p>`;
+                return;
+            }
+
+            thread.forEach(msg => {
+                const isMe = msg.sender === currentUser.username;
+                const bubble = document.createElement('div');
+                bubble.style.cssText = `max-width: 80%; padding: 0.5rem 0.75rem; border-radius: 10px; font-size: 0.8rem; align-self: ${isMe ? 'flex-end' : 'flex-start'}; background: ${isMe ? 'var(--accent-color)' : 'var(--surface-solid)'}; color: ${isMe ? '#fff' : 'var(--text-primary)'}; border: 1px solid var(--border-color);`;
+                bubble.innerHTML = `<div style="font-size:0.65rem; opacity:0.8; margin-bottom:0.15rem;">${msg.sender} • ${msg.time}</div><div>${msg.text}</div>`;
+                container.appendChild(bubble);
+            });
+            container.scrollTop = container.scrollHeight;
+        }
 
         document.getElementById('openMailboxModal').addEventListener('click', () => {
             document.getElementById('mailboxModal').classList.add('active');
@@ -1862,35 +2172,6 @@
             alert("Admin customizations applied successfully!");
         });
 
-        // Active Chat Submission (WhatsApp style)
-        document.getElementById('chatSendForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const text = document.getElementById('chatInputMessage').value.trim();
-            if(!text) return;
-            globalChatMessages.push({ sender: currentUser.username, text: text, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
-            await saveGlobalChat();
-            document.getElementById('chatInputMessage').value = "";
-            renderActiveChatMessages();
-        });
-
-        function renderActiveChatMessages() {
-            const container = document.getElementById('chatMessagesContainer');
-            container.innerHTML = "";
-            if(globalChatMessages.length === 0) {
-                container.innerHTML = `<p style="text-align:center; color:var(--text-secondary); font-size:0.75rem;">No messages yet. Say hello!</p>`;
-                return;
-            }
-            globalChatMessages.forEach(msg => {
-                const isMe = msg.sender === currentUser.username;
-                const bubble = document.createElement('div');
-                bubble.style.cssText = `max-width: 80%; padding: 0.6rem 0.85rem; border-radius: 12px; font-size: 0.8rem; align-self: ${isMe ? 'flex-end' : 'flex-start'}; background: ${isMe ? 'var(--accent-color)' : 'var(--surface-solid)'}; color: ${isMe ? '#fff' : 'var(--text-primary)'}; border: 1px solid var(--border-color);`;
-                bubble.innerHTML = `<div style="font-size:0.65rem; opacity:0.8; margin-bottom:0.2rem;">${msg.sender} • ${msg.time}</div><div>${msg.text}</div>`;
-                container.appendChild(bubble);
-            });
-            container.scrollTop = container.scrollHeight;
-        }
-
-        // Mailbox Submission (Admin only)
         document.getElementById('adminMailForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const subject = document.getElementById('adminMailSubject').value.trim();
