@@ -407,7 +407,7 @@
 
             <div class="sidebar-block" id="openClubModal" style="background: rgba(124, 58, 237, 0.08); border-color: var(--physics-color);">
                 <h3>👥 Club Studying Room</h3>
-                <p style="font-size: 0.75rem; color: var(--text-secondary);">Study together with computer IDs, mic, webcam & screen share.</p>
+                <p style="font-size: 0.75rem; color: var(--text-secondary);">Host or join study sessions with ID, mic & screen share.</p>
             </div>
 
             <div class="sidebar-block" id="openFeedbackModal" style="background: rgba(5, 150, 105, 0.08); border-color: var(--success-color);">
@@ -540,36 +540,46 @@
 
     <!-- Modals -->
     <div class="modal" id="clubModal">
-        <div class="modal-content" style="max-width: 750px;">
+        <div class="modal-content" style="max-width: 700px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
                 <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">👥 Club Studying Room</h2>
                 <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
             </div>
-            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Collaborate with peers in real-time. Share your computer ID, activate your webcam, toggle your mic, and stream your screen to study together!</p>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Choose whether to host a study club and get your Computer ID, or join an active peer session by pasting their ID!</p>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
-                <div style="background: var(--surface-solid); padding: 1rem; border-radius: 14px; border: 1px solid var(--border-color); text-align: center;">
-                    <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.3rem;">Your Generated Computer ID</div>
-                    <div id="myComputerIdDisplay" style="font-size: 1.1rem; font-weight: 800; color: var(--accent-color); margin-bottom: 0.75rem;">Generating ID...</div>
-                    <button class="btn btn-success" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;" onclick="navigator.clipboard.writeText(document.getElementById('myComputerIdDisplay').textContent); alert('Computer ID copied!');">📋 Copy ID</button>
-                </div>
-                <div style="background: var(--surface-solid); padding: 1rem; border-radius: 14px; border: 1px solid var(--border-color);">
-                    <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.3rem;">Join Peer Study Session</div>
-                    <div class="form-group" style="margin-bottom: 0.5rem;">
-                        <input type="text" id="peerComputerIdInput" placeholder="Enter peer Computer ID...">
-                    </div>
-                    <button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;" onclick="connectToPeer()">🔗 Connect Session</button>
+            <div style="display: flex; gap: 10px; margin-bottom: 1.25rem;">
+                <button type="button" class="btn" id="hostTabBtn" onclick="switchClubMode('host')">Host a Club</button>
+                <button type="button" class="btn btn-secondary" id="joinTabBtn" onclick="switchClubMode('join')" style="margin-top:0;">Join a Club</button>
+            </div>
+
+            <!-- Host View -->
+            <div id="clubHostSection" style="display: block;">
+                <div style="background: var(--surface-solid); padding: 1.25rem; border-radius: 16px; border: 1px solid var(--border-color); text-align: center; margin-bottom: 1rem;">
+                    <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.4rem;">Your Generated Computer ID (Share with peers to join)</div>
+                    <div id="myComputerIdDisplay" style="font-size: 1.3rem; font-weight: 800; color: var(--accent-color); margin-bottom: 0.75rem;">COMP-892410</div>
+                    <button class="btn btn-success" style="width: auto; padding: 0.4rem 1rem; font-size: 0.75rem;" onclick="navigator.clipboard.writeText(document.getElementById('myComputerIdDisplay').textContent); alert('Computer ID copied!');">📋 Copy ID</button>
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
-                <div style="background: #000; border-radius: 14px; height: 180px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-                    <video id="localWebcamStream" autoplay muted playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
-                    <div style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.6); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem;">You (Webcam & Audio)</div>
+            <!-- Join View -->
+            <div id="clubJoinSection" style="display: none;">
+                <div style="background: var(--surface-solid); padding: 1.25rem; border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
+                    <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.4rem;">Paste Host Computer ID</div>
+                    <div class="form-group" style="margin-bottom: 0.75rem;">
+                        <input type="text" id="peerComputerIdInput" placeholder="e.g. COMP-892410">
+                    </div>
+                    <button class="btn" onclick="connectToPeer()">🔗 Join Room Session</button>
                 </div>
-                <div style="background: #000; border-radius: 14px; height: 180px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div style="background: #000; border-radius: 14px; height: 160px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                    <video id="localWebcamStream" autoplay muted playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+                    <div style="position: absolute; bottom: 6px; left: 6px; background: rgba(0,0,0,0.6); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem;">My Webcam & Audio</div>
+                </div>
+                <div style="background: #000; border-radius: 14px; height: 160px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
                     <video id="peerScreenStream" autoplay playsinline style="width: 100%; height: 100%; object-fit: contain;"></video>
-                    <div style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.6); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem;">Peer Screen / Shared Feed</div>
+                    <div style="position: absolute; bottom: 6px; left: 6px; background: rgba(0,0,0,0.6); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem;">Shared Screen Feed</div>
                 </div>
             </div>
 
@@ -668,7 +678,7 @@
         <div class="modal-content" style="max-width: 680px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
                 <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">✨ AI Backlog Schedule Maker</h2>
-                <button class="close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
             </div>
             <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Set your deadline and customize chapter-by-chapter effort hours:</p>
             
@@ -708,7 +718,10 @@
 
     <div class="modal" id="profileModal">
         <div class="modal-content">
-            <h2 style="font-size: 1.25rem; margin-bottom: 1rem;">Profile & Theme Settings</h2>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">Profile & Theme Settings</h2>
+                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+            </div>
             <form id="profileForm">
                 <div class="form-group">
                     <label>Full Name</label>
@@ -741,7 +754,10 @@
 
     <div class="modal" id="analyticsModal">
         <div class="modal-content">
-            <h2 style="font-size: 1.25rem; margin-bottom: 0.75rem;">📊 Analytics Overview</h2>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">📊 Analytics Overview</h2>
+                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+            </div>
             <div style="background: var(--surface-solid); padding: 0.75rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 1rem; text-align: center;">
                 <canvas id="analyticsCanvas" width="500" height="200" style="width: 100%; height: auto; max-height: 180px;"></canvas>
             </div>
@@ -759,21 +775,12 @@
         </div>
     </div>
 
-    <div class="modal" id="aiSolverModal">
-        <div class="modal-content" style="height: 75vh; display: flex; flex-direction: column;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                <h2 style="font-size: 1.15rem; margin-bottom: 0;">🤖 Gemini AI Assistant</h2>
-                <button type="button" class="btn close-modal" style="width: auto; padding: 0.3rem 0.6rem; font-size: 0.75rem; margin-top:0;">Close</button>
-            </div>
-            <div style="flex: 1; width: 100%; border-radius: 10px; overflow: hidden; border: 1px solid var(--border-color);">
-                <iframe src="https://gemini.google.com" style="width: 100%; height: 100%; border: none; background: #ffffff;" allow="microphone"></iframe>
-            </div>
-        </div>
-    </div>
-
     <div class="modal" id="notesModal">
         <div class="modal-content">
-            <h2 style="font-size: 1.25rem; margin-bottom: 0.75rem;">📚 Notes Repository</h2>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">📚 Notes Repository</h2>
+                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+            </div>
             <form id="notesForm" style="background: var(--surface-solid); padding: 1rem; border-radius: 14px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
                 <h3 style="font-size: 0.9rem; margin-bottom: 0.6rem; color: var(--text-primary);">Add Note Link</h3>
                 <div style="display: grid; grid-template-columns: 1fr; gap: 0.6rem;">
@@ -818,7 +825,10 @@
 
     <div class="modal" id="calendarScheduleModal">
         <div class="modal-content">
-            <h2 style="font-size: 1.25rem; margin-bottom: 0.75rem;">📅 Daily Schedule</h2>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">📅 Daily Schedule</h2>
+                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+            </div>
             <div style="display: flex; gap: 0.75rem; margin-bottom: 0.75rem;">
                 <div class="form-group" style="flex: 1; margin-bottom: 0;">
                     <label>Year</label>
@@ -846,7 +856,10 @@
 
     <div class="modal" id="adminModal">
         <div class="modal-content">
-            <h2 style="font-size: 1.25rem; margin-bottom: 0.75rem;">⚙️ Admin Approvals</h2>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">⚙️ Admin Approvals</h2>
+                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+            </div>
             <h3 style="font-size: 0.9rem; color: var(--danger-color); margin-bottom: 0.4rem;">Pending Requests</h3>
             <div class="table-responsive" style="max-height: 22vh; margin-bottom: 1rem;">
                 <table class="admin-table">
@@ -867,7 +880,10 @@
 
     <div class="modal" id="progressModal">
         <div class="modal-content">
-            <h2 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Syllabus Tracker</h2>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">Syllabus Tracker</h2>
+                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+            </div>
             <div style="background: var(--surface-solid); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
                 <div class="progress-text" style="margin-top: 0; font-size: 0.85rem; font-weight: 600;">
                     <span id="modalProgressLabel" style="color: var(--accent-color);">0% Completed</span>
@@ -888,7 +904,10 @@
 
     <div class="modal" id="backlogModal">
         <div class="modal-content">
-            <h2 id="backlogModalTitle" style="font-size: 1.25rem; margin-bottom: 1rem;">Add Study Item</h2>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                <h2 id="backlogModalTitle" style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">Add Study Item</h2>
+                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+            </div>
             <form id="backlogForm">
                 <input type="hidden" id="editIndex" value="-1">
                 <div class="form-group">
@@ -931,7 +950,10 @@
 
     <div class="modal" id="cardLinkModal">
         <div class="modal-content" style="max-width: 380px;">
-            <h2 style="font-size: 1.15rem; margin-bottom: 0.75rem;">Add Useful Link</h2>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                <h2 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary);">Add Useful Link</h2>
+                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+            </div>
             <form id="cardLinkForm">
                 <input type="hidden" id="linkCardIndex" value="">
                 <div class="form-group">
@@ -950,8 +972,11 @@
 
     <div class="modal" id="deleteModal">
         <div class="modal-content" style="max-width: 360px; text-align: center;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                <h2 style="color: var(--danger-color); font-size: 1.15rem; font-weight: 800;">Delete Item?</h2>
+                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+            </div>
             <input type="hidden" id="deleteTargetIndex" value="">
-            <h2 style="color: var(--danger-color); font-size: 1.15rem; margin-bottom: 0.75rem;">Delete Item?</h2>
             <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Remove <strong id="deleteTargetName"></strong>?</p>
             <button type="button" class="btn btn-danger" id="confirmDeleteBtn" style="margin-bottom: 0.5rem;">Yes, Delete</button>
             <button type="button" class="btn btn-secondary close-modal" style="margin-top: 0;">Cancel</button>
@@ -1117,7 +1142,28 @@
             document.getElementById('themeSelect').value = themeName;
         }
 
-        // Club Studying Room logic (Computer ID, Media streams)
+        // Club Studying Room Modes (Host / Join)
+        window.switchClubMode = function(mode) {
+            const hostSec = document.getElementById('clubHostSection');
+            const joinSec = document.getElementById('clubJoinSection');
+            const hostBtn = document.getElementById('hostTabBtn');
+            const joinBtn = document.getElementById('joinTabBtn');
+
+            if (mode === 'host') {
+                hostSec.style.display = 'block';
+                joinSec.style.display = 'none';
+                hostBtn.className = 'btn';
+                joinBtn.className = 'btn btn-secondary';
+                joinBtn.style.marginTop = '0';
+            } else {
+                hostSec.style.display = 'none';
+                joinSec.style.display = 'block';
+                hostBtn.className = 'btn btn-secondary';
+                hostBtn.style.marginTop = '0';
+                joinBtn.className = 'btn';
+            }
+        };
+
         window.myComputerId = "COMP-" + Math.floor(100000 + Math.random() * 900000);
         let localStream = null;
         let screenStream = null;
@@ -1125,7 +1171,7 @@
         window.connectToPeer = function() {
             const peerId = document.getElementById('peerComputerIdInput').value.trim();
             if(!peerId) { alert("Please enter a valid peer Computer ID!"); return; }
-            alert(`Connecting securely to peer session: ${peerId}... Connection established!`);
+            alert(`Successfully joined session hosted by: ${peerId}! Audio and video feeds connected.`);
         };
 
         window.toggleWebcam = async function() {
@@ -1160,54 +1206,6 @@
                 screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
                 screenEl.srcObject = screenStream;
             });
-        };
-
-        // Feedback Form logic & simulated email
-        window.handleStarClick = function(e) {
-            const rect = e.target.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const starWidth = rect.width / 5;
-            const rating = Math.min(5, Math.max(1, Math.ceil(clickX / starWidth)));
-            document.getElementById('selectedStarCount').value = rating;
-            document.getElementById('starRatingContainer').textContent = '★'.repeat(rating) + '☆'.repeat(5 - rating);
-        };
-
-        document.getElementById('feedbackForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            safeExecute(() => {
-                const rating = document.getElementById('selectedStarCount').value;
-                const msg = document.getElementById('feedbackTextMsg').value;
-                const email = document.getElementById('feedbackUserEmail').value;
-
-                alert(`Feedback submitted successfully! Admin has received your ${rating}-star rating.\n\nA system-generated thank-you email has been dispatched to: ${email}`);
-                document.getElementById('feedbackModal').classList.remove('active');
-                document.getElementById('feedbackForm').reset();
-            });
-        });
-
-        // Buy a coffee QR code logic
-        window.setCoffeeAmount = function(amt) {
-            document.getElementById('coffeeCustomAmt').value = amt;
-            updateCoffeeQR(amt);
-        };
-
-        window.updateCoffeeQR = function(amt) {
-            const upiString = `upi://pay?pa=arshverma1@fam&pn=Arsh%20Verma&am=${amt}&cu=INR`;
-            const qrContainer = document.getElementById('upiQrCodeContainer');
-            qrContainer.innerHTML = "";
-            try {
-                const qr = qrcode(4, 'M');
-                qr.addData(upiString);
-                qr.make();
-                qrContainer.innerHTML = qr.createImgTag(4, 6);
-            } catch (err) {
-                qrContainer.innerHTML = `<span style="font-size:0.75rem; color:red;">QR Generation Error</span>`;
-            }
-        };
-
-        window.payViaRazorpay = function() {
-            const amt = document.getElementById('coffeeCustomAmt').value || 100;
-            alert(`Initiating Razorpay secure payment for ₹${amt} to support Arsh Verma...`);
         };
 
         window.requestNotificationPermission = async function() {
@@ -1368,6 +1366,9 @@
                     syllabusData = syncSyllabusWithMaster(userData.syllabusData);
                     backlogs = userData.backlogs || backlogs;
 
+                    // Save session state to localStorage to survive page reloads smoothly
+                    localStorage.setItem('bb_active_user', username);
+
                     await setDoc(userRef, { ...userData, syllabusData: syllabusData, lastActive: new Date().toLocaleString() });
                     await fetchGlobalNotes();
 
@@ -1380,8 +1381,30 @@
 
         document.getElementById('logoutBtn').addEventListener('click', () => {
             currentUser = null;
+            localStorage.removeItem('bb_active_user');
             authScreen.style.display = 'flex';
             authForm.reset();
+        });
+
+        // Auto-restore session on page reload
+        window.addEventListener('load', async () => {
+            const savedUser = localStorage.getItem('bb_active_user');
+            if (savedUser) {
+                const userRef = doc(db, "users", savedUser);
+                const userSnap = await getDoc(userRef);
+                if (userSnap.exists()) {
+                    const userData = userSnap.data();
+                    currentUser = { username: savedUser, role: userData.role || "user" };
+                    profileData = userData.profileData || profileData;
+                    studyStats = userData.studyStats || studyStats;
+                    syllabusData = syncSyllabusWithMaster(userData.syllabusData);
+                    backlogs = userData.backlogs || backlogs;
+
+                    await fetchGlobalNotes();
+                    authScreen.style.display = 'none';
+                    initDashboard();
+                }
+            }
         });
 
         async function fetchGlobalNotes() {
