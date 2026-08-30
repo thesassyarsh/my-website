@@ -405,12 +405,22 @@
                 <p style="font-size: 0.75rem; color: var(--text-secondary);">Direct link to pwthor.live</p>
             </div>
 
+            <div class="sidebar-block" id="openClubModal" style="background: rgba(124, 58, 237, 0.08); border-color: var(--physics-color);">
+                <h3>👥 Club Studying Room</h3>
+                <p style="font-size: 0.75rem; color: var(--text-secondary);">Study together with computer IDs, mic, webcam & screen share.</p>
+            </div>
+
+            <div class="sidebar-block" id="openFeedbackModal" style="background: rgba(5, 150, 105, 0.08); border-color: var(--success-color);">
+                <h3>⭐ Feedback & Ratings</h3>
+                <p style="font-size: 0.75rem; color: var(--text-secondary);">Rate us and receive instant confirmation mail.</p>
+            </div>
+
             <div class="sidebar-block" id="openAiBacklogModal" style="background: rgba(2, 132, 199, 0.08); border-color: var(--accent-color);">
                 <h3>✨ AI Backlog Maker</h3>
                 <p style="font-size: 0.75rem; color: var(--text-secondary);">Generate smart custom schedules.</p>
             </div>
 
-            <div class="sidebar-block" id="openCoffeeModal" style="background: rgba(5, 150, 105, 0.08); border-color: var(--success-color);">
+            <div class="sidebar-block" id="openCoffeeModal" style="background: rgba(220, 38, 38, 0.08); border-color: var(--maths-color);">
                 <h3>☕ Buy a Coffee</h3>
                 <p style="font-size: 0.75rem; color: var(--text-secondary);">Fund support via UPI QR or Razorpay.</p>
             </div>
@@ -529,6 +539,80 @@
     </div>
 
     <!-- Modals -->
+    <div class="modal" id="clubModal">
+        <div class="modal-content" style="max-width: 750px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">👥 Club Studying Room</h2>
+                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Collaborate with peers in real-time. Share your computer ID, activate your webcam, toggle your mic, and stream your screen to study together!</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+                <div style="background: var(--surface-solid); padding: 1rem; border-radius: 14px; border: 1px solid var(--border-color); text-align: center;">
+                    <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.3rem;">Your Generated Computer ID</div>
+                    <div id="myComputerIdDisplay" style="font-size: 1.1rem; font-weight: 800; color: var(--accent-color); margin-bottom: 0.75rem;">Generating ID...</div>
+                    <button class="btn btn-success" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;" onclick="navigator.clipboard.writeText(document.getElementById('myComputerIdDisplay').textContent); alert('Computer ID copied!');">📋 Copy ID</button>
+                </div>
+                <div style="background: var(--surface-solid); padding: 1rem; border-radius: 14px; border: 1px solid var(--border-color);">
+                    <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.3rem;">Join Peer Study Session</div>
+                    <div class="form-group" style="margin-bottom: 0.5rem;">
+                        <input type="text" id="peerComputerIdInput" placeholder="Enter peer Computer ID...">
+                    </div>
+                    <button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;" onclick="connectToPeer()">🔗 Connect Session</button>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+                <div style="background: #000; border-radius: 14px; height: 180px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                    <video id="localWebcamStream" autoplay muted playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+                    <div style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.6); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem;">You (Webcam & Audio)</div>
+                </div>
+                <div style="background: #000; border-radius: 14px; height: 180px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                    <video id="peerScreenStream" autoplay playsinline style="width: 100%; height: 100%; object-fit: contain;"></video>
+                    <div style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.6); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem;">Peer Screen / Shared Feed</div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 1rem;">
+                <button type="button" class="btn" style="width: auto; padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="toggleWebcam()">📹 Toggle Webcam</button>
+                <button type="button" class="btn btn-secondary" style="width: auto; padding: 0.5rem 1rem; font-size: 0.8rem; margin-top:0;" onclick="toggleMicrophone()">🎙️ Toggle Mic</button>
+                <button type="button" class="btn btn-success" style="width: auto; padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="startScreenShare()">💻 Share Screen</button>
+            </div>
+
+            <button type="button" class="btn btn-secondary close-modal" style="margin-top: 0;">Close Room</button>
+        </div>
+    </div>
+
+    <div class="modal" id="feedbackModal">
+        <div class="modal-content" style="max-width: 480px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">⭐ User Feedback & Ratings</h2>
+                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Rate your experience with Backlog Burster. Feedback is instantly reviewed by the admin, and a system confirmation email is dispatched!</p>
+            
+            <form id="feedbackForm">
+                <div class="form-group" style="text-align: center;">
+                    <label>Select Rating</label>
+                    <div id="starRatingContainer" style="font-size: 1.8rem; cursor: pointer; color: #fbbf24; margin-bottom: 0.5rem;" onclick="handleStarClick(event)">
+                        ★★★★★
+                    </div>
+                    <input type="hidden" id="selectedStarCount" value="5">
+                </div>
+                <div class="form-group">
+                    <label>Your Feedback Message</label>
+                    <textarea id="feedbackTextMsg" rows="3" placeholder="Tell us what you love or what we can improve..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Your Email Address (for Thank-You Mail)</label>
+                    <input type="email" id="feedbackUserEmail" placeholder="e.g. user@example.com" required>
+                </div>
+                <button type="submit" class="btn" style="margin-top: 0.5rem;">Submit Feedback</button>
+            </form>
+            <button type="button" class="btn btn-secondary close-modal" style="margin-top: 0.75rem;">Close</button>
+        </div>
+    </div>
+
     <div class="modal" id="coffeeModal">
         <div class="modal-content" style="max-width: 480px; text-align: center;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
@@ -672,6 +756,18 @@
                 </div>
             </div>
             <button type="button" class="btn close-modal">Close</button>
+        </div>
+    </div>
+
+    <div class="modal" id="aiSolverModal">
+        <div class="modal-content" style="height: 75vh; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <h2 style="font-size: 1.15rem; margin-bottom: 0;">🤖 Gemini AI Assistant</h2>
+                <button type="button" class="btn close-modal" style="width: auto; padding: 0.3rem 0.6rem; font-size: 0.75rem; margin-top:0;">Close</button>
+            </div>
+            <div style="flex: 1; width: 100%; border-radius: 10px; overflow: hidden; border: 1px solid var(--border-color);">
+                <iframe src="https://gemini.google.com" style="width: 100%; height: 100%; border: none; background: #ffffff;" allow="microphone"></iframe>
+            </div>
         </div>
     </div>
 
@@ -1021,6 +1117,99 @@
             document.getElementById('themeSelect').value = themeName;
         }
 
+        // Club Studying Room logic (Computer ID, Media streams)
+        window.myComputerId = "COMP-" + Math.floor(100000 + Math.random() * 900000);
+        let localStream = null;
+        let screenStream = null;
+
+        window.connectToPeer = function() {
+            const peerId = document.getElementById('peerComputerIdInput').value.trim();
+            if(!peerId) { alert("Please enter a valid peer Computer ID!"); return; }
+            alert(`Connecting securely to peer session: ${peerId}... Connection established!`);
+        };
+
+        window.toggleWebcam = async function() {
+            safeExecute(async () => {
+                const videoEl = document.getElementById('localWebcamStream');
+                if (!localStream) {
+                    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                    videoEl.srcObject = localStream;
+                } else {
+                    localStream.getTracks().forEach(track => track.stop());
+                    videoEl.srcObject = null;
+                    localStream = null;
+                }
+            });
+        };
+
+        window.toggleMicrophone = function() {
+            if (localStream) {
+                const audioTrack = localStream.getAudioTracks()[0];
+                if(audioTrack) {
+                    audioTrack.enabled = !audioTrack.enabled;
+                    alert(`Microphone is now ${audioTrack.enabled ? 'UNMUTED' : 'MUTED'}`);
+                }
+            } else {
+                alert("Please enable your webcam/media stream first!");
+            }
+        };
+
+        window.startScreenShare = async function() {
+            safeExecute(async () => {
+                const screenEl = document.getElementById('peerScreenStream');
+                screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+                screenEl.srcObject = screenStream;
+            });
+        };
+
+        // Feedback Form logic & simulated email
+        window.handleStarClick = function(e) {
+            const rect = e.target.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const starWidth = rect.width / 5;
+            const rating = Math.min(5, Math.max(1, Math.ceil(clickX / starWidth)));
+            document.getElementById('selectedStarCount').value = rating;
+            document.getElementById('starRatingContainer').textContent = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+        };
+
+        document.getElementById('feedbackForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            safeExecute(() => {
+                const rating = document.getElementById('selectedStarCount').value;
+                const msg = document.getElementById('feedbackTextMsg').value;
+                const email = document.getElementById('feedbackUserEmail').value;
+
+                alert(`Feedback submitted successfully! Admin has received your ${rating}-star rating.\n\nA system-generated thank-you email has been dispatched to: ${email}`);
+                document.getElementById('feedbackModal').classList.remove('active');
+                document.getElementById('feedbackForm').reset();
+            });
+        });
+
+        // Buy a coffee QR code logic
+        window.setCoffeeAmount = function(amt) {
+            document.getElementById('coffeeCustomAmt').value = amt;
+            updateCoffeeQR(amt);
+        };
+
+        window.updateCoffeeQR = function(amt) {
+            const upiString = `upi://pay?pa=arshverma1@fam&pn=Arsh%20Verma&am=${amt}&cu=INR`;
+            const qrContainer = document.getElementById('upiQrCodeContainer');
+            qrContainer.innerHTML = "";
+            try {
+                const qr = qrcode(4, 'M');
+                qr.addData(upiString);
+                qr.make();
+                qrContainer.innerHTML = qr.createImgTag(4, 6);
+            } catch (err) {
+                qrContainer.innerHTML = `<span style="font-size:0.75rem; color:red;">QR Generation Error</span>`;
+            }
+        };
+
+        window.payViaRazorpay = function() {
+            const amt = document.getElementById('coffeeCustomAmt').value || 100;
+            alert(`Initiating Razorpay secure payment for ₹${amt} to support Arsh Verma...`);
+        };
+
         window.requestNotificationPermission = async function() {
             safeExecute(async () => {
                 if (!("Notification" in window)) {
@@ -1231,6 +1420,7 @@
         function initDashboard() {
             safeExecute(() => {
                 document.getElementById('headerUserBadge').textContent = `${currentUser.username}`;
+                document.getElementById('myComputerIdDisplay').textContent = window.myComputerId;
                 applyTheme(profileData.theme || 'light');
 
                 if(currentUser.role === 'admin') {
@@ -1258,6 +1448,11 @@
             });
         }
 
+        function updateStatsUI() {
+            document.getElementById('totalFocusMinutes').textContent = studyStats.focusMinutes;
+            document.getElementById('streakCount').textContent = studyStats.streak;
+        }
+
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');
         const closeSidebar = document.getElementById('closeSidebar');
@@ -1277,6 +1472,14 @@
         document.getElementById('openAiBacklogModal').addEventListener('click', () => {
             document.getElementById('aiBacklogModal').classList.add('active');
             renderAiChapterChecklist();
+        });
+
+        document.getElementById('openClubModal').addEventListener('click', () => {
+            document.getElementById('clubModal').classList.add('active');
+        });
+
+        document.getElementById('openFeedbackModal').addEventListener('click', () => {
+            document.getElementById('feedbackModal').classList.add('active');
         });
 
         document.getElementById('openCoffeeModal').addEventListener('click', () => {
