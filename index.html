@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,26 +8,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
-            --bg-gradient-1: #ffffff;
-            --bg-gradient-2: #fef2f2;
-            --bg-gradient-3: #ffffff;
-            --surface-color: rgba(255, 255, 255, 0.9);
-            --surface-solid: #ffffff;
-            --border-color: rgba(239, 68, 68, 0.25);
-            --text-primary: #7f1d1d;
-            --text-secondary: #991b1b;
-            --accent-color: #dc2626;
-            --accent-hover: #b91c1c;
-            --neon-glow: 0 0 20px rgba(220, 38, 38, 0.15);
-            --danger-color: #dc2626;
-            --success-color: #059669;
-            --physics-color: #7c3aed;
-            --chemistry-color: #059669;
-            --maths-color: #dc2626;
-            --bio-color: #15803d;
-        }
-
-        [data-theme="dark"] {
             --bg-gradient-1: #030712;
             --bg-gradient-2: #0f172a;
             --bg-gradient-3: #1e1b4b;
@@ -41,6 +21,26 @@
             --neon-glow: 0 0 35px rgba(56, 189, 248, 0.35);
             --danger-color: #f43f5e;
             --success-color: #10b981;
+            --physics-color: #7c3aed;
+            --chemistry-color: #059669;
+            --maths-color: #dc2626;
+            --bio-color: #15803d;
+        }
+
+        [data-theme="light"] {
+            --bg-gradient-1: #ffffff;
+            --bg-gradient-2: #fef2f2;
+            --bg-gradient-3: #ffffff;
+            --surface-color: rgba(255, 255, 255, 0.9);
+            --surface-solid: #ffffff;
+            --border-color: rgba(239, 68, 68, 0.25);
+            --text-primary: #7f1d1d;
+            --text-secondary: #991b1b;
+            --accent-color: #dc2626;
+            --accent-hover: #b91c1c;
+            --neon-glow: 0 0 20px rgba(220, 38, 38, 0.15);
+            --danger-color: #dc2626;
+            --success-color: #059669;
         }
 
         * {
@@ -76,7 +76,7 @@
             background: #e11d48;
             color: white;
             padding: 0.75rem 1.25rem;
-            border-radius: 12px;
+            border-radius: 16px;
             z-index: 9999;
             font-size: 0.85rem;
             box-shadow: 0 10px 25px rgba(225,29,72,0.4);
@@ -96,9 +96,9 @@
 
         .auth-card {
             background: var(--surface-solid);
-            backdrop-filter: blur(30px);
+            backdrop-filter: blur(40px);
             border: 1px solid var(--border-color);
-            border-radius: 30px;
+            border-radius: 36px;
             width: 100%;
             max-width: 420px;
             padding: 2.75rem 2.25rem;
@@ -134,7 +134,7 @@
             background: var(--surface-color);
             backdrop-filter: blur(25px);
             border: 1px solid var(--border-color);
-            border-radius: 24px;
+            border-radius: 28px;
             padding: 1.75rem 2.25rem;
             margin-bottom: 2rem;
             box-shadow: var(--neon-glow);
@@ -157,7 +157,7 @@
             background: var(--surface-color);
             backdrop-filter: blur(25px);
             border: 1px solid var(--border-color);
-            border-radius: 24px;
+            border-radius: 28px;
             padding: 1.75rem;
             text-align: center;
             box-shadow: var(--neon-glow);
@@ -168,7 +168,7 @@
 
         .subject-block-container {
             margin-bottom: 2rem;
-            border-radius: 24px;
+            border-radius: 28px;
             overflow: hidden;
             border: 1px solid var(--border-color);
             box-shadow: var(--neon-glow);
@@ -209,7 +209,7 @@
             position: fixed;
             top: 0; left: -100%; width: 100%; max-width: 320px; height: 100%;
             background: var(--surface-color);
-            backdrop-filter: blur(40px);
+            backdrop-filter: blur(50px);
             box-shadow: 20px 0 50px rgba(0,0,0,0.25);
             transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             z-index: 1000;
@@ -224,7 +224,7 @@
         .sidebar-block {
             background: var(--surface-solid);
             border: 1px solid var(--border-color);
-            border-radius: 16px;
+            border-radius: 20px;
             padding: 1rem 1.25rem;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
@@ -249,9 +249,9 @@
         .modal.active { display: flex; }
         .modal-content {
             background: var(--surface-color);
-            backdrop-filter: blur(40px);
+            backdrop-filter: blur(50px);
             border: 1px solid var(--border-color);
-            border-radius: 30px;
+            border-radius: 36px;
             width: 100%; max-width: 650px; padding: 2.25rem; max-height: 85vh; overflow-y: auto;
             box-shadow: var(--neon-glow), 0 30px 60px rgba(0,0,0,0.3);
         }
@@ -260,13 +260,13 @@
         .form-group label { display: block; margin-bottom: 0.4rem; color: var(--text-secondary); font-size: 0.85rem; font-weight: 500; }
         .form-group input, .form-group textarea, .form-group select {
             width: 100%; padding: 0.75rem 1rem; background: var(--surface-solid);
-            border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-primary); font-size: 0.9rem;
+            border: 1px solid var(--border-color); border-radius: 16px; color: var(--text-primary); font-size: 0.9rem;
             outline: none; transition: border-color 0.2s;
         }
 
         .btn {
             background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
-            color: #ffffff; padding: 0.75rem 1.25rem; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; width: 100%; text-align: center;
+            color: #ffffff; padding: 0.75rem 1.25rem; border-radius: 16px; border: none; font-weight: 600; cursor: pointer; width: 100%; text-align: center;
             font-size: 0.9rem;
             box-shadow: 0 10px 25px rgba(220, 38, 38, 0.2);
             transition: transform 0.2s, filter 0.2s;
@@ -285,7 +285,7 @@
         .backlog-card {
             background: var(--surface-solid);
             border: 1px solid var(--border-color);
-            border-radius: 20px; padding: 1.35rem; display: flex; flex-direction: column; gap: 0.85rem;
+            border-radius: 24px; padding: 1.35rem; display: flex; flex-direction: column; gap: 0.85rem;
             box-shadow: 0 10px 25px rgba(0,0,0,0.03);
             transition: transform 0.2s;
         }
@@ -295,17 +295,17 @@
 
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
         .card-header h3 { font-size: 1.05rem; font-weight: 600; color: var(--text-primary); word-break: break-word; }
-        .card-date { font-size: 0.7rem; background: var(--bg-gradient-1); padding: 0.2rem 0.5rem; border-radius: 6px; color: var(--accent-color); border: 1px solid var(--border-color); white-space: nowrap; }
+        .card-date { font-size: 0.7rem; background: var(--bg-gradient-1); padding: 0.2rem 0.5rem; border-radius: 10px; color: var(--accent-color); border: 1px solid var(--border-color); white-space: nowrap; }
 
-        .sliders-summary { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.8rem; color: var(--text-secondary); background: var(--bg-gradient-1); padding: 0.75rem; border-radius: 10px; border: 1px solid var(--border-color); }
-        .card-note { font-size: 0.8rem; color: var(--text-secondary); background: var(--bg-gradient-1); padding: 0.75rem; border-radius: 10px; border-left: 3px solid var(--accent-color); border: 1px solid var(--border-color); word-break: break-word; }
+        .sliders-summary { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.8rem; color: var(--text-secondary); background: var(--bg-gradient-1); padding: 0.75rem; border-radius: 12px; border: 1px solid var(--border-color); }
+        .card-note { font-size: 0.8rem; color: var(--text-secondary); background: var(--bg-gradient-1); padding: 0.75rem; border-radius: 12px; border-left: 3px solid var(--accent-color); border: 1px solid var(--border-color); word-break: break-word; }
 
         .links-container { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-        .link-pill { background: var(--bg-gradient-1); color: var(--accent-color); font-size: 0.7rem; padding: 0.25rem 0.6rem; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--border-color); }
+        .link-pill { background: var(--bg-gradient-1); color: var(--accent-color); font-size: 0.7rem; padding: 0.25rem 0.6rem; border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--border-color); }
 
         .card-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.4rem; margin-top: auto; padding-top: 0.4rem; }
         @media(min-width: 400px) { .card-actions { grid-template-columns: repeat(4, 1fr); } }
-        .card-actions button { padding: 0.45rem 0.1rem; font-size: 0.75rem; font-weight: 600; border-radius: 8px; border: 1px solid var(--border-color); background: var(--surface-solid); cursor: pointer; color: var(--text-primary); text-align: center; }
+        .card-actions button { padding: 0.45rem 0.1rem; font-size: 0.75rem; font-weight: 600; border-radius: 10px; border: 1px solid var(--border-color); background: var(--surface-solid); cursor: pointer; color: var(--text-primary); text-align: center; }
         .finish-btn { color: var(--success-color); }
         .edit-btn { color: var(--accent-color); }
         .link-btn { color: #d97706; }
@@ -316,10 +316,10 @@
         .admin-table th, .admin-table td, .schedule-table th, .schedule-table td { padding: 0.6rem; border: 1px solid var(--border-color); text-align: left; }
         .admin-table th, .schedule-table th { background: var(--surface-solid); color: var(--text-primary); }
 
-        .syllabus-subject { background: var(--surface-solid); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.15rem; margin-bottom: 1rem; }
+        .syllabus-subject { background: var(--surface-solid); border: 1px solid var(--border-color); border-radius: 20px; padding: 1.15rem; margin-bottom: 1rem; }
         .syllabus-subject-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem; margin-bottom: 0.6rem; }
         .syllabus-subject h3 { color: var(--accent-color); font-size: 1rem; font-weight: 700; margin: 0; }
-        .syllabus-chapter-item { display: flex; align-items: center; justify-content: space-between; background: var(--bg-gradient-1); padding: 0.5rem 0.75rem; border-radius: 10px; margin-bottom: 0.4rem; font-size: 0.8rem; border: 1px solid var(--border-color); gap: 8px; }
+        .syllabus-chapter-item { display: flex; align-items: center; justify-content: space-between; background: var(--bg-gradient-1); padding: 0.5rem 0.75rem; border-radius: 12px; margin-bottom: 0.4rem; font-size: 0.8rem; border: 1px solid var(--border-color); gap: 8px; }
 
         footer { text-align: center; padding: 2rem 1rem; color: var(--text-secondary); font-size: 0.75rem; border-top: 1px solid var(--border-color); margin-top: 4rem; background: var(--surface-color); backdrop-filter: blur(20px); }
     </style>
@@ -354,7 +354,7 @@
             <div class="logo-text">Backlog Burster</div>
         </div>
         <div style="display: flex; gap: 8px; align-items: center;">
-            <button class="btn btn-secondary" style="width: auto; padding: 0.35rem 0.6rem; font-size: 0.75rem; margin-top:0;" id="themeToggleBtn" onclick="toggleThemePreference()">🌙 Dark</button>
+            <button class="btn btn-secondary" style="width: auto; padding: 0.35rem 0.6rem; font-size: 0.75rem; margin-top:0;" id="themeToggleBtn" onclick="toggleThemePreference()">☀️ Light</button>
             <div class="user-badge" id="headerUserBadge">Guest</div>
             <button class="btn btn-danger" style="width: auto; padding: 0.35rem 0.6rem; font-size: 0.75rem;" id="logoutBtn">Logout</button>
         </div>
@@ -375,6 +375,21 @@
                         <div style="font-size: 0.75rem; color: var(--text-secondary);" id="sidebarClass">Class 11</div>
                     </div>
                 </div>
+            </div>
+
+            <div class="sidebar-block" id="openActiveChatModal" style="background: rgba(5, 150, 105, 0.08); border-color: var(--success-color);">
+                <h3>💬 Active Users Chat</h3>
+                <p style="font-size: 0.75rem; color: var(--text-secondary);">WhatsApp-like room for online users.</p>
+            </div>
+
+            <div class="sidebar-block" id="openMailboxModal" style="background: rgba(2, 132, 199, 0.08); border-color: var(--accent-color);">
+                <h3>📬 Mailbox</h3>
+                <p style="font-size: 0.75rem; color: var(--text-secondary);">View inbox & messages from admin.</p>
+            </div>
+
+            <div class="sidebar-block" id="openPremiumModal" style="background: rgba(251, 191, 36, 0.08); border-color: #fbbf24;">
+                <h3>👑 Premium Plan (₹49/mo)</h3>
+                <p style="font-size: 0.75rem; color: var(--text-secondary);">Unlock all notes & advanced repository access.</p>
             </div>
 
             <div class="sidebar-block" onclick="window.open('https://pwthor.live', '_blank')">
@@ -446,6 +461,11 @@
             <div class="sidebar-block" id="openAdminModal" style="display: none;">
                 <h3>⚙️ Admin Panel</h3>
                 <p style="font-size: 0.75rem; color: var(--text-secondary);">Approve users & manage access.</p>
+            </div>
+
+            <div class="sidebar-block" id="openAdminEditorModal" style="display: none; background: rgba(124, 58, 237, 0.1); border-color: var(--physics-color);">
+                <h3>🛠️ Admin Editor</h3>
+                <p style="font-size: 0.75rem; color: var(--text-secondary);">Customize themes, text & features.</p>
             </div>
 
             <div class="sidebar-block" id="sidebarAddBacklogBtn">
@@ -529,6 +549,98 @@
     </div>
 
     <!-- Modals -->
+    <!-- Active Chat Modal (WhatsApp Style) -->
+    <div class="modal" id="activeChatModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+                <h2 style="font-size: 1.2rem; font-weight: 800; color: var(--text-primary);">💬 Active Users Chat Room</h2>
+                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+            </div>
+            <div id="chatMessagesContainer" style="height: 300px; overflow-y: auto; background: var(--surface-solid); padding: 1rem; border-radius: 16px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem;"></div>
+            <form id="chatSendForm" style="display: flex; gap: 8px;">
+                <input type="text" id="chatInputMessage" placeholder="Type a message like WhatsApp..." required style="flex: 1; margin-bottom: 0;">
+                <button type="submit" class="btn" style="width: auto; padding: 0.75rem 1.25rem; margin-top: 0;">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mailbox Modal -->
+    <div class="modal" id="mailboxModal">
+        <div class="modal-content" style="max-width: 650px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+                <h2 style="font-size: 1.2rem; font-weight: 800; color: var(--text-primary);">📬 Mailbox & Inbox</h2>
+                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+            </div>
+            
+            <div id="adminMailSendSection" style="display: none; background: var(--surface-solid); padding: 1rem; border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
+                <h3 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--accent-color);">Admin Email / Broadcast Tool</h3>
+                <form id="adminMailForm">
+                    <div class="form-group" style="margin-bottom: 0.5rem;">
+                        <input type="text" id="adminMailSubject" placeholder="Mail Subject" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0.5rem;">
+                        <textarea id="adminMailBody" rows="2" placeholder="Write message to broadcast or send..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn" style="width: auto; padding: 0.5rem 1rem; font-size: 0.8rem;">Send Mail to Users</button>
+                </form>
+            </div>
+
+            <div id="mailboxListContainer" style="max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem;"></div>
+            <button type="button" class="btn btn-secondary close-modal" style="margin-top: 1rem;">Close</button>
+        </div>
+    </div>
+
+    <!-- Premium Subscription Modal -->
+    <div class="modal" id="premiumModal">
+        <div class="modal-content" style="max-width: 480px; text-align: center;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">👑 Premium Access</h2>
+                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+            </div>
+            <div style="background: var(--surface-solid); padding: 1.5rem; border-radius: 24px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
+                <div style="font-size: 1.8rem; font-weight: 800; color: #fbbf24; margin-bottom: 0.5rem;">₹49 <span style="font-size: 0.9rem; color: var(--text-secondary);">/ month</span></div>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Gain instant unlimited access to all notes, advanced study materials, and the full repository.</p>
+                <button type="button" class="btn" onclick="proceedToPremiumQR()">Continue to Payment</button>
+            </div>
+
+            <div id="premiumQrView" style="display: none; background: var(--surface-solid); padding: 1.25rem; border-radius: 24px; border: 1px solid var(--border-color);">
+                <div id="premiumUpIQR" style="display: flex; justify-content: center; margin-bottom: 0.75rem;"></div>
+                <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.4rem;">Scan QR via any UPI App</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.75rem;">UPI ID: arshverma1@fam</div>
+                <button type="button" class="btn btn-success" onclick="alert('Payment receipt notified to Admin! Notes tab will unlock upon approval.')">I Have Paid</button>
+            </div>
+            <button type="button" class="btn btn-secondary close-modal" style="margin-top: 0.5rem;">Close</button>
+        </div>
+    </div>
+
+    <!-- Admin Editor Modal -->
+    <div class="modal" id="adminEditorModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+                <h2 style="font-size: 1.2rem; font-weight: 800; color: var(--text-primary);">🛠️ Admin Custom Editor</h2>
+                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Admin can customize global theme variables, website title, header text, and manage features live.</p>
+            
+            <form id="adminEditorForm">
+                <div class="form-group">
+                    <label>Website Logo / Title Text</label>
+                    <input type="text" id="editLogoText" value="Backlog Burster">
+                </div>
+                <div class="form-group">
+                    <label>Primary Accent Color</label>
+                    <input type="color" id="editAccentColor" value="#38bdf8" style="height: 40px; padding: 0;">
+                </div>
+                <div class="form-group">
+                    <label>Main Dashboard Title</label>
+                    <input type="text" id="editDashboardTitle" value="My Study Workspace">
+                </div>
+                <button type="submit" class="btn">Apply Global Changes</button>
+            </form>
+            <button type="button" class="btn btn-secondary close-modal" style="margin-top: 0.75rem;">Close</button>
+        </div>
+    </div>
+
     <!-- Focus Session Modal -->
     <div class="modal" id="focusSessionModal">
         <div class="modal-content" style="max-width: 550px; text-align: center;">
@@ -613,7 +725,7 @@
 
             <!-- Host View -->
             <div id="clubHostSection" style="display: block;">
-                <div style="background: var(--surface-solid); padding: 1.25rem; border-radius: 16px; border: 1px solid var(--border-color); text-align: center; margin-bottom: 1rem;">
+                <div style="background: var(--surface-solid); padding: 1.25rem; border-radius: 20px; border: 1px solid var(--border-color); text-align: center; margin-bottom: 1rem;">
                     <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.4rem;">Your Generated Computer ID (Share with peers to join)</div>
                     <div id="myComputerIdDisplay" style="font-size: 1.3rem; font-weight: 800; color: var(--accent-color); margin-bottom: 0.75rem;">COMP-892410</div>
                     <button class="btn btn-success" style="width: auto; padding: 0.4rem 1rem; font-size: 0.75rem;" onclick="navigator.clipboard.writeText(document.getElementById('myComputerIdDisplay').textContent); alert('Computer ID copied!');">📋 Copy ID</button>
@@ -622,7 +734,7 @@
 
             <!-- Join View -->
             <div id="clubJoinSection" style="display: none;">
-                <div style="background: var(--surface-solid); padding: 1.25rem; border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
+                <div style="background: var(--surface-solid); padding: 1.25rem; border-radius: 20px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
                     <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.4rem;">Paste Host Computer ID</div>
                     <div class="form-group" style="margin-bottom: 0.75rem;">
                         <input type="text" id="peerComputerIdInput" placeholder="e.g. COMP-892410">
@@ -633,13 +745,13 @@
 
             <!-- Google Meet style Grid Feed -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                <div style="background: #000; border-radius: 14px; height: 200px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                <div style="background: #000; border-radius: 20px; height: 200px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
                     <video id="localWebcamStream" autoplay muted playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
-                    <div style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.6); color: white; padding: 3px 8px; border-radius: 6px; font-size: 0.7rem;">You (Webcam & Audio)</div>
+                    <div style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.6); color: white; padding: 3px 8px; border-radius: 8px; font-size: 0.7rem;">You (Webcam & Audio)</div>
                 </div>
-                <div style="background: #000; border-radius: 14px; height: 200px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                <div style="background: #000; border-radius: 20px; height: 200px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
                     <video id="peerScreenStream" autoplay playsinline style="width: 100%; height: 100%; object-fit: contain;"></video>
-                    <div style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.6); color: white; padding: 3px 8px; border-radius: 6px; font-size: 0.7rem;">Peer Screen / Shared Feed</div>
+                    <div style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.6); color: white; padding: 3px 8px; border-radius: 8px; font-size: 0.7rem;">Peer Screen / Shared Feed</div>
                 </div>
             </div>
 
@@ -704,7 +816,7 @@
                 <input type="number" id="coffeeCustomAmt" value="100" min="1" oninput="updateCoffeeQR(this.value)">
             </div>
 
-            <div style="background: var(--surface-solid); padding: 1rem; border-radius: 16px; border: 1px solid var(--border-color); display: inline-block; margin: 0.5rem 0;">
+            <div style="background: var(--surface-solid); padding: 1rem; border-radius: 20px; border: 1px solid var(--border-color); display: inline-block; margin: 0.5rem 0;">
                 <div id="upiQrCodeContainer" style="display: flex; justify-content: center;"></div>
                 <div style="font-size: 0.75rem; font-weight: 600; color: var(--text-primary); margin-top: 0.5rem;">UPI ID: arshverma1@fam</div>
             </div>
@@ -765,13 +877,13 @@
                         <label style="font-weight: 600; color: var(--text-primary); margin-bottom: 0;">Select Chapters & Effort:</label>
                         <span style="font-size: 0.75rem; color: var(--accent-color); font-weight: 600; cursor: pointer;" onclick="toggleAllAiChapters(true)">Select All</span>
                     </div>
-                    <div id="aiChapterSelectionList" style="max-height: 32vh; overflow-y: auto; background: var(--surface-solid); padding: 0.75rem; border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 0.5rem;"></div>
+                    <div id="aiChapterSelectionList" style="max-height: 32vh; overflow-y: auto; background: var(--surface-solid); padding: 0.75rem; border-radius: 16px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 0.5rem;"></div>
                 </div>
 
                 <button type="submit" class="btn" style="margin-top: 0.5rem;">🤖 Preview AI Schedule</button>
             </form>
 
-            <div id="aiBacklogOutputArea" style="display: none; background: var(--surface-solid); padding: 1.15rem; border-radius: 12px; border: 1px solid var(--border-color); margin-top: 1.25rem; font-size: 0.85rem; max-height: 25vh; overflow-y: auto;">
+            <div id="aiBacklogOutputArea" style="display: none; background: var(--surface-solid); padding: 1.15rem; border-radius: 16px; border: 1px solid var(--border-color); margin-top: 1.25rem; font-size: 0.85rem; max-height: 25vh; overflow-y: auto;">
             </div>
         </div>
     </div>
@@ -818,15 +930,15 @@
                 <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">📊 Analytics Overview</h2>
                 <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
             </div>
-            <div style="background: var(--surface-solid); padding: 0.75rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 1rem; text-align: center;">
+            <div style="background: var(--surface-solid); padding: 0.75rem; border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 1rem; text-align: center;">
                 <canvas id="analyticsCanvas" width="500" height="200" style="width: 100%; height: auto; max-height: 180px;"></canvas>
             </div>
             <div style="display: grid; grid-template-columns: 1fr; gap: 0.75rem; margin-bottom: 1rem;">
-                <div style="background: var(--surface-solid); padding: 0.75rem; border-radius: 10px; border: 1px solid var(--border-color);">
+                <div style="background: var(--surface-solid); padding: 0.75rem; border-radius: 14px; border: 1px solid var(--border-color);">
                     <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 0.25rem;">Workload Stats</div>
                     <div id="analyticsWorkloadText" style="font-size: 0.75rem; color: var(--text-secondary);">Calculating...</div>
                 </div>
-                <div style="background: var(--surface-solid); padding: 0.75rem; border-radius: 10px; border: 1px solid var(--border-color);">
+                <div style="background: var(--surface-solid); padding: 0.75rem; border-radius: 14px; border: 1px solid var(--border-color);">
                     <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 0.25rem;">Focus Performance</div>
                     <div id="analyticsFocusText" style="font-size: 0.75rem; color: var(--text-secondary);">Calculating...</div>
                 </div>
@@ -841,7 +953,7 @@
                 <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">📚 Notes Repository</h2>
                 <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
             </div>
-            <form id="notesForm" style="background: var(--surface-solid); padding: 1rem; border-radius: 14px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
+            <form id="notesForm" style="background: var(--surface-solid); padding: 1rem; border-radius: 20px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
                 <h3 style="font-size: 0.9rem; margin-bottom: 0.6rem; color: var(--text-primary);">Add Note Link</h3>
                 <div style="display: grid; grid-template-columns: 1fr; gap: 0.6rem;">
                     <div class="form-group" style="margin-bottom:0;">
@@ -920,6 +1032,15 @@
                 <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">⚙️ Admin Approvals</h2>
                 <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
             </div>
+            
+            <div style="background: var(--surface-solid); padding: 1rem; border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <strong>Auto-Approval Mode</strong>
+                    <div style="font-size: 0.75rem; color: var(--text-secondary);">Instantly approve all new user registries</div>
+                </div>
+                <input type="checkbox" id="autoApprovalToggle" onchange="toggleAutoApprovalSetting(this.checked)" style="width: 20px; height: 20px; accent-color: var(--accent-color); cursor: pointer;">
+            </div>
+
             <h3 style="font-size: 0.9rem; color: var(--danger-color); margin-bottom: 0.4rem;">Pending Requests</h3>
             <div class="table-responsive" style="max-height: 22vh; margin-bottom: 1rem;">
                 <table class="admin-table">
@@ -944,7 +1065,7 @@
                 <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">Syllabus Tracker</h2>
                 <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
             </div>
-            <div style="background: var(--surface-solid); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
+            <div style="background: var(--surface-solid); padding: 1rem; border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
                 <div class="progress-text" style="margin-top: 0; font-size: 0.85rem; font-weight: 600;">
                     <span id="modalProgressLabel" style="color: var(--accent-color);">0% Completed</span>
                     <span id="modalProgressCounts">0 / 0</span>
@@ -954,7 +1075,7 @@
                 </div>
             </div>
             <div style="display: flex; gap: 0.4rem; margin-bottom: 1rem;">
-                <input type="text" id="newSubjectInput" placeholder="New Subject..." style="flex:1; padding:0.5rem; border-radius:8px; border:1px solid var(--border-color); font-size: 0.85rem;">
+                <input type="text" id="newSubjectInput" placeholder="New Subject..." style="flex:1; padding:0.5rem; border-radius:12px; border:1px solid var(--border-color); font-size: 0.85rem;">
                 <button type="button" class="btn" style="width:auto; padding:0.5rem 0.75rem; font-size:0.85rem;" onclick="window.addSubject()">+ Subject</button>
             </div>
             <div id="syllabusContainer" style="max-height: 38vh; overflow-y: auto; padding-right: 0.25rem;"></div>
@@ -1080,8 +1201,11 @@
 
         let currentUser = null;
         let isRegisterMode = false;
-        let profileData = { name: "Arsh Verma", classLevel: "Class 11", address: "Lucknow, India", avatarUrl: "", theme: "light" };
+        let profileData = { name: "Arsh Verma", classLevel: "Class 11", address: "Lucknow, India", avatarUrl: "", theme: "dark" };
         let studyStats = { focusMinutes: 0, streak: 1, badges: ["🏆 Beginner Scholar"] };
+        let globalChatMessages = [];
+        let mailboxMessages = [];
+        let systemSettings = { autoApproval: false, customLogoText: "Backlog Burster", accentColor: "#38bdf8", dashboardTitle: "My Study Workspace" };
         
         const defaultSyllabusMaster = [
             {
@@ -1268,7 +1392,7 @@
 
         window.toggleThemePreference = function() {
             safeExecute(() => {
-                const currentTheme = profileData.theme || 'light';
+                const currentTheme = profileData.theme || 'dark';
                 profileData.theme = currentTheme === 'light' ? 'dark' : 'light';
                 applyTheme(profileData.theme);
                 if (currentUser) saveDataToCloud();
@@ -1276,12 +1400,12 @@
         };
 
         function applyTheme(themeName) {
-            if (themeName === 'dark') {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                document.getElementById('themeToggleBtn').textContent = '☀️ Light';
+            if (themeName === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.getElementById('themeToggleBtn').textContent = '🌙 Dark';
             } else {
                 document.documentElement.removeAttribute('data-theme');
-                document.getElementById('themeToggleBtn').textContent = '🌙 Dark';
+                document.getElementById('themeToggleBtn').textContent = '☀️ Light';
             }
             document.getElementById('themeSelect').value = themeName;
         }
@@ -1433,11 +1557,18 @@
                         role: "admin",
                         approved: true,
                         lastActive: new Date().toLocaleString(),
-                        profileData: { name: "Administrator", classLevel: "Admin Portal", address: "System", avatarUrl: "", theme: "light" },
+                        profileData: { name: "Administrator", classLevel: "Admin Portal", address: "System", avatarUrl: "", theme: "dark" },
                         studyStats: { focusMinutes: 120, streak: 5, badges: ["🏆 Master Admin"] },
                         syllabusData: defaultSyllabusMaster,
                         backlogs: []
                     });
+                }
+                const sysRef = doc(db, "system", "config");
+                const sysSnap = await getDoc(sysRef);
+                if(sysSnap.exists()) {
+                    systemSettings = sysSnap.data();
+                } else {
+                    await setDoc(sysRef, systemSettings);
                 }
             });
         }
@@ -1476,15 +1607,19 @@
                     const newUserData = {
                         password: password,
                         role: "user",
-                        approved: false,
+                        approved: systemSettings.autoApproval,
                         lastActive: new Date().toLocaleString(),
-                        profileData: { name: username, classLevel: "Class 11", address: "India", avatarUrl: "", theme: "light" },
+                        profileData: { name: username, classLevel: "Class 11", address: "India", avatarUrl: "", theme: "dark" },
                         studyStats: { focusMinutes: 0, streak: 1, badges: ["🏆 Beginner Scholar"] },
                         syllabusData: defaultSyllabusMaster,
                         backlogs: backlogs
                     };
                     await setDoc(userRef, newUserData);
-                    alert("Account registered successfully! Waiting for Admin approval.");
+                    if (systemSettings.autoApproval) {
+                        alert("Account registered and automatically approved!");
+                    } else {
+                        alert("Account registered successfully! Waiting for Admin approval.");
+                    }
                     isRegisterMode = false;
                     authTitle.textContent = "Backlog Burster Login";
                     authSubmitBtn.textContent = "Login";
@@ -1500,7 +1635,7 @@
                         alert("Incorrect password!");
                         return;
                     }
-                    if(userData.approved === false) {
+                    if(!systemSettings.autoApproval && userData.approved === false) {
                         alert("Your account is pending admin approval.");
                         return;
                     }
@@ -1514,7 +1649,7 @@
                     localStorage.setItem('bb_active_user', username);
 
                     await setDoc(userRef, { ...userData, syllabusData: syllabusData, lastActive: new Date().toLocaleString() });
-                    await fetchGlobalNotes();
+                    await fetchGlobalData();
 
                     authScreen.style.display = 'none';
                     initDashboard();
@@ -1543,19 +1678,54 @@
                     syllabusData = syncSyllabusWithMaster(userData.syllabusData);
                     backlogs = userData.backlogs || backlogs;
 
-                    await fetchGlobalNotes();
+                    await fetchGlobalData();
                     authScreen.style.display = 'none';
                     initDashboard();
                 }
             }
         });
 
-        async function fetchGlobalNotes() {
+        async function fetchGlobalData() {
             safeExecute(async () => {
                 const notesRef = doc(db, "system", "global_notes");
                 const notesSnap = await getDoc(notesRef);
                 if (notesSnap.exists()) notesData = notesSnap.data().list || [];
                 else notesData = [];
+
+                const chatRef = doc(db, "system", "global_chat");
+                const chatSnap = await getDoc(chatRef);
+                if (chatSnap.exists()) globalChatMessages = chatSnap.data().messages || [];
+                else globalChatMessages = [];
+
+                const mailRef = doc(db, "system", "mailbox");
+                const mailSnap = await getDoc(mailRef);
+                if (mailSnap.exists()) mailboxMessages = mailSnap.data().messages || [];
+                else mailboxMessages = [];
+
+                const sysRef = doc(db, "system", "config");
+                const sysSnap = await getDoc(sysRef);
+                if (sysSnap.exists()) systemSettings = sysSnap.data();
+            });
+        }
+
+        async function saveGlobalChat() {
+            safeExecute(async () => {
+                const chatRef = doc(db, "system", "global_chat");
+                await setDoc(chatRef, { messages: globalChatMessages });
+            });
+        }
+
+        async function saveMailbox() {
+            safeExecute(async () => {
+                const mailRef = doc(db, "system", "mailbox");
+                await setDoc(mailRef, { messages: mailboxMessages });
+            });
+        }
+
+        async function saveSystemConfig() {
+            safeExecute(async () => {
+                const sysRef = doc(db, "system", "config");
+                await setDoc(sysRef, systemSettings);
             });
         }
 
@@ -1587,10 +1757,19 @@
             safeExecute(() => {
                 document.getElementById('headerUserBadge').textContent = `${currentUser.username}`;
                 document.getElementById('myComputerIdDisplay').textContent = window.myComputerId;
-                applyTheme(profileData.theme || 'light');
+                applyTheme(profileData.theme || 'dark');
+
+                // Apply system customizations
+                if(systemSettings.customLogoText) {
+                    document.querySelectorAll('.logo-text').forEach(el => el.textContent = systemSettings.customLogoText);
+                }
+                if(systemSettings.dashboardTitle) {
+                    document.getElementById('mainDashboardTitle').textContent = systemSettings.dashboardTitle;
+                }
 
                 if(currentUser.role === 'admin') {
                     document.getElementById('openAdminModal').style.display = 'block';
+                    document.getElementById('openAdminEditorModal').style.display = 'block';
                     document.getElementById('mainDashboardTitle').textContent = "All Users Overview";
                     document.getElementById('mainAddBtn').style.display = 'none';
                     document.getElementById('homeProgressBannerContainer').style.display = 'none';
@@ -1600,7 +1779,8 @@
                     renderAdminMasterHomeView();
                 } else {
                     document.getElementById('openAdminModal').style.display = 'none';
-                    document.getElementById('mainDashboardTitle').textContent = "My Study Workspace";
+                    document.getElementById('openAdminEditorModal').style.display = 'none';
+                    document.getElementById('mainDashboardTitle').textContent = systemSettings.dashboardTitle || "My Study Workspace";
                     document.getElementById('mainAddBtn').style.display = 'block';
                     document.getElementById('homeProgressBannerContainer').style.display = 'block';
                     document.getElementById('userWidgetsContainer').style.display = 'grid';
@@ -1631,9 +1811,125 @@
             document.getElementById('inputClass').value = profileData.classLevel;
             document.getElementById('inputAddress').value = profileData.address;
             document.getElementById('inputAvatar').value = profileData.avatarUrl;
-            document.getElementById('themeSelect').value = profileData.theme || 'light';
+            document.getElementById('themeSelect').value = profileData.theme || 'dark';
             document.getElementById('profileModal').classList.add('active');
         });
+
+        document.getElementById('openActiveChatModal').addEventListener('click', () => {
+            document.getElementById('activeChatModal').classList.add('active');
+            renderActiveChatMessages();
+        });
+
+        document.getElementById('openMailboxModal').addEventListener('click', () => {
+            document.getElementById('mailboxModal').classList.add('active');
+            if(currentUser.role === 'admin') {
+                document.getElementById('adminMailSendSection').style.display = 'block';
+            } else {
+                document.getElementById('adminMailSendSection').style.display = 'none';
+            }
+            renderMailboxMessages();
+        });
+
+        document.getElementById('openPremiumModal').addEventListener('click', () => {
+            document.getElementById('premiumModal').classList.add('active');
+            document.getElementById('premiumQrView').style.display = 'none';
+        });
+
+        window.proceedToPremiumQR = function() {
+            document.getElementById('premiumQrView').style.display = 'block';
+            const qrContainer = document.getElementById('premiumUpIQR');
+            qrContainer.innerHTML = "";
+            new QRCode(qrContainer, {
+                text: "upi://pay?pa=arshverma1@fam&pn=ArshVerma&am=49.00&cu=INR",
+                width: 140,
+                height: 140
+            });
+        };
+
+        document.getElementById('openAdminEditorModal').addEventListener('click', () => {
+            document.getElementById('adminEditorModal').classList.add('active');
+            document.getElementById('editLogoText').value = systemSettings.customLogoText || "Backlog Burster";
+            document.getElementById('editDashboardTitle').value = systemSettings.dashboardTitle || "My Study Workspace";
+        });
+
+        document.getElementById('adminEditorForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            systemSettings.customLogoText = document.getElementById('editLogoText').value;
+            systemSettings.dashboardTitle = document.getElementById('editDashboardTitle').value;
+            await saveSystemConfig();
+            document.getElementById('adminEditorModal').classList.remove('active');
+            initDashboard();
+            alert("Admin customizations applied successfully!");
+        });
+
+        // Active Chat Submission (WhatsApp style)
+        document.getElementById('chatSendForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = document.getElementById('chatInputMessage').value.trim();
+            if(!text) return;
+            globalChatMessages.push({ sender: currentUser.username, text: text, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) });
+            await saveGlobalChat();
+            document.getElementById('chatInputMessage').value = "";
+            renderActiveChatMessages();
+        });
+
+        function renderActiveChatMessages() {
+            const container = document.getElementById('chatMessagesContainer');
+            container.innerHTML = "";
+            if(globalChatMessages.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:var(--text-secondary); font-size:0.75rem;">No messages yet. Say hello!</p>`;
+                return;
+            }
+            globalChatMessages.forEach(msg => {
+                const isMe = msg.sender === currentUser.username;
+                const bubble = document.createElement('div');
+                bubble.style.cssText = `max-width: 80%; padding: 0.6rem 0.85rem; border-radius: 12px; font-size: 0.8rem; align-self: ${isMe ? 'flex-end' : 'flex-start'}; background: ${isMe ? 'var(--accent-color)' : 'var(--surface-solid)'}; color: ${isMe ? '#fff' : 'var(--text-primary)'}; border: 1px solid var(--border-color);`;
+                bubble.innerHTML = `<div style="font-size:0.65rem; opacity:0.8; margin-bottom:0.2rem;">${msg.sender} • ${msg.time}</div><div>${msg.text}</div>`;
+                container.appendChild(bubble);
+            });
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Mailbox Submission (Admin only)
+        document.getElementById('adminMailForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const subject = document.getElementById('adminMailSubject').value.trim();
+            const body = document.getElementById('adminMailBody').value.trim();
+            if(!subject || !body) return;
+
+            mailboxMessages.push({ sender: "Admin", subject: subject, body: body, time: new Date().toLocaleString() });
+            await saveMailbox();
+            document.getElementById('adminMailForm').reset();
+            renderMailboxMessages();
+            alert("Mail broadcasted successfully to all user mailboxes!");
+        });
+
+        function renderMailboxMessages() {
+            const container = document.getElementById('mailboxListContainer');
+            container.innerHTML = "";
+            if(mailboxMessages.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:var(--text-secondary); font-size:0.75rem;">Inbox is empty.</p>`;
+                return;
+            }
+            mailboxMessages.forEach(mail => {
+                const card = document.createElement('div');
+                card.style.cssText = "background: var(--surface-solid); padding: 0.85rem 1rem; border-radius: 16px; border: 1px solid var(--border-color);";
+                card.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.3rem;">
+                        <strong style="font-size:0.85rem; color:var(--accent-color);">${mail.subject}</strong>
+                        <span style="font-size:0.65rem; color:var(--text-secondary);">${mail.time}</span>
+                    </div>
+                    <p style="font-size:0.8rem; color:var(--text-primary);">${mail.body}</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        window.toggleAutoApprovalSetting = async function(val) {
+            systemSettings.autoApproval = val;
+            await saveSystemConfig();
+            alert(`Auto-approval is now ${val ? 'ENABLED' : 'DISABLED'}`);
+        };
 
         document.getElementById('openAiBacklogModal').addEventListener('click', () => {
             document.getElementById('aiBacklogModal').classList.add('active');
@@ -1674,14 +1970,14 @@
                         if (!ch.completed) {
                             hasChapters = true;
                             const div = document.createElement('div');
-                            div.style.cssText = "display: flex; align-items: center; justify-content: space-between; gap: 8px; background: var(--surface-solid); padding: 0.5rem 0.65rem; border-radius: 8px; border: 1px solid var(--border-color);";
+                            div.style.cssText = "display: flex; align-items: center; justify-content: space-between; gap: 8px; background: var(--surface-solid); padding: 0.5rem 0.65rem; border-radius: 12px; border: 1px solid var(--border-color);";
                             div.innerHTML = `
                                 <label style="font-size: 0.75rem; display: flex; align-items: center; gap: 6px; flex: 1; word-break: break-word; font-weight: 500;">
                                     <input type="checkbox" class="ai-chapter-checkbox" data-subject="${subj.subject}" data-name="${ch.name}" checked style="width: 14px; height: 14px; accent-color: var(--accent-color);">
                                     [${subj.subject}] ${ch.name}
                                 </label>
                                 <div style="display: flex; align-items: center; gap: 3px; flex-shrink: 0;">
-                                    <input type="number" class="ai-chapter-hours" value="4" min="1" max="40" style="width: 50px; padding: 0.2rem; font-size: 0.7rem; text-align: center; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-gradient-1); color: var(--text-primary);">
+                                    <input type="number" class="ai-chapter-hours" value="4" min="1" max="40" style="width: 50px; padding: 0.2rem; font-size: 0.7rem; text-align: center; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-gradient-1); color: var(--text-primary);">
                                     <span style="font-size: 0.65rem; color: var(--text-secondary);">hrs</span>
                                 </div>
                             `;
@@ -1796,6 +2092,7 @@
 
         document.getElementById('openAdminModal').addEventListener('click', () => {
             document.getElementById('adminModal').classList.add('active');
+            document.getElementById('autoApprovalToggle').checked = systemSettings.autoApproval;
             renderAdminPanel();
         });
 
@@ -1962,7 +2259,7 @@
 
                 visibleNotes.forEach((note) => {
                     const item = document.createElement('div');
-                    item.style.cssText = "background:var(--bg-gradient-1); padding:0.6rem; border-radius:8px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; gap:6px;";
+                    item.style.cssText = "background:var(--bg-gradient-1); padding:0.6rem; border-radius:12px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; gap:6px;";
                     item.innerHTML = `
                         <div style="overflow:hidden;">
                             <div style="font-weight:600; color:var(--text-primary); font-size:0.75rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">[${note.subject}] ${note.topic}</div>
@@ -2339,7 +2636,7 @@
                     });
                     chaptersHtml += `
                         <div style="display: flex; gap: 0.3rem; margin-top: 0.4rem;">
-                            <input type="text" id="newChapterInput_${sIdx}" placeholder="New chapter..." style="flex:1; padding:0.3rem; font-size:0.7rem; border-radius:6px; border:1px solid var(--border-color);">
+                            <input type="text" id="newChapterInput_${sIdx}" placeholder="New chapter..." style="flex:1; padding:0.3rem; font-size:0.7rem; border-radius:8px; border:1px solid var(--border-color);">
                             <button class="btn" style="width:auto; padding:0.3rem 0.5rem; font-size:0.7rem;" onclick="window.addChapter(${sIdx})">+ Add</button>
                         </div>
                     `;
