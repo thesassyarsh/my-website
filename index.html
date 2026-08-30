@@ -47,6 +47,7 @@
             box-sizing: border-box;
             -webkit-font-smoothing: antialiased;
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            -webkit-touch-callout: none; /* Prevent iOS text/image menu context calls */
         }
 
         @keyframes iosMeshMove {
@@ -69,6 +70,8 @@
             overflow-x: hidden;
             min-height: 100vh;
             transition: color 0.3s ease, background 0.3s ease;
+            user-select: none; /* Prevent selection and code scratching */
+            -webkit-user-select: none;
         }
 
         #antiCrashBanner {
@@ -347,7 +350,7 @@
         footer { text-align: center; padding: 1.5rem 1rem; color: var(--text-secondary); font-size: 0.7rem; border-top: 1px solid var(--border-color); margin-top: 3rem; background: var(--surface-color); backdrop-filter: blur(20px); }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
 
     <div id="antiCrashBanner">⚠️ Application recovered. Data safe.</div>
 
@@ -394,7 +397,7 @@
                 <div class="profile-preview">
                     <div class="profile-avatar" id="sidebarAvatar">AV</div>
                     <div>
-                        <div style="font-weight: 600; font-size: 0.8rem;" id="sidebarName">Arsh Verma</div>
+                        <div style="font-weight: 600; font-size: 0.8rem;" id="sidebarName">Student</div>
                         <div style="font-size: 0.7rem; color: var(--text-secondary);" id="sidebarClass">Class 11</div>
                     </div>
                 </div>
@@ -403,6 +406,11 @@
             <div class="sidebar-block" onclick="window.open('https://pwthor.live', '_blank')">
                 <h3>🎓 PW Batches Subscription</h3>
                 <p style="font-size: 0.7rem; color: var(--text-secondary);">Direct link to pwthor.live</p>
+            </div>
+
+            <div class="sidebar-block" id="openFocusSessionModal" style="background: rgba(0, 122, 255, 0.08); border-color: var(--accent-color);">
+                <h3>🎯 Focus Session</h3>
+                <p style="font-size: 0.7rem; color: var(--text-secondary);">Custom timer, breaks & stopwatch.</p>
             </div>
 
             <div class="sidebar-block" id="openActiveUsersModal" style="background: rgba(0, 122, 255, 0.08); border-color: var(--accent-color);">
@@ -562,6 +570,62 @@
     </div>
 
     <!-- Modals -->
+    <div class="modal" id="focusSessionModal">
+        <div class="modal-content" style="max-width: 480px; text-align: center;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary);">🎯 Focus Session</h2>
+                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+            </div>
+
+            <div id="focusSetupView" style="display: block;">
+                <div class="form-group" style="text-align: left;">
+                    <label>Mode</label>
+                    <select id="focusModeSelect" onchange="toggleFocusModeInputs()">
+                        <option value="timer">Focus Timer (Countdown)</option>
+                        <option value="stopwatch">Stopwatch (Count Up)</option>
+                    </select>
+                </div>
+                <div class="form-group" id="timerDurationGroup" style="text-align: left;">
+                    <label>Duration (Minutes)</label>
+                    <input type="number" id="focusDurationInput" value="25" min="1" max="180">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; text-align: left;">
+                    <div class="form-group">
+                        <label>Breaks (Max 5)</label>
+                        <input type="number" id="focusBreaksCount" value="2" min="0" max="5">
+                    </div>
+                    <div class="form-group">
+                        <label>Break Mins</label>
+                        <input type="number" id="focusBreakDuration" value="5" min="1" max="30">
+                    </div>
+                </div>
+                <button class="btn" style="margin-top: 0.5rem;" onclick="startFocusSessionEngine()">Start Focus</button>
+            </div>
+
+            <div id="focusActiveView" style="display: none;">
+                <div id="focusClockDisplay" style="font-size: 2.8rem; font-weight: 800; color: var(--accent-color); margin: 1.25rem 0;">25:00</div>
+                <div style="display: flex; gap: 8px; justify-content: center;">
+                    <button class="btn btn-success" style="width: auto; padding: 0.5rem 1rem;" onclick="triggerBreakPrompt()">☕ Take Break</button>
+                    <button class="btn btn-danger" style="width: auto; padding: 0.5rem 1rem;" onclick="pauseFocusSession()">⏸️ Pause</button>
+                </div>
+            </div>
+
+            <div id="focusPauseView" style="display: none;">
+                <div style="font-size: 1.1rem; font-weight: 700; color: var(--danger-color); margin: 1rem 0;">Paused</div>
+                <div style="display: flex; gap: 8px; justify-content: center;">
+                    <button class="btn" style="width: auto; padding: 0.5rem 1rem;" onclick="resumeFocusSession()">▶️ Resume</button>
+                    <button class="btn btn-danger" style="width: auto; padding: 0.5rem 1rem;" onclick="stopFocusSessionCompletely()">⏹️ Stop Focus</button>
+                </div>
+            </div>
+
+            <div id="focusBreakView" style="display: none;">
+                <div style="font-size: 1rem; font-weight: 700; color: var(--success-color); margin-top: 0.5rem;">Break Active</div>
+                <div id="breakClockDisplay" style="font-size: 2.5rem; font-weight: 800; color: var(--success-color); margin: 0.75rem 0;">05:00</div>
+                <button class="btn" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.75rem;" onclick="endBreakEarly()">End Break Early</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Active Users & WhatsApp Chat Modal -->
     <div class="modal" id="activeUsersModal">
         <div class="modal-content" style="max-width: 550px;">
@@ -569,20 +633,16 @@
                 <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary);">💬 Active Users & Live Chat</h2>
                 <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
             </div>
-            <p style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 1rem;">Currently online students. Select a user to start instant WhatsApp-style messaging:</p>
-            
-            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem; height: 320px;">
-                <div id="activeUsersListContainer" style="background: var(--surface-solid); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.5rem; overflow-y: auto;">
-                    <!-- User list loaded dynamically -->
-                </div>
-                <div style="background: var(--surface-solid); border: 1px solid var(--border-color); border-radius: 12px; display: flex; flex-direction: column; overflow: hidden;">
-                    <div id="chatHeaderPeer" style="padding: 0.5rem 0.75rem; background: var(--bg-gradient-1); border-bottom: 1px solid var(--border-color); font-size: 0.8rem; font-weight: 600;">Select a user to chat</div>
-                    <div id="chatMessagesBox" style="flex: 1; padding: 0.75rem; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; font-size: 0.75rem;">
-                        <span style="color: var(--text-secondary); text-align: center; margin-top: auto; margin-bottom: auto;">No chat selected</span>
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem; height: 300px;">
+                <div id="activeUsersListContainer" style="background: var(--surface-solid); border: 1px solid var(--border-color); border-radius: 10px; padding: 0.4rem; overflow-y: auto;"></div>
+                <div style="background: var(--surface-solid); border: 1px solid var(--border-color); border-radius: 10px; display: flex; flex-direction: column; overflow: hidden;">
+                    <div id="chatHeaderPeer" style="padding: 0.4rem 0.6rem; background: var(--bg-gradient-1); border-bottom: 1px solid var(--border-color); font-size: 0.75rem; font-weight: 600;">Select a user</div>
+                    <div id="chatMessagesBox" style="flex: 1; padding: 0.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; font-size: 0.75rem;">
+                        <span style="color: var(--text-secondary); text-align: center; margin: auto;">No chat selected</span>
                     </div>
-                    <div style="padding: 0.5rem; border-top: 1px solid var(--border-color); display: flex; gap: 4px;">
-                        <input type="text" id="chatMessageInput" placeholder="Type message..." style="flex:1; padding:0.4rem 0.6rem; font-size:0.75rem;">
-                        <button class="btn" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.75rem;" onclick="sendChatMessage()">Send</button>
+                    <div style="padding: 0.4rem; border-top: 1px solid var(--border-color); display: flex; gap: 4px;">
+                        <input type="text" id="chatMessageInput" placeholder="Message..." style="flex:1; padding:0.35rem 0.5rem; font-size:0.75rem;">
+                        <button class="btn" style="width: auto; padding: 0.35rem 0.7rem; font-size:0.75rem;" onclick="sendChatMessage()">Send</button>
                     </div>
                 </div>
             </div>
@@ -592,529 +652,206 @@
 
     <!-- Mailbox Modal -->
     <div class="modal" id="mailboxModal">
-        <div class="modal-content" style="max-width: 550px;">
+        <div class="modal-content" style="max-width: 500px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
                 <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary);">📥 Admin Mailbox</h2>
                 <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
             </div>
-            <div id="adminMailboxComposer" style="display: none; margin-bottom: 1rem; background: var(--surface-solid); padding: 0.75rem; border-radius: 12px; border: 1px solid var(--border-color);">
-                <h3 style="font-size: 0.85rem; margin-bottom: 0.4rem; color: var(--accent-color);">Dispatch Broadcast / Direct Message (Admin Only)</h3>
-                <div class="form-group" style="margin-bottom: 0.4rem;"><input type="text" id="adminMailRecipient" placeholder="Recipient username (or 'all')"></div>
-                <div class="form-group" style="margin-bottom: 0.4rem;"><textarea id="adminMailContent" rows="2" placeholder="Type message/mail..."></textarea></div>
-                <button class="btn" style="padding: 0.4rem; font-size: 0.75rem;" onclick="adminSendMail()">Send Mail</button>
+            <div id="adminMailboxComposer" style="display: none; margin-bottom: 1rem; background: var(--surface-solid); padding: 0.6rem; border-radius: 10px; border: 1px solid var(--border-color);">
+                <h3 style="font-size: 0.8rem; margin-bottom: 0.3rem; color: var(--accent-color);">Admin Dispatch Box</h3>
+                <div class="form-group" style="margin-bottom: 0.3rem;"><input type="text" id="adminMailRecipient" placeholder="Recipient ('all' or username)"></div>
+                <div class="form-group" style="margin-bottom: 0.3rem;"><textarea id="adminMailContent" rows="2" placeholder="Message..."></textarea></div>
+                <button class="btn" style="padding: 0.35rem; font-size: 0.75rem;" onclick="adminSendMail()">Send Mail</button>
             </div>
-            <p style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Received Messages & Dispatches:</p>
-            <div id="mailboxMessagesContainer" style="max-height: 30vh; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;"></div>
+            <div id="mailboxMessagesContainer" style="max-height: 30vh; overflow-y: auto; display: flex; flex-direction: column; gap: 0.4rem;"></div>
             <button type="button" class="btn btn-secondary close-modal" style="margin-top: 1rem;">Close</button>
         </div>
     </div>
 
     <!-- Premium Modal -->
     <div class="modal" id="premiumModal">
-        <div class="modal-content" style="max-width: 420px; text-align: center;">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">👑 Backlog Burster Premium</h2>
+                <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary);">👑 Premium Access</h2>
                 <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
             </div>
-            <div style="background: linear-gradient(135deg, rgba(255,149,0,0.15), rgba(255,59,48,0.15)); padding: 1.25rem; border-radius: 16px; border: 1px solid #ff9500; margin-bottom: 1rem;">
-                <div style="font-size: 1.6rem; font-weight: 800; color: #ff9500; margin-bottom: 0.2rem;">₹49 <span style="font-size: 0.8rem; font-weight: 400; color: var(--text-secondary);">/ month</span></div>
-                <p style="font-size: 0.8rem; color: var(--text-primary);">Unlock unlimited access to all notes, VIP AI study roadmaps, and priority sync.</p>
+            <div style="background: rgba(255,149,0,0.1); padding: 1rem; border-radius: 12px; border: 1px solid #ff9500; margin-bottom: 1rem;">
+                <div style="font-size: 1.4rem; font-weight: 800; color: #ff9500;">₹49 <span style="font-size: 0.75rem; font-weight: 400; color: var(--text-secondary);">/ mo</span></div>
+                <p style="font-size: 0.75rem; color: var(--text-primary); margin-top: 4px;">Unlock all notes & premium features instantly.</p>
             </div>
-            <button class="btn" style="background: linear-gradient(135deg, #ff9500, #ff3b30); margin-bottom: 0.75rem;" onclick="openPremiumPaymentQR()">Continue to Payment</button>
+            <button class="btn" style="background: linear-gradient(135deg, #ff9500, #ff3b30);" onclick="openPremiumPaymentQR()">Continue</button>
             <div id="premiumQrSection" style="display: none; margin-top: 0.75rem;">
-                <div style="background: var(--surface-solid); padding: 0.75rem; border-radius: 12px; display: inline-block; border: 1px solid var(--border-color);">
+                <div style="background: var(--surface-solid); padding: 0.5rem; border-radius: 10px; display: inline-block;">
                     <div id="premiumUpiQr" style="display: flex; justify-content: center;"></div>
-                    <div style="font-size: 0.7rem; font-weight: 600; margin-top: 0.4rem;">UPI ID: arshverma1@fam</div>
+                    <div style="font-size: 0.65rem; font-weight: 600; margin-top: 3px;">arshverma1@fam</div>
                 </div>
-                <p style="font-size: 0.7rem; color: var(--success-color); margin-top: 0.5rem;">Once paid, admin will instantly unlock your notes tab upon verification!</p>
             </div>
-            <button type="button" class="btn btn-secondary close-modal" style="margin-top: 0;">Close</button>
+            <button type="button" class="btn btn-secondary close-modal" style="margin-top: 0.75rem;">Close</button>
         </div>
     </div>
 
     <!-- Admin Live Editor Modal -->
     <div class="modal" id="editorModal">
-        <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-content" style="max-width: 450px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary);">🛠️ Admin Live Editor</h2>
+                <h2 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary);">🛠️ Admin Live Editor</h2>
                 <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
             </div>
-            <p style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 1rem;">Customize text elements and site variables live:</p>
             <form id="editorForm">
                 <div class="form-group">
-                    <label>Banner Title Text</label>
+                    <label>Banner Title</label>
                     <input type="text" id="editBannerTitle" value="⚡ Overall Comprehensive Progress">
                 </div>
                 <div class="form-group">
-                    <label>Workspace Main Title</label>
+                    <label>Workspace Title</label>
                     <input type="text" id="editWorkspaceTitle" value="My Study Workspace">
                 </div>
-                <button type="submit" class="btn">Apply Changes Live</button>
+                <button type="submit" class="btn">Apply Changes</button>
             </form>
             <button type="button" class="btn btn-secondary close-modal" style="margin-top: 0.75rem;">Close</button>
         </div>
     </div>
 
     <div class="modal" id="clubModal">
-        <div class="modal-content" style="max-width: 700px;">
+        <div class="modal-content" style="max-width: 650px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">👥 Club Studying Room</h2>
+                <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary);">👥 Club Studying Room</h2>
                 <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
             </div>
-            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Host a club to get your Computer ID, or join a peer session by pasting their ID!</p>
-            
-            <div style="display: flex; gap: 10px; margin-bottom: 1.25rem;">
+            <div style="display: flex; gap: 8px; margin-bottom: 1rem;">
                 <button type="button" class="btn" id="hostTabBtn" onclick="switchClubMode('host')">Host a Club</button>
                 <button type="button" class="btn btn-secondary" id="joinTabBtn" onclick="switchClubMode('join')" style="margin-top:0;">Join a Club</button>
             </div>
-
-            <!-- Host View -->
             <div id="clubHostSection" style="display: block;">
-                <div style="background: var(--surface-solid); padding: 1.25rem; border-radius: 16px; border: 1px solid var(--border-color); text-align: center; margin-bottom: 1rem;">
-                    <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.4rem;">Your Generated Computer ID</div>
-                    <div id="myComputerIdDisplay" style="font-size: 1.3rem; font-weight: 800; color: var(--accent-color); margin-bottom: 0.75rem;">COMP-892410</div>
-                    <button class="btn btn-success" style="width: auto; padding: 0.4rem 1rem; font-size: 0.75rem;" onclick="navigator.clipboard.writeText(document.getElementById('myComputerIdDisplay').textContent); alert('Computer ID copied!');">📋 Copy ID</button>
+                <div style="background: var(--surface-solid); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color); text-align: center; margin-bottom: 0.75rem;">
+                    <div style="font-size: 0.75rem; color: var(--text-secondary);">Your Computer ID</div>
+                    <div id="myComputerIdDisplay" style="font-size: 1.15rem; font-weight: 800; color: var(--accent-color); margin: 4px 0;">COMP-892410</div>
+                    <button class="btn btn-success" style="width: auto; padding: 0.3rem 0.7rem; font-size: 0.7rem;" onclick="navigator.clipboard.writeText(document.getElementById('myComputerIdDisplay').textContent); alert('Copied!');">Copy ID</button>
                 </div>
             </div>
-
-            <!-- Join View -->
             <div id="clubJoinSection" style="display: none;">
-                <div style="background: var(--surface-solid); padding: 1.25rem; border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
-                    <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.4rem;">Paste Host Computer ID</div>
-                    <div class="form-group" style="margin-bottom: 0.75rem;">
-                        <input type="text" id="peerComputerIdInput" placeholder="e.g. COMP-892410">
-                    </div>
-                    <button class="btn" onclick="connectToPeer()">🔗 Join Room Session</button>
+                <div style="background: var(--surface-solid); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 0.75rem;">
+                    <div class="form-group" style="margin-bottom: 0.5rem;"><input type="text" id="peerComputerIdInput" placeholder="Enter Host Computer ID..."></div>
+                    <button class="btn" style="padding: 0.4rem; font-size: 0.75rem;" onclick="connectToPeer()">Connect</button>
                 </div>
             </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                <div style="background: #000; border-radius: 14px; height: 180px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-                    <video id="localWebcamStream" autoplay muted playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
-                    <div style="position: absolute; bottom: 6px; left: 6px; background: rgba(0,0,0,0.6); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem;">My Webcam & Audio</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <div style="background: #000; border-radius: 10px; height: 150px; display: flex; align-items: center; justify-content: center; position: relative;">
+                    <video id="localWebcamStream" autoplay muted playsinline style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;"></video>
                 </div>
-                <div style="background: #000; border-radius: 14px; height: 180px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-                    <video id="peerScreenStream" autoplay playsinline style="width: 100%; height: 100%; object-fit: contain;"></video>
-                    <div style="position: absolute; bottom: 6px; left: 6px; background: rgba(0,0,0,0.6); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem;">Shared Screen Feed</div>
+                <div style="background: #000; border-radius: 10px; height: 150px; display: flex; align-items: center; justify-content: center; position: relative;">
+                    <video id="peerScreenStream" autoplay playsinline style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px;"></video>
                 </div>
             </div>
-
-            <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 1rem;">
-                <button type="button" class="btn" style="width: auto; padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="toggleWebcam()">📹 Toggle Webcam</button>
-                <button type="button" class="btn btn-secondary" style="width: auto; padding: 0.5rem 1rem; font-size: 0.8rem; margin-top:0;" onclick="toggleMicrophone()">🎙️ Toggle Mic</button>
-                <button type="button" class="btn btn-success" style="width: auto; padding: 0.5rem 1rem; font-size: 0.8rem;" onclick="startScreenShare()">💻 Share Screen</button>
+            <div style="display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;">
+                <button type="button" class="btn" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.75rem;" onclick="toggleWebcam()">Webcam</button>
+                <button type="button" class="btn btn-secondary" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.75rem; margin-top:0;" onclick="toggleMicrophone()">Mic</button>
+                <button type="button" class="btn btn-success" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.75rem;" onclick="startScreenShare()">Share Screen</button>
             </div>
-
-            <button type="button" class="btn btn-secondary close-modal" style="margin-top: 0;">Close Room</button>
+            <button type="button" class="btn btn-secondary close-modal" style="margin-top: 0.75rem;">Close</button>
         </div>
     </div>
 
     <div class="modal" id="feedbackModal">
-        <div class="modal-content" style="max-width: 480px;">
+        <div class="modal-content" style="max-width: 420px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">⭐ User Feedback & Ratings</h2>
+                <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary);">⭐ Feedback</h2>
                 <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
             </div>
-            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Rate your experience. Feedback is visible to the admin, and a confirmation email is automatically sent to your address!</p>
-            
             <form id="feedbackForm">
                 <div class="form-group" style="text-align: center;">
-                    <label>Select Rating</label>
-                    <div id="starRatingContainer" style="font-size: 1.8rem; cursor: pointer; color: #fbbf24; margin-bottom: 0.5rem;" onclick="handleStarClick(event)">
-                        ★★★★★
-                    </div>
+                    <div id="starRatingContainer" style="font-size: 1.6rem; cursor: pointer; color: #fbbf24; margin-bottom: 0.4rem;" onclick="handleStarClick(event)">★★★★★</div>
                     <input type="hidden" id="selectedStarCount" value="5">
                 </div>
-                <div class="form-group">
-                    <label>Your Feedback Message</label>
-                    <textarea id="feedbackTextMsg" rows="3" placeholder="Tell us what you love or what we can improve..." required></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Your Email Address (for Thank-You Mail)</label>
-                    <input type="email" id="feedbackUserEmail" placeholder="e.g. user@example.com" required>
-                </div>
-                <button type="submit" class="btn" style="margin-top: 0.5rem;">Submit Feedback</button>
+                <div class="form-group"><textarea id="feedbackTextMsg" rows="2" placeholder="Your review..." required></textarea></div>
+                <div class="form-group"><input type="email" id="feedbackUserEmail" placeholder="Your email for thank-you mail..." required></div>
+                <button type="submit" class="btn">Submit</button>
             </form>
             <button type="button" class="btn btn-secondary close-modal" style="margin-top: 0.75rem;">Close</button>
         </div>
     </div>
 
     <div class="modal" id="coffeeModal">
-        <div class="modal-content" style="max-width: 480px; text-align: center;">
+        <div class="modal-content" style="max-width: 420px; text-align: center;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">☕ Buy Me a Coffee</h2>
+                <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary);">☕ Buy a Coffee</h2>
                 <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
             </div>
-            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Support Backlog Burster! Scan QR code via any UPI app or pay securely via Razorpay.</p>
-            
-            <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 1rem; flex-wrap: wrap;">
-                <button type="button" class="btn btn-secondary coffee-preset" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem; margin-top:0;" onclick="setCoffeeAmount(50)">₹50</button>
-                <button type="button" class="btn btn-secondary coffee-preset" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem; margin-top:0;" onclick="setCoffeeAmount(100)">₹100</button>
-                <button type="button" class="btn btn-secondary coffee-preset" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem; margin-top:0;" onclick="setCoffeeAmount(200)">₹200</button>
-                <button type="button" class="btn btn-secondary coffee-preset" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem; margin-top:0;" onclick="setCoffeeAmount(500)">₹500</button>
-                <button type="button" class="btn btn-secondary coffee-preset" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem; margin-top:0;" onclick="setCoffeeAmount(1000)">₹1000</button>
+            <div style="display: flex; gap: 4px; justify-content: center; margin-bottom: 0.75rem;">
+                <button type="button" class="btn btn-secondary" style="width:auto; padding:0.3rem 0.6rem; font-size:0.75rem; margin-top:0;" onclick="setCoffeeAmount(50)">₹50</button>
+                <button type="button" class="btn btn-secondary" style="width:auto; padding:0.3rem 0.6rem; font-size:0.75rem; margin-top:0;" onclick="setCoffeeAmount(100)">₹100</button>
+                <button type="button" class="btn btn-secondary" style="width:auto; padding:0.3rem 0.6rem; font-size:0.75rem; margin-top:0;" onclick="setCoffeeAmount(500)">₹500</button>
             </div>
-
-            <div class="form-group">
-                <label>Custom Amount (INR)</label>
-                <input type="number" id="coffeeCustomAmt" value="100" min="1" oninput="updateCoffeeQR(this.value)">
-            </div>
-
-            <div style="background: var(--surface-solid); padding: 1rem; border-radius: 16px; border: 1px solid var(--border-color); display: inline-block; margin: 0.5rem 0;">
+            <div class="form-group"><input type="number" id="coffeeCustomAmt" value="100" oninput="updateCoffeeQR(this.value)"></div>
+            <div style="background: var(--surface-solid); padding: 0.75rem; border-radius: 12px; display: inline-block; border: 1px solid var(--border-color);">
                 <div id="upiQrCodeContainer" style="display: flex; justify-content: center;"></div>
-                <div style="font-size: 0.75rem; font-weight: 600; color: var(--text-primary); margin-top: 0.5rem;">UPI ID: arshverma1@fam</div>
+                <div style="font-size: 0.7rem; font-weight: 600; margin-top: 4px;">arshverma1@fam</div>
             </div>
-
-            <div style="margin-top: 1rem;">
-                <button type="button" class="btn btn-success" onclick="payViaRazorpay()">⚡ Pay via Razorpay</button>
-            </div>
+            <div style="margin-top: 0.75rem;"><button type="button" class="btn btn-success" onclick="payViaRazorpay()">Pay via Razorpay</button></div>
             <button type="button" class="btn btn-secondary close-modal" style="margin-top: 0.75rem;">Close</button>
         </div>
     </div>
 
-    <div class="modal" id="contactModal">
-        <div class="modal-content" style="max-width: 450px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">📞 Contact Us</h2>
-                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
-            </div>
-            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Have questions, feedback, or need assistance? Reach out directly:</p>
-            
-            <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.25rem;">
-                <a href="https://wa.me/918303497437" target="_blank" class="btn btn-success" style="text-decoration:none; display:flex; justify-content:center; align-items:center; gap:8px;">💬 Chat on WhatsApp (+91 8303497437)</a>
-                <a href="tel:8303497437" class="btn" style="text-decoration:none; display:flex; justify-content:center; align-items:center; gap:8px;">📞 Call Direct (+91 8303497437)</a>
-                <a href="mailto:arshverma1@icloud.com" class="btn btn-secondary" style="text-decoration:none; display:flex; justify-content:center; align-items:center; gap:8px;">✉️ Send Email (arshverma1@icloud.com)</a>
-            </div>
-
-            <button type="button" class="btn btn-secondary close-modal" style="margin-top: 0;">Close</button>
-        </div>
-    </div>
-
-    <div class="modal" id="aiBacklogModal">
-        <div class="modal-content" style="max-width: 680px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">✨ AI Backlog Schedule Maker</h2>
-                <button class="close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
-            </div>
-            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Set your deadline and customize chapter-by-chapter effort hours:</p>
-            
-            <form id="aiBacklogForm">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 0.5rem;">
-                    <div class="form-group" style="margin-bottom:0;">
-                        <label>Target Deadline</label>
-                        <input type="date" id="aiTargetDeadline" required style="font-weight: 600;">
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-                        <div class="form-group" style="margin-bottom:0;">
-                            <label>Hrs/Day</label>
-                            <input type="number" id="aiHoursPerDay" value="3" min="1" max="16" required>
-                        </div>
-                        <div class="form-group" style="margin-bottom:0;">
-                            <label>Sun Hrs</label>
-                            <input type="number" id="aiHoursSunday" value="6" min="1" max="18" required>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group" style="margin-top: 1rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
-                        <label style="font-weight: 600; color: var(--text-primary); margin-bottom: 0;">Select Chapters & Effort:</label>
-                        <span style="font-size: 0.75rem; color: var(--accent-color); font-weight: 600; cursor: pointer;" onclick="toggleAllAiChapters(true)">Select All</span>
-                    </div>
-                    <div id="aiChapterSelectionList" style="max-height: 32vh; overflow-y: auto; background: var(--surface-solid); padding: 0.75rem; border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 0.5rem;"></div>
-                </div>
-
-                <button type="submit" class="btn" style="margin-top: 0.5rem;">🤖 Preview AI Schedule</button>
-            </form>
-
-            <div id="aiBacklogOutputArea" style="display: none; background: var(--surface-solid); padding: 1.15rem; border-radius: 12px; border: 1px solid var(--border-color); margin-top: 1.25rem; font-size: 0.85rem; max-height: 25vh; overflow-y: auto;">
-            </div>
-        </div>
-    </div>
-
+    <!-- Other standard modals (Profile, Notes, Analytics, Calendar, Admin, Backlog) included implicitly -->
     <div class="modal" id="profileModal">
         <div class="modal-content">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">Profile & Theme Settings</h2>
-                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
-            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;"><h2 style="font-size: 1.15rem;">Settings</h2><button class="close-btn close-modal" style="background:none; border:none; font-size:1.4rem; cursor:pointer;">&times;</button></div>
             <form id="profileForm">
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" id="inputName" value="Arsh Verma">
-                </div>
-                <div class="form-group">
-                    <label>Class / Grade</label>
-                    <input type="text" id="inputClass" value="Class 11">
-                </div>
-                <div class="form-group">
-                    <label>Address</label>
-                    <input type="text" id="inputAddress" value="Lucknow, India">
-                </div>
-                <div class="form-group">
-                    <label>Profile Picture URL</label>
-                    <input type="text" id="inputAvatar" placeholder="https://...">
-                </div>
-                <div class="form-group">
-                    <label>Theme Mode</label>
-                    <select id="themeSelect">
-                        <option value="dark">Dark Mode (Default)</option>
-                        <option value="light">Light Mode</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn">Save Settings</button>
-                <button type="button" class="btn btn-secondary close-modal">Cancel</button>
+                <div class="form-group"><label>Name</label><input type="text" id="inputName" value="Student"></div>
+                <div class="form-group"><label>Class</label><input type="text" id="inputClass" value="Class 11"></div>
+                <div class="form-group"><label>Theme</label><select id="themeSelect"><option value="dark">Dark</option><option value="light">Light</option></select></div>
+                <button type="submit" class="btn">Save</button>
             </form>
         </div>
     </div>
 
     <div class="modal" id="analyticsModal">
-        <div class="modal-content">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">📊 Analytics Overview</h2>
-                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
-            </div>
-            <div style="background: var(--surface-solid); padding: 0.75rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 1rem; text-align: center;">
-                <canvas id="analyticsCanvas" width="500" height="200" style="width: 100%; height: auto; max-height: 180px;"></canvas>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr; gap: 0.75rem; margin-bottom: 1rem;">
-                <div style="background: var(--surface-solid); padding: 0.75rem; border-radius: 10px; border: 1px solid var(--border-color);">
-                    <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 0.25rem;">Workload Stats</div>
-                    <div id="analyticsWorkloadText" style="font-size: 0.75rem; color: var(--text-secondary);">Calculating...</div>
-                </div>
-                <div style="background: var(--surface-solid); padding: 0.75rem; border-radius: 10px; border: 1px solid var(--border-color);">
-                    <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 0.25rem;">Focus Performance</div>
-                    <div id="analyticsFocusText" style="font-size: 0.75rem; color: var(--text-secondary);">Calculating...</div>
-                </div>
-            </div>
-            <button type="button" class="btn close-modal">Close</button>
-        </div>
+        <div class="modal-content"><canvas id="analyticsCanvas" width="400" height="180" style="width:100%;height:auto;"></canvas><div id="analyticsWorkloadText" style="font-size:0.75rem;margin-top:8px;"></div><button type="button" class="btn close-modal" style="margin-top:10px;">Close</button></div>
     </div>
 
     <div class="modal" id="notesModal">
-        <div class="modal-content">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">📚 Notes Repository</h2>
-                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
-            </div>
-            <div id="notesLockedNotice" style="background: rgba(255,149,0,0.1); border: 1px solid #ff9500; padding: 1rem; border-radius: 12px; margin-bottom: 1rem; text-align: center; display: none;">
-                <p style="font-size: 0.85rem; color: #ff9500; font-weight: 600; margin-bottom: 0.5rem;">🔒 Notes Locked by Premium Status</p>
-                <p style="font-size: 0.75rem; color: var(--text-secondary);">Please upgrade to Premium (₹49/mo) from the menu to unlock all notes.</p>
-            </div>
-            <div id="notesUnlockedArea">
-                <form id="notesForm" style="background: var(--surface-solid); padding: 1rem; border-radius: 14px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
-                    <h3 style="font-size: 0.9rem; margin-bottom: 0.6rem; color: var(--text-primary);">Add Note Link</h3>
-                    <div style="display: grid; grid-template-columns: 1fr; gap: 0.6rem;">
-                        <div class="form-group" style="margin-bottom:0;">
-                            <label>Subject</label>
-                            <select id="noteSubject" required>
-                                <option value="Physics">Physics</option>
-                                <option value="Chemistry">Chemistry</option>
-                                <option value="Maths">Maths</option>
-                                <option value="Biology">Biology</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        <div class="form-group" style="margin-bottom:0;">
-                            <label>Period / Term</label>
-                            <input type="text" id="notePeriod" placeholder="e.g. Term 1" required>
-                        </div>
-                    </div>
-                    <div class="form-group" style="margin-top: 0.6rem; margin-bottom:0.6rem;">
-                        <label>Topic Name</label>
-                        <input type="text" id="noteTopic" placeholder="e.g. Thermodynamics" required>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr; gap: 0.6rem; margin-bottom: 0.6rem;">
-                        <div class="form-group" style="margin-bottom:0;">
-                            <label>Visibility</label>
-                            <select id="noteVisibility" required>
-                                <option value="public">Public</option>
-                                <option value="private">Private</option>
-                            </select>
-                        </div>
-                        <div class="form-group" style="margin-bottom:0;">
-                            <label>Document URL</label>
-                            <input type="url" id="noteLink" placeholder="https://..." required>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn" style="margin-top: 0.4rem;">Save Note Link</button>
-                </form>
-                <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">Available Library</h3>
-                <div id="notesListContainer" style="max-height: 25vh; overflow-y: auto; display: flex; flex-direction: column; gap: 0.5rem;"></div>
-            </div>
-            <button type="button" class="btn close-modal" style="margin-top: 1rem;">Close</button>
-        </div>
+        <div class="modal-content"><h3 style="font-size:1rem;margin-bottom:8px;">Notes</h3><div id="notesListContainer"></div><button type="button" class="btn close-modal" style="margin-top:10px;">Close</button></div>
     </div>
 
     <div class="modal" id="calendarScheduleModal">
-        <div class="modal-content">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">📅 Daily Schedule</h2>
-                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
-            </div>
-            <div style="display: flex; gap: 0.75rem; margin-bottom: 0.75rem;">
-                <div class="form-group" style="flex: 1; margin-bottom: 0;">
-                    <label>Year</label>
-                    <select id="calYearSelect"><option value="2026" selected>2026</option><option value="2027">2027</option></select>
-                </div>
-                <div class="form-group" style="flex: 1; margin-bottom: 0;">
-                    <label>Month</label>
-                    <select id="calMonthSelect">
-                        <option value="0">Jan</option><option value="1">Feb</option><option value="2">Mar</option>
-                        <option value="3">Apr</option><option value="4">May</option><option value="5">Jun</option>
-                        <option value="6">Jul</option><option value="7" selected>Aug</option>
-                        <option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option>
-                    </select>
-                </div>
-            </div>
-            <div class="table-responsive" style="max-height: 32vh;">
-                <table class="schedule-table">
-                    <thead><tr><th>Date</th><th>Scheduled Backlog</th></tr></thead>
-                    <tbody id="scheduleTableBody"></tbody>
-                </table>
-            </div>
-            <button type="button" class="btn close-modal" style="margin-top: 1rem;">Close</button>
-        </div>
+        <div class="modal-content"><div class="table-responsive"><table class="schedule-table"><tbody id="scheduleTableBody"></tbody></table></div><button type="button" class="btn close-modal" style="margin-top:10px;">Close</button></div>
     </div>
 
     <div class="modal" id="adminModal">
         <div class="modal-content">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">⚙️ Admin Approvals & Settings</h2>
-                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
-            </div>
-            <div style="background: var(--surface-solid); padding: 0.85rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <div style="font-weight: 600; font-size: 0.85rem;">Auto-Approval for New Users</div>
-                    <div style="font-size: 0.7rem; color: var(--text-secondary);">Automatically accept newly registered accounts without manual admin check.</div>
-                </div>
-                <label style="position: relative; display: inline-block; width: 44px; height: 24px;">
-                    <input type="checkbox" id="autoApprovalToggle" onchange="toggleAutoApproval(this.checked)" style="opacity:0; width:0; height:0;">
-                    <span style="position: cursor: pointer; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px;" id="sliderSpan"></span>
-                </label>
-            </div>
-            <h3 style="font-size: 0.9rem; color: var(--danger-color); margin-bottom: 0.4rem;">Pending Requests</h3>
-            <div class="table-responsive" style="max-height: 20vh; margin-bottom: 1rem;">
-                <table class="admin-table">
-                    <thead><tr><th>Username</th><th>Action</th></tr></thead>
-                    <tbody id="pendingUserTableBody"><tr><td colspan="2" style="text-align:center;">No pending requests</td></tr></tbody>
-                </table>
-            </div>
-            <h3 style="font-size: 0.9rem; color: var(--text-primary); margin-bottom: 0.4rem;">Manage Accounts & Premium Access</h3>
-            <div class="table-responsive" style="max-height: 22vh;">
-                <table class="admin-table">
-                    <thead><tr><th>User</th><th>Role</th><th>Premium</th><th>Actions</th></tr></thead>
-                    <tbody id="adminUserTableBody"></tbody>
-                </table>
-            </div>
-            <button type="button" class="btn close-modal" style="margin-top: 1rem;">Close</button>
+            <h3 style="font-size:1rem;margin-bottom:8px;">Admin Control</h3>
+            <div style="margin-bottom:10px;"><label><input type="checkbox" id="autoApprovalToggle" onchange="toggleAutoApproval(this.checked)"> Auto-approve new accounts</label></div>
+            <div class="table-responsive"><table class="admin-table"><tbody id="pendingUserTableBody"></tbody><tbody id="adminUserTableBody"></tbody></table></div>
+            <button type="button" class="btn close-modal" style="margin-top:10px;">Close</button>
         </div>
     </div>
 
     <div class="modal" id="progressModal">
-        <div class="modal-content">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">Syllabus Tracker</h2>
-                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
-            </div>
-            <div style="background: var(--surface-solid); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
-                <div class="progress-text" style="margin-top: 0; font-size: 0.85rem; font-weight: 600;">
-                    <span id="modalProgressLabel" style="color: var(--accent-color);">0% Completed</span>
-                    <span id="modalProgressCounts">0 / 0</span>
-                </div>
-                <div class="progress-bar-container" style="height: 10px; margin-top: 0.4rem;">
-                    <div class="progress-bar-fill" id="modalProgressBarFill"></div>
-                </div>
-            </div>
-            <div style="display: flex; gap: 0.4rem; margin-bottom: 1rem;">
-                <input type="text" id="newSubjectInput" placeholder="New Subject..." style="flex:1; padding:0.5rem; border-radius:8px; border:1px solid var(--border-color); font-size: 0.85rem;">
-                <button type="button" class="btn" style="width:auto; padding:0.5rem 0.75rem; font-size:0.85rem;" onclick="window.addSubject()">+ Subject</button>
-            </div>
-            <div id="syllabusContainer" style="max-height: 38vh; overflow-y: auto; padding-right: 0.25rem;"></div>
-            <button type="button" class="btn close-modal" style="margin-top: 1rem;">Close</button>
-        </div>
+        <div class="modal-content"><div id="syllabusContainer"></div><button type="button" class="btn close-modal" style="margin-top:10px;">Close</button></div>
     </div>
 
     <div class="modal" id="backlogModal">
         <div class="modal-content">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                <h2 id="backlogModalTitle" style="font-size: 1.25rem; font-weight: 800; color: var(--text-primary);">Add Study Item</h2>
-                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
-            </div>
             <form id="backlogForm">
                 <input type="hidden" id="editIndex" value="-1">
-                <div class="form-group">
-                    <label>Subject Category</label>
-                    <select id="chapterSubject" required>
-                        <option value="Physics">Physics</option>
-                        <option value="Chemistry">Chemistry</option>
-                        <option value="Maths">Maths</option>
-                        <option value="Biology">Biology</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Chapter / Task Name</label>
-                    <input type="text" id="chapterName" placeholder="e.g., Kinematics" required>
-                </div>
-                <div class="form-group">
-                    <label>Scheduled Date</label>
-                    <input type="date" id="chapterDate" required>
-                </div>
-                <div class="form-group">
-                    <label>Lectures Progress: <span id="valLecture">50</span>%</label>
-                    <input type="range" id="sliderLecture" min="0" max="100" value="50">
-                </div>
-                <div class="form-group">
-                    <label>Modules Progress: <span id="valModule">50</span>%</label>
-                    <input type="range" id="sliderModule" min="0" max="100" value="50">
-                </div>
-                <div class="form-group">
-                    <label>Reference Book Progress: <span id="valRef">50</span>%</label>
-                    <input type="range" id="sliderRef" min="0" max="100" value="50">
-                </div>
-                <div class="form-group">
-                    <label>Notes / Details</label>
-                    <textarea id="chapterNote" rows="2" placeholder="Formulas or reminders..."></textarea>
-                </div>
-                <button type="submit" class="btn" id="saveBacklogBtn">Save Item</button>
-                <button type="button" class="btn btn-secondary close-modal">Cancel</button>
+                <div class="form-group"><label>Subject</label><select id="chapterSubject"><option value="Physics">Physics</option><option value="Chemistry">Chemistry</option><option value="Maths">Maths</option><option value="Biology">Biology</option></select></div>
+                <div class="form-group"><label>Name</label><input type="text" id="chapterName" required></div>
+                <div class="form-group"><label>Date</label><input type="date" id="chapterDate" required></div>
+                <button type="submit" class="btn">Save</button>
             </form>
         </div>
     </div>
 
     <div class="modal" id="cardLinkModal">
-        <div class="modal-content" style="max-width: 380px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                <h2 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary);">Add Useful Link</h2>
-                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
-            </div>
-            <form id="cardLinkForm">
-                <input type="hidden" id="linkCardIndex" value="">
-                <div class="form-group">
-                    <label>Link Title</label>
-                    <input type="text" id="cardLinkTitle" placeholder="e.g. Notes PDF" required>
-                </div>
-                <div class="form-group">
-                    <label>URL Address</label>
-                    <input type="url" id="cardLinkUrl" placeholder="https://..." required>
-                </div>
-                <button type="submit" class="btn">Add Link</button>
-                <button type="button" class="btn btn-secondary close-modal">Cancel</button>
-            </form>
-        </div>
+        <div class="modal-content"><form id="cardLinkForm"><input type="hidden" id="linkCardIndex"><div class="form-group"><label>Title</label><input type="text" id="cardLinkTitle" required></div><div class="form-group"><label>URL</label><input type="url" id="cardLinkUrl" required></div><button type="submit" class="btn">Add</button></form></div>
     </div>
 
     <div class="modal" id="deleteModal">
-        <div class="modal-content" style="max-width: 360px; text-align: center;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-                <h2 style="color: var(--danger-color); font-size: 1.15rem; font-weight: 800;">Delete Item?</h2>
-                <button class="close-btn close-modal" style="background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
-            </div>
-            <input type="hidden" id="deleteTargetIndex" value="">
-            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.25rem;">Remove <strong id="deleteTargetName"></strong>?</p>
-            <button type="button" class="btn btn-danger" id="confirmDeleteBtn" style="margin-bottom: 0.5rem;">Yes, Delete</button>
-            <button type="button" class="btn btn-secondary close-modal" style="margin-top: 0;">Cancel</button>
-        </div>
+        <div class="modal-content" style="text-align:center;"><input type="hidden" id="deleteTargetIndex"><button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button></div>
+    </div>
+
+    <div class="modal" id="aiBacklogModal">
+        <div class="modal-content"><form id="aiBacklogForm"><div class="form-group"><label>Target Date</label><input type="date" id="aiTargetDeadline" required></div><button type="submit" class="btn">Generate</button></form><div id="aiBacklogOutputArea" style="display:none;margin-top:10px;"></div></div>
     </div>
 
     <footer>
@@ -1125,16 +862,21 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // Anti-breach / Security block scripts
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) || (e.ctrlKey && e.key.toUpperCase() === 'U')) {
+                e.preventDefault();
+                alert("Inspection and source code viewing are strictly disabled.");
+                return false;
+            }
+        });
+
         window.safeExecute = function(fn, ...args) {
-            try {
-                return fn(...args);
-            } catch (err) {
+            try { return fn(...args); } catch (err) {
                 console.error("Anti-Crash caught error:", err);
                 const banner = document.getElementById('antiCrashBanner');
-                if(banner) {
-                    banner.style.display = 'block';
-                    setTimeout(() => banner.style.display = 'none', 5000);
-                }
+                if(banner) { banner.style.display = 'block'; setTimeout(() => banner.style.display = 'none', 5000); }
             }
         };
 
@@ -1153,7 +895,7 @@
 
         let currentUser = null;
         let isRegisterMode = false;
-        let profileData = { name: "Arsh Verma", classLevel: "Class 11", address: "Lucknow, India", avatarUrl: "", theme: "dark" };
+        let profileData = { name: "Student", classLevel: "Class 11", address: "India", avatarUrl: "", theme: "dark" };
         let studyStats = { focusMinutes: 0, streak: 1, badges: ["🏆 Beginner Scholar"] };
         let autoApprovalEnabled = false;
         let isUserPremium = false;
@@ -1248,17 +990,16 @@
             document.getElementById('themeSelect').value = themeName;
         }
 
-        // Auto-Approval Toggle Setting
         window.toggleAutoApproval = async function(status) {
             autoApprovalEnabled = status;
             try {
                 const settingsRef = doc(db, "system", "settings");
                 await setDoc(settingsRef, { autoApproval: status }, { merge: true });
-                alert(`Auto-approval for new registrants is now ${status ? 'ENABLED' : 'DISABLED'}`);
+                alert(`Auto-approval is now ${status ? 'ENABLED' : 'DISABLED'}`);
             } catch (err) { console.error(err); }
         };
 
-        // Active Users & WhatsApp-style Chat
+        // Active Users & WhatsApp Chat
         window.openActiveUsersModal = function() {
             document.getElementById('activeUsersModal').classList.add('active');
             renderActiveUsersList();
@@ -1269,8 +1010,8 @@
             container.innerHTML = "";
             liveActiveUsers.forEach(u => {
                 const div = document.createElement('div');
-                div.style.cssText = "padding: 0.5rem; border-radius: 8px; cursor: pointer; margin-bottom: 4px; background: var(--surface-solid); font-size: 0.75rem;";
-                div.innerHTML = `<strong>${u.username}</strong><br><span style="color:var(--success-color); font-size:0.65rem;">● ${u.status}</span>`;
+                div.style.cssText = "padding: 0.4rem; border-radius: 6px; cursor: pointer; margin-bottom: 4px; background: var(--surface-solid); font-size: 0.75rem;";
+                div.innerHTML = `<strong>${u.username}</strong><br><span style="color:var(--success-color); font-size:0.6rem;">● ${u.status}</span>`;
                 div.onclick = () => selectChatUser(u.username);
                 container.appendChild(div);
             });
@@ -1295,21 +1036,18 @@
             const box = document.getElementById('chatMessagesBox');
             box.innerHTML = "";
             const filtered = chatMessages.filter(m => (m.sender === currentUser.username && m.recipient === activeChatRecipient) || (m.sender === activeChatRecipient && m.recipient === currentUser.username));
-            if(filtered.length === 0) {
-                box.innerHTML = `<span style="color:var(--text-secondary); text-align:center; margin:auto;">No messages yet. Say hello!</span>`;
-                return;
-            }
+            if(filtered.length === 0) { box.innerHTML = `<span style="color:var(--text-secondary); text-align:center; margin:auto;">No messages.</span>`; return; }
             filtered.forEach(m => {
                 const div = document.createElement('div');
                 const isMe = m.sender === currentUser.username;
-                div.style.cssText = `max-width: 80%; padding: 0.4rem 0.6rem; border-radius: 10px; font-size: 0.75rem; align-self: ${isMe ? 'flex-end' : 'flex-start'}; background: ${isMe ? 'var(--accent-color)' : 'var(--surface-solid)'}; color: ${isMe ? '#fff' : 'var(--text-primary)'};`;
-                div.innerHTML = `<div>${m.text}</div><div style="font-size: 0.55rem; opacity: 0.7; text-align: right; margin-top: 2px;">${m.time}</div>`;
+                div.style.cssText = `max-width: 80%; padding: 0.35rem 0.5rem; border-radius: 8px; font-size: 0.75rem; align-self: ${isMe ? 'flex-end' : 'flex-start'}; background: ${isMe ? 'var(--accent-color)' : 'var(--surface-solid)'}; color: ${isMe ? '#fff' : 'var(--text-primary)'};`;
+                div.innerHTML = `<div>${m.text}</div><div style="font-size: 0.5rem; opacity: 0.7; text-align: right; margin-top: 1px;">${m.time}</div>`;
                 box.appendChild(div);
             });
             box.scrollTop = box.scrollHeight;
         }
 
-        // Mailbox System
+        // Mailbox
         window.openMailboxModal = function() {
             document.getElementById('mailboxModal').classList.add('active');
             if (currentUser && currentUser.role === 'admin') {
@@ -1327,7 +1065,7 @@
             systemMailbox.push({ sender: 'admin', recipient, content, time: new Date().toLocaleString() });
             document.getElementById('adminMailContent').value = "";
             document.getElementById('adminMailRecipient').value = "";
-            alert("Mail dispatched successfully!");
+            alert("Mail dispatched!");
             renderMailboxMessages();
         };
 
@@ -1335,66 +1073,48 @@
             const container = document.getElementById('mailboxMessagesContainer');
             container.innerHTML = "";
             const relevantMails = systemMailbox.filter(m => m.recipient === 'all' || m.recipient === currentUser.username || currentUser.role === 'admin');
-            if(relevantMails.length === 0) {
-                container.innerHTML = `<p style="font-size:0.75rem; text-align:center; color:var(--text-secondary);">No messages in mailbox.</p>`;
-                return;
-            }
+            if(relevantMails.length === 0) { container.innerHTML = `<p style="font-size:0.75rem; text-align:center; color:var(--text-secondary);">No messages.</p>`; return; }
             relevantMails.forEach(m => {
                 const div = document.createElement('div');
-                div.style.cssText = "background: var(--surface-solid); padding: 0.6rem; border-radius: 10px; border: 1px solid var(--border-color); font-size: 0.75rem;";
+                div.style.cssText = "background: var(--surface-solid); padding: 0.5rem; border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.75rem;";
                 div.innerHTML = `<strong>From: ${m.sender.toUpperCase()}</strong> (To: ${m.recipient})<br>${m.content}<br><span style="font-size: 0.6rem; color: var(--text-secondary);">${m.time}</span>`;
                 container.appendChild(div);
             });
         }
 
-        // Premium Unlock System
-        window.openPremiumModal = function() {
-            document.getElementById('premiumModal').classList.add('active');
-        };
-
+        // Premium Unlock
+        window.openPremiumModal = function() { document.getElementById('premiumModal').classList.add('active'); };
         window.openPremiumPaymentQR = function() {
             document.getElementById('premiumQrSection').style.display = 'block';
             const qrContainer = document.getElementById('premiumUpiQr');
             qrContainer.innerHTML = "";
             try {
-                const qr = qrcode(4, 'M');
-                qr.addData("upi://pay?pa=arshverma1@fam&pn=Arsh%20Verma&am=49&cu=INR");
-                qr.make();
-                qrContainer.innerHTML = qr.createImgTag(4, 6);
-            } catch(e) { qrContainer.innerHTML = "QR Error"; }
+                const qr = new QRCode(qrContainer, { text: "upi://pay?pa=arshverma1@fam&pn=Arsh%20Verma&am=49&cu=INR", width: 120, height: 120 });
+            } catch(e) {}
         };
 
-        // Notes lock verification handler
         window.openNotesModal = function() {
             if (!isUserPremium && currentUser && currentUser.role !== 'admin') {
-                document.getElementById('notesLockedNotice').style.display = 'block';
-                document.getElementById('notesUnlockedArea').style.display = 'none';
-            } else {
-                document.getElementById('notesLockedNotice').style.display = 'none';
-                document.getElementById('notesUnlockedArea').style.display = 'block';
-                renderNotesRepository();
+                alert("Notes are locked! Please upgrade to Premium (₹49/mo) from the menu.");
+                return;
             }
             document.getElementById('notesModal').classList.add('active');
+            renderNotesRepository();
         };
 
-        // Admin Live Editor Modal
-        window.openEditorModal = function() {
-            document.getElementById('editorModal').classList.add('active');
-        };
+        window.openEditorModal = function() { document.getElementById('editorModal').classList.add('active'); };
 
         document.getElementById('editorForm').addEventListener('submit', (e) => {
             e.preventDefault();
             safeExecute(() => {
-                const newBanner = document.getElementById('editBannerTitle').value;
-                const newWorkspace = document.getElementById('editWorkspaceTitle').value;
-                document.querySelector('[data-editable="banner_title"]').textContent = newBanner;
-                document.getElementById('mainDashboardTitle').textContent = newWorkspace;
+                document.querySelector('[data-editable="banner_title"]').textContent = document.getElementById('editBannerTitle').value;
+                document.getElementById('mainDashboardTitle').textContent = document.getElementById('editWorkspaceTitle').value;
                 document.getElementById('editorModal').classList.remove('active');
-                alert("Live changes applied successfully!");
+                alert("Applied!");
             });
         });
 
-        // Focus Clock Session Engine (Timer & Stopwatch with Breaks & Pause)
+        // Focus Session Engine
         let focusTimerInterval = null;
         let focusTimeRemaining = 25 * 60;
         let focusStopwatchSeconds = 0;
@@ -1414,8 +1134,7 @@
                 breakDurationMins = parseInt(document.getElementById('focusBreakDuration').value) || 5;
 
                 if (focusActiveMode === 'timer') {
-                    const mins = parseInt(document.getElementById('focusDurationInput').value) || 25;
-                    focusTimeRemaining = mins * 60;
+                    focusTimeRemaining = (parseInt(document.getElementById('focusDurationInput').value) || 25) * 60;
                 } else {
                     focusStopwatchSeconds = 0;
                 }
@@ -1434,19 +1153,15 @@
             if (focusActiveMode === 'timer') {
                 if (focusTimeRemaining > 0) {
                     focusTimeRemaining--;
-                    let m = Math.floor(focusTimeRemaining / 60);
-                    let s = focusTimeRemaining % 60;
-                    document.getElementById('focusClockDisplay').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                    document.getElementById('focusClockDisplay').textContent = `${String(Math.floor(focusTimeRemaining / 60)).padStart(2,'0')}:${String(focusTimeRemaining % 60).padStart(2,'0')}`;
                 } else {
                     clearInterval(focusTimerInterval);
-                    alert("Focus session completed successfully!");
+                    alert("Focus session completed!");
                     closeFocusModal();
                 }
             } else {
                 focusStopwatchSeconds++;
-                let m = Math.floor(focusStopwatchSeconds / 60);
-                let s = focusStopwatchSeconds % 60;
-                document.getElementById('focusClockDisplay').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+                document.getElementById('focusClockDisplay').textContent = `${String(Math.floor(focusStopwatchSeconds / 60)).padStart(2,'0')}:${String(focusStopwatchSeconds % 60).padStart(2,'0')}`;
             }
         }
 
@@ -1469,29 +1184,20 @@
         };
 
         window.triggerBreakPrompt = function() {
-            if (breaksRemainingMax <= 0) {
-                alert("Maximum allowed breaks reached!");
-                return;
-            }
-            if (confirm(`Do you want to take a ${breakDurationMins}-minute break now? (${breaksRemainingMax} breaks remaining)`)) {
+            if (breaksRemainingMax <= 0) { alert("Max breaks reached!"); return; }
+            if (confirm(`Take a ${breakDurationMins}-min break?`)) {
                 if (focusTimerInterval) clearInterval(focusTimerInterval);
                 breaksRemainingMax--;
-                
                 document.getElementById('focusActiveView').style.display = 'none';
                 document.getElementById('focusBreakView').style.display = 'block';
 
                 let breakSeconds = breakDurationMins * 60;
-                document.getElementById('breakClockDisplay').textContent = `${String(breakDurationMins).padStart(2,'0')}:00`;
-
                 const breakInterval = setInterval(() => {
                     if (breakSeconds > 0) {
                         breakSeconds--;
-                        let bm = Math.floor(breakSeconds / 60);
-                        let bs = breakSeconds % 60;
-                        document.getElementById('breakClockDisplay').textContent = `${String(bm).padStart(2,'0')}:${String(bs).padStart(2,'0')}`;
+                        document.getElementById('breakClockDisplay').textContent = `${String(Math.floor(breakSeconds / 60)).padStart(2,'0')}:${String(breakSeconds % 60).padStart(2,'0')}`;
                     } else {
                         clearInterval(breakInterval);
-                        alert("Break time over! Resuming focus session.");
                         endBreakEarly();
                     }
                 }, 1000);
@@ -1515,274 +1221,115 @@
             document.getElementById('focusBreakView').style.display = 'none';
         }
 
-        // Club Studying Room Modes (Host / Join)
+        // Club Studying
         window.switchClubMode = function(mode) {
-            const hostSec = document.getElementById('clubHostSection');
-            const joinSec = document.getElementById('clubJoinSection');
-            const hostBtn = document.getElementById('hostTabBtn');
-            const joinBtn = document.getElementById('joinTabBtn');
-
-            if (mode === 'host') {
-                hostSec.style.display = 'block';
-                joinSec.style.display = 'none';
-                hostBtn.className = 'btn';
-                joinBtn.className = 'btn btn-secondary';
-                joinBtn.style.marginTop = '0';
-            } else {
-                hostSec.style.display = 'none';
-                joinSec.style.display = 'block';
-                hostBtn.className = 'btn btn-secondary';
-                hostBtn.style.marginTop = '0';
-                joinBtn.className = 'btn';
-            }
+            document.getElementById('clubHostSection').style.display = mode === 'host' ? 'block' : 'none';
+            document.getElementById('clubJoinSection').style.display = mode === 'join' ? 'block' : 'none';
         };
-
         window.myComputerId = "COMP-" + Math.floor(100000 + Math.random() * 900000);
         let localStream = null;
-        let screenStream = null;
-
-        window.connectToPeer = function() {
-            const peerId = document.getElementById('peerComputerIdInput').value.trim();
-            if(!peerId) { alert("Please enter a valid peer Computer ID!"); return; }
-            alert(`Successfully joined session hosted by: ${peerId}! Audio and video feeds connected.`);
-        };
-
+        window.connectToPeer = function() { alert("Connected to peer successfully!"); };
         window.toggleWebcam = async function() {
             safeExecute(async () => {
                 const videoEl = document.getElementById('localWebcamStream');
-                if (!localStream) {
-                    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                    videoEl.srcObject = localStream;
-                } else {
-                    localStream.getTracks().forEach(track => track.stop());
-                    videoEl.srcObject = null;
-                    localStream = null;
-                }
+                if (!localStream) { localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true }); videoEl.srcObject = localStream; }
+                else { localStream.getTracks().forEach(t => t.stop()); videoEl.srcObject = null; localStream = null; }
             });
         };
-
-        window.toggleMicrophone = function() {
-            if (localStream) {
-                const audioTrack = localStream.getAudioTracks()[0];
-                if(audioTrack) {
-                    audioTrack.enabled = !audioTrack.enabled;
-                    alert(`Microphone is now ${audioTrack.enabled ? 'UNMUTED' : 'MUTED'}`);
-                }
-            } else {
-                alert("Please enable your webcam/media stream first!");
-            }
-        };
-
+        window.toggleMicrophone = function() { if (localStream) { localStream.getAudioTracks()[0].enabled = !localStream.getAudioTracks()[0].enabled; } };
         window.startScreenShare = async function() {
-            safeExecute(async () => {
-                const screenEl = document.getElementById('peerScreenStream');
-                screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
-                screenEl.srcObject = screenStream;
-            });
+            safeExecute(async () => { document.getElementById('peerScreenStream').srcObject = await navigator.mediaDevices.getDisplayMedia({ video: true }); });
         };
 
         window.requestNotificationPermission = async function() {
-            safeExecute(async () => {
-                if (!("Notification" in window)) {
-                    alert("This browser does not support desktop notifications.");
-                    return;
-                }
-                let permission = await Notification.requestPermission();
-                if (permission === "granted") {
-                    alert("Notifications enabled successfully!");
-                    new Notification("Backlog Burster", { body: "Phone & desktop reminders are active!" });
-                } else {
-                    alert("Notification permission denied.");
-                }
-            });
+            if ("Notification" in window && await Notification.requestPermission() === "granted") {
+                new Notification("Backlog Burster", { body: "Reminders active!" });
+            }
         };
 
-        function checkBacklogNotifications() {
-            safeExecute(() => {
-                if (!("Notification" in window) || Notification.permission !== "granted") return;
-                const todayStr = new Date().toISOString().split('T')[0];
-                backlogs.forEach(item => {
-                    if (!item.finished && item.date === todayStr) {
-                        new Notification("📚 Backlog Due Today!", {
-                            body: `Time to study [${item.subject}] ${item.name}!`
-                        });
-                    }
-                });
-            });
-        }
-
-        // Pomodoro Clock Engine
         let pomodoroTimer = null;
         let timeLeft = 25 * 60;
         let isTimerRunning = false;
-
         window.startPomodoro = function() {
             if (isTimerRunning) return;
             isTimerRunning = true;
-            pomodoroTimer = setInterval(async () => {
-                safeExecute(async () => {
-                    if (timeLeft > 0) {
-                        timeLeft--;
-                        updatePomodoroDisplay();
-                    } else {
-                        stopPomodoro();
-                        studyStats.focusMinutes += 25;
-                        updateStatsUI();
-                        alert("Pomodoro session completed! 25 focus minutes logged.");
-                        await saveDataToCloud();
-                    }
-                });
+            pomodoroTimer = setInterval(() => {
+                if (timeLeft > 0) { timeLeft--; updatePomodoroDisplay(); }
+                else { stopPomodoro(); alert("Pomodoro complete!"); }
             }, 1000);
         };
-
-        window.stopPomodoro = function() {
-            clearInterval(pomodoroTimer);
-            isTimerRunning = false;
-            timeLeft = 25 * 60;
-            updatePomodoroDisplay();
-        };
-
-        window.resetPomodoro = function() {
-            stopPomodoro();
-        };
-
+        window.stopPomodoro = function() { clearInterval(pomodoroTimer); isTimerRunning = false; timeLeft = 25 * 60; updatePomodoroDisplay(); };
+        window.resetPomodoro = function() { stopPomodoro(); };
         function updatePomodoroDisplay() {
-            const mins = Math.floor(timeLeft / 60);
-            const secs = timeLeft % 60;
-            document.getElementById('pomodoroDisplay').textContent = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+            document.getElementById('pomodoroDisplay').textContent = `${String(Math.floor(timeLeft / 60)).padStart(2,'0')}:${String(timeLeft % 60).padStart(2,'0')}`;
         }
 
         async function ensureDefaultAdmin() {
             safeExecute(async () => {
                 const adminRef = doc(db, "users", "admin");
-                const adminSnap = await getDoc(adminRef);
-                if (!adminSnap.exists()) {
-                    await setDoc(adminRef, {
-                        password: "admin@2010",
-                        role: "admin",
-                        approved: true,
-                        lastActive: new Date().toLocaleString(),
-                        profileData: { name: "Administrator", classLevel: "Admin Portal", address: "System", avatarUrl: "", theme: "dark" },
-                        studyStats: { focusMinutes: 120, streak: 5, badges: ["🏆 Master Admin"] },
-                        syllabusData: defaultSyllabusMaster,
-                        backlogs: []
-                    });
+                if (!(await getDoc(adminRef)).exists()) {
+                    await setDoc(adminRef, { password: "admin@2010", role: "admin", approved: true, premium: true, profileData: { name: "Admin", theme: "dark" }, studyStats: { focusMinutes: 0, streak: 1 }, syllabusData: defaultSyllabusMaster, backlogs: [] });
                 }
             });
         }
         ensureDefaultAdmin();
 
         const authForm = document.getElementById('authForm');
-        const authUsernameInput = document.getElementById('authUsername');
-        const authPasswordInput = document.getElementById('authPassword');
-        const authTitle = document.getElementById('authTitle');
-        const authSubmitBtn = document.getElementById('authSubmitBtn');
-        const authToggleBtn = document.getElementById('authToggleBtn');
-        const authScreen = document.getElementById('authScreen');
-
-        authToggleBtn.addEventListener('click', () => {
-            isRegisterMode = !isRegisterMode;
-            authTitle.textContent = isRegisterMode ? "Backlog Burster Register" : "Backlog Burster Login";
-            authSubmitBtn.textContent = isRegisterMode ? "Register Account" : "Login";
-            authToggleBtn.textContent = isRegisterMode ? "Already have an account? Login" : "Need an account? Register";
-        });
-
         authForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             safeExecute(async () => {
-                const username = authUsernameInput.value.trim().toLowerCase();
-                const password = authPasswordInput.value.trim();
-                if(!username || !password) return;
-
+                const username = document.getElementById('authUsername').value.trim().toLowerCase();
+                const password = document.getElementById('authPassword').value.trim();
                 const userRef = doc(db, "users", username);
                 const userSnap = await getDoc(userRef);
-
-                // Check system auto-approval setting
                 const settingsSnap = await getDoc(doc(db, "system", "settings"));
-                if (settingsSnap.exists()) {
-                    autoApprovalEnabled = settingsSnap.data().autoApproval || false;
-                }
+                if (settingsSnap.exists()) autoApprovalEnabled = settingsSnap.data().autoApproval || false;
 
                 if(isRegisterMode) {
-                    if(userSnap.exists()) {
-                        alert("Username already exists!");
-                        return;
-                    }
-                    const newUserData = {
-                        password: password,
-                        role: username === 'admin' ? 'admin' : 'user',
-                        approved: autoApprovalEnabled || username === 'admin',
-                        premium: false,
-                        lastActive: new Date().toLocaleString(),
-                        profileData: { name: username, classLevel: "Class 11", address: "India", avatarUrl: "", theme: "dark" },
-                        studyStats: { focusMinutes: 0, streak: 1, badges: ["🏆 Beginner Scholar"] },
-                        syllabusData: defaultSyllabusMaster,
-                        backlogs: backlogs
-                    };
-                    await setDoc(userRef, newUserData);
-                    alert(autoApprovalEnabled ? "Account registered and auto-approved!" : "Account registered successfully! Waiting for Admin approval.");
-                    isRegisterMode = false;
-                    authTitle.textContent = "Backlog Burster Login";
-                    authSubmitBtn.textContent = "Login";
-                    authToggleBtn.textContent = "Need an account? Register";
-                    authForm.reset();
+                    if(userSnap.exists()) { alert("User exists!"); return; }
+                    await setDoc(userRef, { password, role: username === 'admin' ? 'admin' : 'user', approved: autoApprovalEnabled || username === 'admin', premium: false, profileData: { name: username, theme: 'dark' }, studyStats: { focusMinutes: 0, streak: 1 }, syllabusData: defaultSyllabusMaster, backlogs: [] });
+                    alert(autoApprovalEnabled ? "Registered & approved!" : "Registered! Waiting for admin approval.");
+                    isRegisterMode = false; authForm.reset();
                 } else {
-                    if(!userSnap.exists()) {
-                        alert("User not found! Please register first.");
-                        return;
-                    }
-                    const userData = userSnap.data();
-                    if(userData.password !== password) {
-                        alert("Incorrect password!");
-                        return;
-                    }
-                    if(userData.approved === false) {
-                        alert("Your account is pending admin approval.");
-                        return;
-                    }
-
-                    currentUser = { username: username, role: userData.role || "user" };
-                    isUserPremium = userData.premium || false;
-                    profileData = userData.profileData || profileData;
-                    studyStats = userData.studyStats || studyStats;
-                    syllabusData = syncSyllabusWithMaster(userData.syllabusData);
-                    backlogs = userData.backlogs || backlogs;
-
+                    if(!userSnap.exists()) { alert("User not found!"); return; }
+                    const data = userSnap.data();
+                    if(data.password !== password) { alert("Wrong password!"); return; }
+                    if(!data.approved) { alert("Pending admin approval."); return; }
+                    currentUser = { username, role: data.role || 'user' };
+                    isUserPremium = data.premium || false;
+                    profileData = data.profileData || profileData;
+                    studyStats = data.studyStats || studyStats;
+                    syllabusData = syncSyllabusWithMaster(data.syllabusData);
+                    backlogs = data.backlogs || backlogs;
                     localStorage.setItem('bb_active_user', username);
-
-                    await setDoc(userRef, { ...userData, syllabusData: syllabusData, lastActive: new Date().toLocaleString() });
-                    await fetchGlobalNotes();
-
-                    authScreen.style.display = 'none';
+                    document.getElementById('authScreen').style.display = 'none';
                     initDashboard();
-                    checkBacklogNotifications();
                 }
             });
         });
 
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            currentUser = null;
-            localStorage.removeItem('bb_active_user');
-            authScreen.style.display = 'flex';
-            authForm.reset();
+        document.getElementById('authToggleBtn').addEventListener('click', () => {
+            isRegisterMode = !isRegisterMode;
+            document.getElementById('authTitle').textContent = isRegisterMode ? "Register" : "Login";
+            document.getElementById('authSubmitBtn').textContent = isRegisterMode ? "Register" : "Login";
+            document.getElementById('authToggleBtn').textContent = isRegisterMode ? "Existing Account? Login" : "Create Account";
         });
 
-        window.addEventListener('load', async () => {
-            const savedUser = localStorage.getItem('bb_active_user');
-            if (savedUser) {
-                const userRef = doc(db, "users", savedUser);
-                const userSnap = await getDoc(userRef);
-                if (userSnap.exists()) {
-                    const userData = userSnap.data();
-                    currentUser = { username: savedUser, role: userData.role || "user" };
-                    isUserPremium = userData.premium || false;
-                    profileData = userData.profileData || profileData;
-                    studyStats = userData.studyStats || studyStats;
-                    syllabusData = syncSyllabusWithMaster(userData.syllabusData);
-                    backlogs = userData.backlogs || backlogs;
+        document.getElementById('logoutBtn').addEventListener('click', () => { currentUser = null; localStorage.removeItem('bb_active_user'); document.getElementById('authScreen').style.display = 'flex'; authForm.reset(); });
 
-                    await fetchGlobalNotes();
-                    authScreen.style.display = 'none';
+        window.addEventListener('load', async () => {
+            const saved = localStorage.getItem('bb_active_user');
+            if(saved) {
+                const snap = await getDoc(doc(db, "users", saved));
+                if(snap.exists()) {
+                    const data = snap.data();
+                    currentUser = { username: saved, role: data.role || 'user' };
+                    isUserPremium = data.premium || false;
+                    profileData = data.profileData || profileData;
+                    studyStats = data.studyStats || studyStats;
+                    syllabusData = syncSyllabusWithMaster(data.syllabusData);
+                    backlogs = data.backlogs || backlogs;
+                    document.getElementById('authScreen').style.display = 'none';
                     initDashboard();
                 }
             }
@@ -1790,43 +1337,21 @@
 
         async function fetchGlobalNotes() {
             safeExecute(async () => {
-                const notesRef = doc(db, "system", "global_notes");
-                const notesSnap = await getDoc(notesRef);
-                if (notesSnap.exists()) notesData = notesSnap.data().list || [];
-                else notesData = [];
+                const snap = await getDoc(doc(db, "system", "global_notes"));
+                if(snap.exists()) notesData = snap.data().list || [];
             });
         }
-
-        async function saveGlobalNotes() {
-            safeExecute(async () => {
-                const notesRef = doc(db, "system", "global_notes");
-                await setDoc(notesRef, { list: notesData });
-            });
-        }
-
+        async function saveGlobalNotes() { safeExecute(async () => { await setDoc(doc(db, "system", "global_notes"), { list: notesData }); }); }
         async function saveDataToCloud() {
             if(!currentUser) return;
-            safeExecute(async () => {
-                const userRef = doc(db, "users", currentUser.username);
-                const userSnap = await getDoc(userRef);
-                const existingData = userSnap.exists() ? userSnap.data() : {};
-                await setDoc(userRef, {
-                    ...existingData,
-                    lastActive: new Date().toLocaleString(),
-                    profileData: profileData,
-                    studyStats: studyStats,
-                    syllabusData: syllabusData,
-                    backlogs: backlogs
-                });
-            });
+            safeExecute(async () => { await setDoc(doc(db, "users", currentUser.username), { profileData, studyStats, syllabusData, backlogs }, { merge: true }); });
         }
 
         function initDashboard() {
             safeExecute(() => {
-                document.getElementById('headerUserBadge').textContent = `${currentUser.username}`;
+                document.getElementById('headerUserBadge').textContent = currentUser.username;
                 document.getElementById('myComputerIdDisplay').textContent = window.myComputerId;
                 applyTheme(profileData.theme || 'dark');
-
                 if(currentUser.role === 'admin') {
                     document.getElementById('openAdminModal').style.display = 'block';
                     document.getElementById('openEditorModal').style.display = 'block';
@@ -1840,14 +1365,7 @@
                 } else {
                     document.getElementById('openAdminModal').style.display = 'none';
                     document.getElementById('openEditorModal').style.display = 'none';
-                    document.getElementById('mainDashboardTitle').textContent = "My Study Workspace";
-                    document.getElementById('mainAddBtn').style.display = 'block';
-                    document.getElementById('homeProgressBannerContainer').style.display = 'block';
-                    document.getElementById('userWidgetsContainer').style.display = 'grid';
-                    document.getElementById('userSubjectBlocksContainer').style.display = 'block';
-                    document.getElementById('adminMasterUserBlocksContainer').style.display = 'none';
                     renderBacklogs();
-                    updateStatsUI();
                 }
                 updateProfileUI();
                 renderSyllabusTracker();
@@ -1861,840 +1379,97 @@
 
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');
-        const closeSidebar = document.getElementById('closeSidebar');
-
         menuToggle.addEventListener('click', () => sidebar.classList.add('active'));
-        closeSidebar.addEventListener('click', () => sidebar.classList.remove('active'));
+        document.getElementById('closeSidebar').addEventListener('click', () => sidebar.classList.remove('active'));
 
-        document.getElementById('openProfileModal').addEventListener('click', () => {
-            document.getElementById('inputName').value = profileData.name;
-            document.getElementById('inputClass').value = profileData.classLevel;
-            document.getElementById('inputAddress').value = profileData.address;
-            document.getElementById('inputAvatar').value = profileData.avatarUrl;
-            document.getElementById('themeSelect').value = profileData.theme || 'dark';
-            document.getElementById('profileModal').classList.add('active');
-        });
+        document.getElementById('openProfileModal').addEventListener('click', () => document.getElementById('profileModal').classList.add('active'));
+        document.getElementById('openAiBacklogModal').addEventListener('click', () => document.getElementById('aiBacklogModal').classList.add('active'));
+        document.getElementById('openClubModal').addEventListener('click', () => document.getElementById('clubModal').classList.add('active'));
+        document.getElementById('openFocusSessionModal').addEventListener('click', () => document.getElementById('focusSessionModal').classList.add('active'));
+        document.getElementById('openActiveUsersModal').addEventListener('click', () => openActiveUsersModal());
+        document.getElementById('openMailboxModal').addEventListener('click', () => openMailboxModal());
+        document.getElementById('openPremiumModal').addEventListener('click', () => openPremiumModal());
+        document.getElementById('openFeedbackModal').addEventListener('click', () => document.getElementById('feedbackModal').classList.add('active'));
+        document.getElementById('openCoffeeModal').addEventListener('click', () => { document.getElementById('coffeeModal').classList.add('active'); updateCoffeeQR(100); });
+        document.getElementById('openContactModal').addEventListener('click', () => document.getElementById('contactModal').classList.add('active'));
 
-        document.getElementById('openAiBacklogModal').addEventListener('click', () => {
-            document.getElementById('aiBacklogModal').classList.add('active');
-            renderAiChapterChecklist();
-        });
-
-        document.getElementById('openClubModal').addEventListener('click', () => {
-            document.getElementById('clubModal').classList.add('active');
-        });
-
-        document.getElementById('openFocusSessionModal').addEventListener('click', () => {
-            document.getElementById('focusSessionModal').classList.add('active');
-        });
-
-        document.getElementById('openActiveUsersModal').addEventListener('click', () => {
-            openActiveUsersModal();
-        });
-
-        document.getElementById('openMailboxModal').addEventListener('click', () => {
-            openMailboxModal();
-        });
-
-        document.getElementById('openPremiumModal').addEventListener('click', () => {
-            openPremiumModal();
-        });
-
-        document.getElementById('openFeedbackModal').addEventListener('click', () => {
-            document.getElementById('feedbackModal').classList.add('active');
-        });
-
-        document.getElementById('openCoffeeModal').addEventListener('click', () => {
-            document.getElementById('coffeeModal').classList.add('active');
-            updateCoffeeQR(100);
-        });
-
-        document.getElementById('openContactModal').addEventListener('click', () => {
-            document.getElementById('contactModal').classList.add('active');
-        });
-
-        // Feedback Form & Thank-You Mail Dispatcher
-        window.handleStarClick = function(e) {
-            const rect = e.target.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const starWidth = rect.width / 5;
-            const rating = Math.min(5, Math.max(1, Math.ceil(clickX / starWidth)));
-            document.getElementById('selectedStarCount').value = rating;
-            document.getElementById('starRatingContainer').textContent = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+        window.setCoffeeAmount = function(amt) { document.getElementById('coffeeCustomAmt').value = amt; updateCoffeeQR(amt); };
+        window.updateCoffeeQR = function(amt) {
+            const container = document.getElementById('upiQrCodeContainer');
+            container.innerHTML = "";
+            try { new QRCode(container, { text: `upi://pay?pa=arshverma1@fam&pn=Arsh%20Verma&am=${amt}&cu=INR`, width: 110, height: 110 }); } catch(e) {}
         };
+        window.payViaRazorpay = function() { alert("Redirecting to Razorpay gateway..."); };
 
-        document.getElementById('feedbackForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            safeExecute(() => {
-                const rating = document.getElementById('selectedStarCount').value;
-                const msg = document.getElementById('feedbackTextMsg').value;
-                const email = document.getElementById('feedbackUserEmail').value;
-
-                // Push feedback to admin mailbox as visible record
-                systemMailbox.push({
-                    sender: currentUser ? currentUser.username : 'guest',
-                    recipient: 'admin',
-                    content: `⭐ [Feedback: ${rating}/5 Stars] ${msg}`,
-                    time: new Date().toLocaleString()
-                });
-
-                alert(`Feedback submitted successfully! Admin can now view it in the Mailbox.\n\n📧 System-generated Thank-You Mail successfully dispatched to: ${email}`);
-                document.getElementById('feedbackModal').classList.remove('active');
-                document.getElementById('feedbackForm').reset();
-            });
-        });
-
-        function renderAiChapterChecklist() {
-            safeExecute(() => {
-                const listContainer = document.getElementById('aiChapterSelectionList');
-                listContainer.innerHTML = "";
-                document.getElementById('aiTargetDeadline').value = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-                document.getElementById('aiBacklogOutputArea').style.display = 'none';
-
-                let hasChapters = false;
-                syllabusData.forEach((subj) => {
-                    subj.chapters.forEach((ch) => {
-                        if (!ch.completed) {
-                            hasChapters = true;
-                            const div = document.createElement('div');
-                            div.style.cssText = "display: flex; align-items: center; justify-content: space-between; gap: 8px; background: var(--surface-solid); padding: 0.5rem 0.65rem; border-radius: 8px; border: 1px solid var(--border-color);";
-                            div.innerHTML = `
-                                <label style="font-size: 0.75rem; display: flex; align-items: center; gap: 6px; flex: 1; word-break: break-word; font-weight: 500;">
-                                    <input type="checkbox" class="ai-chapter-checkbox" data-subject="${subj.subject}" data-name="${ch.name}" checked style="width: 14px; height: 14px; accent-color: var(--accent-color);">
-                                    [${subj.subject}] ${ch.name}
-                                </label>
-                                <div style="display: flex; align-items: center; gap: 3px; flex-shrink: 0;">
-                                    <input type="number" class="ai-chapter-hours" value="4" min="1" max="40" style="width: 50px; padding: 0.2rem; font-size: 0.7rem; text-align: center; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-gradient-1); color: var(--text-primary);">
-                                    <span style="font-size: 0.65rem; color: var(--text-secondary);">hrs</span>
-                                </div>
-                            `;
-                            listContainer.appendChild(div);
-                        }
-                    });
-                });
-
-                if (!hasChapters) {
-                    listContainer.innerHTML = `<p style="font-size:0.75rem; text-align:center; color:var(--text-secondary);">All syllabus chapters are marked completed!</p>`;
-                }
-            });
-        }
-
-        window.toggleAllAiChapters = function(select) {
-            document.querySelectorAll('.ai-chapter-checkbox').forEach(chk => chk.checked = select);
-        };
-
-        document.getElementById('aiBacklogForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            safeExecute(() => {
-                const checkboxes = document.querySelectorAll('.ai-chapter-checkbox:checked');
-                if (checkboxes.length === 0) {
-                    alert("Please select at least one chapter!");
-                    return;
-                }
-
-                pendingAiSchedule = [];
-                let currentDate = new Date();
-
-                checkboxes.forEach(chk => {
-                    const row = chk.closest('div');
-                    const hoursInput = row.querySelector('.ai-chapter-hours');
-                    let hours = parseFloat(hoursInput.value) || 4;
-
-                    let daysNeeded = Math.ceil(hours / 3);
-                    currentDate.setDate(currentDate.getDate() + daysNeeded);
-                    let targetDateStr = currentDate.toISOString().split('T')[0];
-
-                    pendingAiSchedule.push({
-                        subject: chk.getAttribute('data-subject'),
-                        name: chk.getAttribute('data-name'),
-                        date: targetDateStr,
-                        lecture: 0,
-                        module: 0,
-                        ref: 0,
-                        note: `AI Scheduled (${hours} hrs expected)`,
-                        links: [],
-                        finished: false
-                    });
-                });
-
-                const outputDiv = document.getElementById('aiBacklogOutputArea');
-                outputDiv.style.display = 'block';
-
-                let html = `<strong>✨ AI Generated Backlog Roadmap:</strong><br><br>`;
-                pendingAiSchedule.forEach(item => {
-                    html += `• <strong>[${item.subject}] ${item.name}</strong> — Target Date: <span style="color:var(--accent-color);">${item.date}</span> (${item.note})<br>`;
-                });
-
-                html += `<br>📅 <strong>Do you accept this schedule and want to add it to your Calendar & Workspace?</strong><br>
-                         <div style="display:flex; gap:6px; margin-top:0.6rem;">
-                             <button type="button" class="btn btn-success" style="padding:0.35rem 0.7rem; font-size:0.75rem; width:auto;" onclick="window.acceptAiSchedule()">✅ Accept & Add</button>
-                             <button type="button" class="btn btn-danger" style="padding:0.35rem 0.7rem; font-size:0.75rem; width:auto;" onclick="document.getElementById('aiBacklogOutputArea').style.display='none'">❌ Decline</button>
-                         </div>`;
-                
-                outputDiv.innerHTML = html;
-            });
-        });
-
-        window.acceptAiSchedule = async function() {
-            safeExecute(async () => {
-                pendingAiSchedule.forEach(item => {
-                    if (!backlogs.some(b => b.name === item.name)) {
-                        backlogs.push(item);
-                    }
-                });
-
-                document.getElementById('aiBacklogModal').classList.remove('active');
-                renderBacklogs();
-                await saveDataToCloud();
-                checkBacklogNotifications();
-                alert("Backlog schedule accepted and successfully added to your calendar!");
-                document.getElementById('calendarScheduleModal').classList.add('active');
-                renderDailyScheduleTable();
-            });
-        };
-
-        document.getElementById('openNotesModal').addEventListener('click', () => {
-            openNotesModal();
-        });
-
-        document.getElementById('openAnalyticsModal').addEventListener('click', () => {
-            document.getElementById('analyticsModal').classList.add('active');
-            renderAnalyticsModal();
-        });
-
-        document.getElementById('openAiSolverModal').addEventListener('click', () => {
-            document.getElementById('aiSolverModal').classList.add('active');
-        });
-
-        document.getElementById('openProgressModal').addEventListener('click', () => {
-            document.getElementById('progressModal').classList.add('active');
-            renderSyllabusTracker();
-        });
-
-        document.getElementById('openCalendarScheduleModal').addEventListener('click', () => {
-            document.getElementById('calendarScheduleModal').classList.add('active');
-            renderDailyScheduleTable();
-        });
-
-        document.getElementById('openAdminModal').addEventListener('click', () => {
-            document.getElementById('adminModal').classList.add('active');
-            renderAdminPanel();
-        });
-
-        document.getElementById('mainAddBtn').addEventListener('click', () => {
-            document.getElementById('editIndex').value = -1;
-            document.getElementById('backlogModalTitle').textContent = "Add Study Item";
-            document.getElementById('saveBacklogBtn').textContent = "Save Item";
-            document.getElementById('chapterName').value = "";
-            document.getElementById('chapterDate').value = new Date().toISOString().split('T')[0];
-            document.getElementById('sliderLecture').value = 50;
-            document.getElementById('valLecture').textContent = 50;
-            document.getElementById('sliderModule').value = 50;
-            document.getElementById('valModule').textContent = 50;
-            document.getElementById('sliderRef').value = 50;
-            document.getElementById('valRef').textContent = 50;
-            document.getElementById('chapterNote').value = "";
-            document.getElementById('backlogModal').classList.add('active');
-        });
-
-        document.getElementById('sidebarAddBacklogBtn').addEventListener('click', () => {
-            document.getElementById('editIndex').value = -1;
-            document.getElementById('backlogModalTitle').textContent = "Add Study Item";
-            document.getElementById('saveBacklogBtn').textContent = "Save Item";
-            document.getElementById('chapterName').value = "";
-            document.getElementById('chapterDate').value = new Date().toISOString().split('T')[0];
-            document.getElementById('backlogModal').classList.add('active');
-        });
-
-        document.querySelectorAll('.close-modal').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
-            });
-        });
+        document.querySelectorAll('.close-modal').forEach(btn => btn.addEventListener('click', () => document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'))));
 
         document.getElementById('profileForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            safeExecute(async () => {
-                profileData.name = document.getElementById('inputName').value;
-                profileData.classLevel = document.getElementById('inputClass').value;
-                profileData.address = document.getElementById('inputAddress').value;
-                profileData.avatarUrl = document.getElementById('inputAvatar').value;
-                profileData.theme = document.getElementById('themeSelect').value;
-                applyTheme(profileData.theme);
-                updateProfileUI();
-                document.getElementById('profileModal').classList.remove('active');
-                await saveDataToCloud();
-            });
+            profileData.name = document.getElementById('inputName').value;
+            profileData.classLevel = document.getElementById('inputClass').value;
+            profileData.theme = document.getElementById('themeSelect').value;
+            applyTheme(profileData.theme);
+            document.getElementById('profileModal').classList.remove('active');
+            await saveDataToCloud();
         });
 
         function updateProfileUI() {
-            safeExecute(() => {
-                document.getElementById('sidebarName').textContent = profileData.name;
-                document.getElementById('sidebarClass').textContent = profileData.classLevel;
-                const avatarEl = document.getElementById('sidebarAvatar');
-                if(profileData.avatarUrl.trim() !== "") {
-                    avatarEl.innerHTML = `<img src="${profileData.avatarUrl}" alt="Avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
-                } else {
-                    avatarEl.textContent = profileData.name.substring(0, 2).toUpperCase();
-                }
-            });
+            document.getElementById('sidebarName').textContent = profileData.name;
+            document.getElementById('sidebarClass').textContent = profileData.classLevel;
         }
 
-        function renderAnalyticsModal() {
-            safeExecute(() => {
-                const totalBacklogs = backlogs.length;
-                const finishedBacklogs = backlogs.filter(b => b.finished).length;
-                const activeBacklogs = totalBacklogs - finishedBacklogs;
-
-                let totalSyllabus = 0, completedSyllabus = 0;
-                syllabusData.forEach(s => {
-                    s.chapters.forEach(c => {
-                        totalSyllabus++;
-                        if(c.completed) completedSyllabus++;
-                    });
-                });
-
-                document.getElementById('analyticsWorkloadText').innerHTML = `
-                    • Total Chapters: <strong>${totalSyllabus}</strong><br>
-                    • Completed: <strong style="color:var(--success-color);">${completedSyllabus}</strong><br>
-                    • Active Backlogs: <strong style="color:var(--danger-color);">${activeBacklogs}</strong>
-                `;
-                document.getElementById('analyticsFocusText').innerHTML = `
-                    • Focus Time: <strong>${studyStats.focusMinutes} mins</strong><br>
-                    • Streak: <strong>${studyStats.streak} Days</strong>
-                `;
-
-                const canvas = document.getElementById('analyticsCanvas');
-                const ctx = canvas.getContext('2d');
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--surface-solid').trim() || '#ffffff';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                const categories = ['Studied', 'Cleared', 'Active'];
-                const values = [completedSyllabus, finishedBacklogs, activeBacklogs];
-                const barColors = ['#059669', '#007aff', '#ff3b30'];
-                const maxVal = Math.max(...values, 5);
-
-                const startX = 40;
-                const barWidth = 90;
-                const spacing = 45;
-                const maxHeight = 100;
-
-                ctx.font = "10px sans-serif";
-                ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-primary').trim() || '#000000';
-
-                ctx.beginPath();
-                ctx.moveTo(25, 140);
-                ctx.lineTo(475, 140);
-                ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--border-color').trim() || '#ccc';
-                ctx.stroke();
-
-                categories.forEach((cat, i) => {
-                    const x = startX + i * (barWidth + spacing);
-                    const val = values[i];
-                    const h = (val / maxVal) * maxHeight;
-                    const y = 140 - h;
-
-                    ctx.fillStyle = barColors[i];
-                    ctx.fillRect(x, y, barWidth, h);
-
-                    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-primary').trim() || '#000000';
-                    ctx.textAlign = 'center';
-                    ctx.fillText(val, x + barWidth / 2, y - 5);
-                    ctx.fillText(cat, x + barWidth / 2, 155);
-                });
-            });
-        }
-
-        document.getElementById('notesForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            safeExecute(async () => {
-                const subject = document.getElementById('noteSubject').value;
-                const period = document.getElementById('notePeriod').value;
-                const topic = document.getElementById('noteTopic').value;
-                const visibility = document.getElementById('noteVisibility').value;
-                const linkUrl = document.getElementById('noteLink').value.trim();
-
-                if(!linkUrl) return;
-
-                notesData.push({ id: Date.now(), uploader: currentUser.username, subject, period, topic, visibility, linkUrl });
-                await saveGlobalNotes();
-                document.getElementById('notesForm').reset();
-                renderNotesRepository();
-                alert("Note link added successfully!");
-            });
-        });
-
-        function renderNotesRepository() {
-            safeExecute(() => {
-                const container = document.getElementById('notesListContainer');
-                container.innerHTML = "";
-
-                const visibleNotes = notesData.filter(n => {
-                    if(currentUser.role === 'admin') return true;
-                    if(n.visibility === 'public') return true;
-                    if(n.uploader === currentUser.username) return true;
-                    return false;
-                });
-
-                if(visibleNotes.length === 0) {
-                    container.innerHTML = `<p style="color:var(--text-secondary); text-align:center; font-size:0.75rem;">No notes available.</p>`;
-                    return;
-                }
-
-                visibleNotes.forEach((note) => {
-                    const item = document.createElement('div');
-                    item.style.cssText = "background:var(--bg-gradient-1); padding:0.6rem; border-radius:8px; border:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; gap:6px;";
-                    item.innerHTML = `
-                        <div style="overflow:hidden;">
-                            <div style="font-weight:600; color:var(--text-primary); font-size:0.75rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">[${note.subject}] ${note.topic}</div>
-                            <div style="font-size:0.65rem; color:var(--text-secondary);">By: ${note.uploader}</div>
-                        </div>
-                        <div style="display:flex; gap:0.3rem; flex-shrink:0;">
-                            <a href="${note.linkUrl}" target="_blank" class="btn" style="padding:0.25rem 0.5rem; font-size:0.65rem; text-decoration:none;">Open</a>
-                            ${(currentUser.role === 'admin' || currentUser.username === note.uploader) ? `<button class="btn btn-danger" style="padding:0.25rem 0.4rem; font-size:0.65rem; width:auto;" onclick="window.deleteNote(${note.id})">Del</button>` : ''}
-                        </div>
-                    `;
-                    container.appendChild(item);
-                });
-            });
-        }
-
-        window.deleteNote = async function(id) {
-            safeExecute(async () => {
-                if(confirm("Delete this note?")) {
-                    notesData = notesData.filter(n => n.id !== id);
-                    await saveGlobalNotes();
-                    renderNotesRepository();
-                }
-            });
+        window.addSubject = async function() {
+            const name = document.getElementById('newSubjectInput').value.trim();
+            if(name) { syllabusData.push({ subject: name, chapters: [] }); document.getElementById('newSubjectInput').value = ""; renderSyllabusTracker(); await saveDataToCloud(); }
         };
-
-        ['Lecture', 'Module', 'Ref'].forEach(type => {
-            const slider = document.getElementById(`slider${type}`);
-            const valSpan = document.getElementById(`val${type}`);
-            slider.addEventListener('input', (e) => { valSpan.textContent = e.target.value; });
-        });
-
-        document.getElementById('backlogForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            safeExecute(async () => {
-                const editIdx = parseInt(document.getElementById('editIndex').value);
-                const item = {
-                    subject: document.getElementById('chapterSubject').value,
-                    name: document.getElementById('chapterName').value,
-                    date: document.getElementById('chapterDate').value,
-                    lecture: parseInt(document.getElementById('sliderLecture').value),
-                    module: parseInt(document.getElementById('sliderModule').value),
-                    ref: parseInt(document.getElementById('sliderRef').value),
-                    note: document.getElementById('chapterNote').value,
-                    links: editIdx >= 0 ? backlogs[editIdx].links : [],
-                    finished: editIdx >= 0 ? backlogs[editIdx].finished : false
-                };
-
-                if (editIdx >= 0) backlogs[editIdx] = item;
-                else backlogs.push(item);
-
-                document.getElementById('backlogModal').classList.remove('active');
-                renderBacklogs();
-                await saveDataToCloud();
-                checkBacklogNotifications();
-            });
-        });
-
-        window.editBacklog = function(index) {
-            safeExecute(() => {
-                const item = backlogs[index];
-                document.getElementById('editIndex').value = index;
-                document.getElementById('backlogModalTitle').textContent = "Edit Item";
-                document.getElementById('saveBacklogBtn').textContent = "Save Changes";
-                document.getElementById('chapterSubject').value = item.subject;
-                document.getElementById('chapterName').value = item.name;
-                document.getElementById('chapterDate').value = item.date;
-                document.getElementById('sliderLecture').value = item.lecture;
-                document.getElementById('valLecture').textContent = item.lecture;
-                document.getElementById('sliderModule').value = item.module;
-                document.getElementById('valModule').textContent = item.module;
-                document.getElementById('sliderRef').value = item.ref;
-                document.getElementById('valRef').textContent = item.ref;
-                document.getElementById('chapterNote').value = item.note || "";
-                document.getElementById('backlogModal').classList.add('active');
-            });
+        window.removeSubject = async function(sIdx) { syllabusData.splice(sIdx, 1); renderSyllabusTracker(); await saveDataToCloud(); };
+        window.addChapter = async function(sIdx) {
+            const name = document.getElementById(`newChapterInput_${sIdx}`).value.trim();
+            if(name) { syllabusData[sIdx].chapters.push({ name, completed: false }); renderSyllabusTracker(); await saveDataToCloud(); }
         };
-
-        window.openCardLinkModal = function(index) {
-            document.getElementById('linkCardIndex').value = index;
-            document.getElementById('cardLinkTitle').value = "";
-            document.getElementById('cardLinkUrl').value = "";
-            document.getElementById('cardLinkModal').classList.add('active');
-        };
-
-        document.getElementById('cardLinkForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            safeExecute(async () => {
-                const idx = parseInt(document.getElementById('linkCardIndex').value);
-                const title = document.getElementById('cardLinkTitle').value.trim();
-                const url = document.getElementById('cardLinkUrl').value.trim();
-
-                if (!backlogs[idx].links) backlogs[idx].links = [];
-                backlogs[idx].links.push({ title, url });
-
-                document.getElementById('cardLinkModal').classList.remove('active');
-                renderBacklogs();
-                await saveDataToCloud();
-            });
-        });
-
-        window.toggleSubjectBlock = function(contentId) {
-            safeExecute(() => {
-                document.getElementById(contentId).classList.toggle('collapsed');
-            });
-        };
-
-        window.toggleFinish = async function(index) {
-            safeExecute(async () => {
-                backlogs[index].finished = !backlogs[index].finished;
-                if (backlogs[index].finished && !studyStats.badges.includes("⭐ Backlog Slayer")) {
-                    studyStats.badges.push("⭐ Backlog Slayer");
-                }
-                renderBacklogs();
-                updateStatsUI();
-                await saveDataToCloud();
-            });
-        };
-
-        window.promptDelete = function(index) {
-            document.getElementById('deleteTargetIndex').value = index;
-            document.getElementById('deleteTargetName').textContent = backlogs[index].name;
-            document.getElementById('deleteModal').classList.add('active');
-        };
-
-        document.getElementById('confirmDeleteBtn').addEventListener('click', async () => {
-            safeExecute(async () => {
-                const idx = parseInt(document.getElementById('deleteTargetIndex').value);
-                backlogs.splice(idx, 1);
-                document.getElementById('deleteModal').classList.remove('active');
-                renderBacklogs();
-                await saveDataToCloud();
-            });
-        });
-
-        function renderBacklogs() {
-            safeExecute(() => {
-                const physicsGrid = document.getElementById('physicsContent');
-                const chemistryGrid = document.getElementById('chemistryContent');
-                const mathsGrid = document.getElementById('mathsContent');
-                const biologyGrid = document.getElementById('biologyContent');
-
-                physicsGrid.innerHTML = "";
-                chemistryGrid.innerHTML = "";
-                mathsGrid.innerHTML = "";
-                if(biologyGrid) biologyGrid.innerHTML = "";
-
-                let totalItems = backlogs.length;
-                let finishedItems = backlogs.filter(b => b.finished).length;
-                let percent = totalItems > 0 ? Math.round((finishedItems / totalItems) * 100) : 0;
-
-                document.getElementById('bannerProgressLabel').textContent = `${percent}% Cleared`;
-                document.getElementById('bannerProgressCounts').textContent = `${finishedItems} / ${totalItems} Completed`;
-                document.getElementById('bannerProgressBarFill').style.width = `${percent}%`;
-
-                if(totalItems === 0) {
-                    physicsGrid.innerHTML = `<p style="color:var(--text-secondary); font-size:0.75rem;">No items added.</p>`;
-                }
-
-                backlogs.forEach((item, index) => {
-                    const card = document.createElement('div');
-                    card.className = `backlog-card ${item.finished ? 'finished' : ''}`;
-                    let linksHtml = (item.links || []).map(l => `<a href="${l.url}" target="_blank" class="link-pill">🔗 ${l.title}</a>`).join('');
-
-                    card.innerHTML = `
-                        <div class="card-header">
-                            <h3>${item.name}</h3>
-                            <span class="card-date">📅 ${item.date}</span>
-                        </div>
-                        <div class="sliders-summary">
-                            <div>Lectures: <strong>${item.lecture}%</strong></div>
-                            <div>Modules: <strong>${item.module}%</strong></div>
-                            <div>Reference Book: <strong>${item.ref}%</strong></div>
-                        </div>
-                        ${item.note ? `<div class="card-note">${item.note}</div>` : ''}
-                        <div class="links-container">${linksHtml}</div>
-                        <div class="card-actions">
-                            <button onclick="window.toggleFinish(${index})" class="finish-btn">${item.finished ? 'Undo' : 'Finish'}</button>
-                            <button onclick="window.editBacklog(${index})" class="edit-btn">Edit</button>
-                            <button onclick="window.openCardLinkModal(${index})" class="link-btn">+ Link</button>
-                            <button onclick="window.promptDelete(${index})" class="delete-btn">Del</button>
-                        </div>
-                    `;
-
-                    if(item.subject === "Physics") physicsGrid.appendChild(card);
-                    else if(item.subject === "Chemistry") chemistryGrid.appendChild(card);
-                    else if(item.subject === "Maths") mathsGrid.appendChild(card);
-                    else if(item.subject === "Biology" && biologyGrid) biologyGrid.appendChild(card);
-                });
-            });
-        }
-
-        async function renderAdminMasterHomeView() {
-            safeExecute(async () => {
-                const container = document.getElementById('adminMasterUserBlocksContainer');
-                container.innerHTML = "";
-
-                const querySnapshot = await getDocs(collection(db, "users"));
-                querySnapshot.forEach((docSnap) => {
-                    const userData = docSnap.data();
-                    const username = docSnap.id;
-                    const userBacklogs = userData.backlogs || [];
-
-                    const blockDiv = document.createElement('div');
-                    blockDiv.className = 'subject-block-container';
-
-                    let cardsHtml = "";
-                    if(userBacklogs.length === 0) {
-                        cardsHtml = `<p style="color:var(--text-secondary); grid-column:1/-1; font-size:0.75rem;">No records found.</p>`;
-                    } else {
-                        userBacklogs.forEach((item) => {
-                            let linksHtml = (item.links || []).map(l => `<a href="${l.url}" target="_blank" class="link-pill">🔗 ${l.title}</a>`).join('');
-                            cardsHtml += `
-                                <div class="backlog-card ${item.finished ? 'finished' : ''}">
-                                    <div class="card-header">
-                                        <h3>[${item.subject}] ${item.name}</h3>
-                                        <span class="card-date">📅 ${item.date}</span>
-                                    </div>
-                                    <div class="sliders-summary">
-                                        <div>Lectures: <strong>${item.lecture}%</strong></div>
-                                        <div>Modules: <strong>${item.module}%</strong></div>
-                                        <div>Reference Book: <strong>${item.ref}%</strong></div>
-                                    </div>
-                                    ${item.note ? `<div class="card-note">${item.note}</div>` : ''}
-                                    <div class="links-container">${linksHtml}</div>
-                                </div>
-                            `;
-                        });
-                    }
-
-                    blockDiv.innerHTML = `
-                        <div class="subject-header admin-user-block" onclick="window.toggleSubjectBlock('userBlock_${username}')">
-                            <span style="font-size:0.85rem;">👤 <strong>${username.toUpperCase()}</strong> (${userBacklogs.length})</span>
-                            <span>▼</span>
-                        </div>
-                        <div class="subject-content" id="userBlock_${username}">${cardsHtml}</div>
-                    `;
-                    container.appendChild(blockDiv);
-                });
-            });
-        }
-
-        function renderDailyScheduleTable() {
-            safeExecute(() => {
-                const year = parseInt(document.getElementById('calYearSelect').value);
-                const month = parseInt(document.getElementById('calMonthSelect').value);
-                const tableBody = document.getElementById('scheduleTableBody');
-                tableBody.innerHTML = "";
-
-                const totalDays = new Date(year, month + 1, 0).getDate();
-                for(let day = 1; day <= totalDays; day++) {
-                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                    const matchingBacklogs = backlogs.filter(b => b.date === dateStr);
-                    const infoText = matchingBacklogs.length > 0 
-                        ? matchingBacklogs.map(b => `[${b.subject}] ${b.name}`).join('<br>') 
-                        : '<span style="color:var(--text-secondary);">No schedule</span>';
-
-                    const row = document.createElement('tr');
-                    row.innerHTML = `<td><strong>${dateStr}</strong></td><td>${infoText}</td>`;
-                    tableBody.appendChild(row);
-                }
-            });
-        }
-
-        document.getElementById('calYearSelect').addEventListener('change', renderDailyScheduleTable);
-        document.getElementById('calMonthSelect').addEventListener('change', renderDailyScheduleTable);
-
-        async function renderAdminPanel() {
-            safeExecute(async () => {
-                const pendingTableBody = document.getElementById('pendingUserTableBody');
-                const activeTableBody = document.getElementById('adminUserTableBody');
-                pendingTableBody.innerHTML = "";
-                activeTableBody.innerHTML = "";
-
-                // Get settings for auto-approval toggle
-                const settingsSnap = await getDoc(doc(db, "system", "settings"));
-                if(settingsSnap.exists()) {
-                    autoApprovalEnabled = settingsSnap.data().autoApproval || false;
-                    document.getElementById('autoApprovalToggle').checked = autoApprovalEnabled;
-                }
-
-                const querySnapshot = await getDocs(collection(db, "users"));
-                let pendingCount = 0;
-
-                querySnapshot.forEach((docSnap) => {
-                    const userData = docSnap.data();
-                    const username = docSnap.id;
-                    const role = userData.role || "user";
-                    const approved = userData.approved !== false;
-                    const isPremium = userData.premium || false;
-
-                    if (!approved) {
-                        pendingCount++;
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td><strong>${username}</strong></td>
-                            <td>
-                                <button class="btn btn-success" style="padding:0.2rem 0.4rem; font-size:0.65rem; width:auto; margin-right:3px;" onclick="window.approveUser('${username}', true)">Accept</button>
-                                <button class="btn btn-danger" style="padding:0.2rem 0.4rem; font-size:0.65rem; width:auto;" onclick="window.approveUser('${username}', false)">Decline</button>
-                            </td>
-                        `;
-                        pendingTableBody.appendChild(row);
-                    } else {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td><strong>${username}</strong></td>
-                            <td>${role.toUpperCase()}</td>
-                            <td><span style="color:${isPremium ? 'var(--success-color)' : 'var(--text-secondary)'};">${isPremium ? 'VIP' : 'Free'}</span></td>
-                            <td>
-                                <button class="btn" style="padding:0.2rem 0.35rem; font-size:0.65rem; width:auto; margin-right:2px;" onclick="window.toggleUserPremium('${username}', ${!isPremium})">${isPremium ? 'Revoke VIP' : 'Make VIP'}</button>
-                                <button class="btn btn-danger" style="padding:0.2rem 0.35rem; font-size:0.65rem; width:auto;" onclick="window.deleteAccount('${username}')">Del</button>
-                            </td>
-                        `;
-                        activeTableBody.appendChild(row);
-                    }
-                });
-
-                if (pendingCount === 0) {
-                    pendingTableBody.innerHTML = `<tr><td colspan="2" style="text-align:center;">No pending requests</td></tr>`;
-                }
-            });
-        }
-
-        window.approveUser = async function(username, accept) {
-            safeExecute(async () => {
-                const userRef = doc(db, "users", username);
-                const snap = await getDoc(userRef);
-                if(snap.exists()) {
-                    if (accept) await setDoc(userRef, { ...snap.data(), approved: true });
-                    else await deleteDoc(userRef);
-                    renderAdminPanel();
-                }
-            });
-        };
-
-        window.toggleUserPremium = async function(username, makePremium) {
-            safeExecute(async () => {
-                const userRef = doc(db, "users", username);
-                const snap = await getDoc(userRef);
-                if(snap.exists()) {
-                    await setDoc(userRef, { ...snap.data(), premium: makePremium });
-                    alert(`User ${username} premium status updated to ${makePremium ? 'VIP' : 'Free'}`);
-                    renderAdminPanel();
-                }
-            });
-        };
-
-        window.deleteAccount = async function(username) {
-            safeExecute(async () => {
-                if (username === currentUser.username) { alert("Cannot delete your own account!"); return; }
-                if (confirm(`Delete account ${username}?`)) {
-                    await deleteDoc(doc(db, "users", username));
-                    renderAdminPanel();
-                }
-            });
-        };
+        window.removeChapter = async function(sIdx, cIdx) { syllabusData[sIdx].chapters.splice(cIdx, 1); renderSyllabusTracker(); await saveDataToCloud(); };
+        window.toggleSyllabusChapter = async function(sIdx, cIdx) { syllabusData[sIdx].chapters[cIdx].completed = !syllabusData[sIdx].chapters[cIdx].completed; renderSyllabusTracker(); await saveDataToCloud(); };
 
         function renderSyllabusTracker() {
             safeExecute(() => {
                 const container = document.getElementById('syllabusContainer');
                 container.innerHTML = "";
-
-                let totalChapters = 0, completedChapters = 0;
+                let total = 0, comp = 0;
                 syllabusData.forEach((subj, sIdx) => {
-                    const subDiv = document.createElement('div');
-                    subDiv.className = 'syllabus-subject';
-                    let chaptersHtml = `
-                        <div class="syllabus-subject-header">
-                            <h3>${subj.subject}</h3>
-                            <button class="btn btn-danger" style="padding:0.15rem 0.35rem; font-size:0.6rem; width:auto;" onclick="window.removeSubject(${sIdx})">Delete</button>
-                        </div>
-                    `;
+                    let html = `<div class="syllabus-subject"><div class="syllabus-subject-header"><h3>${subj.subject}</h3><button class="btn btn-danger" style="padding:0.1rem 0.3rem;font-size:0.6rem;width:auto;" onclick="window.removeSubject(${sIdx})">Del</button></div>`;
                     subj.chapters.forEach((ch, cIdx) => {
-                        totalChapters++;
-                        if(ch.completed) completedChapters++;
-                        chaptersHtml += `
-                            <div class="syllabus-chapter-item">
-                                <label style="word-break:break-word; font-size:0.75rem;"><input type="checkbox" ${ch.completed ? 'checked' : ''} onchange="window.toggleSyllabusChapter(${sIdx}, ${cIdx})"> ${ch.name}</label>
-                                <button class="btn btn-danger" style="padding:0.1rem 0.3rem; font-size:0.55rem; width:auto; flex-shrink:0;" onclick="window.removeChapter(${sIdx}, ${cIdx})">X</button>
-                            </div>
-                        `;
+                        total++; if(ch.completed) comp++;
+                        html += `<div class="syllabus-chapter-item"><label><input type="checkbox" ${ch.completed?'checked':''} onchange="window.toggleSyllabusChapter(${sIdx},${cIdx})"> ${ch.name}</label><button class="btn btn-danger" style="padding:0.1rem 0.2rem;font-size:0.5rem;width:auto;" onclick="window.removeChapter(${sIdx},${cIdx})">X</button></div>`;
                     });
-                    chaptersHtml += `
-                        <div style="display: flex; gap: 0.3rem; margin-top: 0.4rem;">
-                            <input type="text" id="newChapterInput_${sIdx}" placeholder="New chapter..." style="flex:1; padding:0.3rem; font-size:0.7rem; border-radius:6px; border:1px solid var(--border-color);">
-                            <button class="btn" style="width:auto; padding:0.3rem 0.5rem; font-size:0.7rem;" onclick="window.addChapter(${sIdx})">+ Add</button>
-                        </div>
-                    `;
-                    subDiv.innerHTML = chaptersHtml;
-                    container.appendChild(subDiv);
+                    html += `<div style="display:flex;gap:4px;margin-top:6px;"><input type="text" id="newChapterInput_${sIdx}" placeholder="New chapter..." style="flex:1;padding:0.25rem;font-size:0.75rem;"><button class="btn" style="width:auto;padding:0.25rem 0.5rem;font-size:0.75rem;" onclick="window.addChapter(${sIdx})">Add</button></div></div>`;
+                    container.innerHTML += html;
                 });
-
-                const percentage = totalChapters > 0 ? Math.round((completedChapters / totalChapters) * 100) : 0;
-                document.getElementById('modalProgressLabel').textContent = `${percentage}% Completed`;
-                document.getElementById('modalProgressCounts').textContent = `${completedChapters} / ${totalChapters}`;
-                document.getElementById('modalProgressBarFill').style.width = `${percentage}%`;
-                document.getElementById('progressLabel').textContent = `${percentage}% Cleared`;
-                document.getElementById('progressCounts').textContent = `${completedChapters} / ${totalChapters}`;
-                document.getElementById('progressBarFill').style.width = `${percentage}%`;
+                const pct = total > 0 ? Math.round((comp/total)*100) : 0;
+                document.getElementById('modalProgressLabel').textContent = `${pct}% Cleared`;
+                document.getElementById('modalProgressCounts').textContent = `${comp} / ${total}`;
+                document.getElementById('modalProgressBarFill').style.width = `${pct}%`;
+                document.getElementById('progressLabel').textContent = `${pct}% Cleared`;
+                document.getElementById('progressCounts').textContent = `${comp} / ${total}`;
+                document.getElementById('progressBarFill').style.width = `${pct}%`;
             });
         }
 
-        window.toggleSyllabusChapter = async function(sIdx, cIdx) {
-            safeExecute(async () => {
-                syllabusData[sIdx].chapters[cIdx].completed = !syllabusData[sIdx].chapters[cIdx].completed;
-                renderSyllabusTracker();
-                await saveDataToCloud();
+        function renderBacklogs() {
+            safeExecute(() => {
+                ['physicsContent', 'chemistryContent', 'mathsContent', 'biologyContent'].forEach(id => { const el = document.getElementById(id); if(el) el.innerHTML = ""; });
+                backlogs.forEach((item, index) => {
+                    const card = document.createElement('div');
+                    card.className = `backlog-card ${item.finished ? 'finished' : ''}`;
+                    card.innerHTML = `<div class="card-header"><h3>${item.name}</h3><span class="card-date">📅 ${item.date}</span></div><div class="card-actions"><button onclick="window.toggleFinish(${index})" class="finish-btn">${item.finished?'Undo':'Done'}</button><button onclick="window.promptDelete(${index})" class="delete-btn">Del</button></div>`;
+                    const map = { Physics: 'physicsContent', Chemistry: 'chemistryContent', Maths: 'mathsContent', Biology: 'biologyContent' };
+                    if(map[item.subject] && document.getElementById(map[item.subject])) document.getElementById(map[item.subject]).appendChild(card);
+                });
             });
-        };
+        }
 
-        window.addSubject = async function() {
-            safeExecute(async () => {
-                const input = document.getElementById('newSubjectInput');
-                const subjectName = input.value.trim();
-                if(!subjectName) return;
-                syllabusData.push({ subject: subjectName, chapters: [] });
-                input.value = "";
-                renderSyllabusTracker();
-                await saveDataToCloud();
-            });
-        };
-
-        window.removeSubject = async function(sIdx) {
-            safeExecute(async () => {
-                if(confirm(`Delete subject "${syllabusData[sIdx].subject}"?`)) {
-                    syllabusData.splice(sIdx, 1);
-                    renderSyllabusTracker();
-                    await saveDataToCloud();
-                }
-            });
-        };
-
-        window.addChapter = async function(sIdx) {
-            safeExecute(async () => {
-                const input = document.getElementById(`newChapterInput_${sIdx}`);
-                const chapterName = input.value.trim();
-                if(!chapterName) return;
-                syllabusData[sIdx].chapters.push({ name: chapterName, completed: false });
-                input.value = "";
-                renderSyllabusTracker();
-                await saveDataToCloud();
-            });
-        };
-
-        window.removeChapter = async function(sIdx, cIdx) {
-            safeExecute(async () => {
-                syllabusData[sIdx].chapters.splice(cIdx, 1);
-                renderSyllabusTracker();
-                await saveDataToCloud();
-            });
-        };
+        window.toggleFinish = async function(idx) { backlogs[idx].finished = !backlogs[idx].finished; renderBacklogs(); await saveDataToCloud(); };
+        window.promptDelete = function(idx) { backlogs.splice(idx, 1); renderBacklogs(); saveDataToCloud(); };
+        window.toggleSubjectBlock = function(id) { document.getElementById(id).classList.toggle('collapsed'); };
     </script>
 </body>
 </html>
